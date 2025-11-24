@@ -1,0 +1,24 @@
+package com.healthcare.service;
+
+
+import java.util.List;
+
+import com.healthcare.dto.FoodieDetailsDto;
+import com.healthcare.entities.Creator;
+import com.healthcare.entities.Foodie;
+
+public interface FoodieService {
+
+	void addFoodie(Foodie newFoodie);
+	
+	Foodie findById(Long id);
+
+	void updateFoodie(Foodie f);
+
+	List<FoodieDetailsDto> findAll();
+
+	Foodie findByIdWithCreators(Long id);
+	
+	Creator findCreatorWithFoodies(Long creator_id);
+	
+}
