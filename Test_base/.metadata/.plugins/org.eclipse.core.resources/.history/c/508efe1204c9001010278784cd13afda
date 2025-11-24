@@ -1,0 +1,84 @@
+package com.healthcare.service;
+
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import com.healthcare.dto.UserDetailsDto;
+import com.healthcare.entities.User;
+import com.healthcare.exception_handler.BadRequestException;
+import com.healthcare.repository.UserRepo;
+
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class UserServiceImpl implements UserService {
+	
+	// dependencies
+	private final UserRepo repo;
+	private final ModelMapper mapper;
+	
+	@Override
+	public UserDetailsDto signIn(String em,String pwd) {
+		Optional<User> u = repo.findByEmail(em).orElseThrow(()-> throw new InvalidCredentialsException("Invalid email or password"));
+//	    if (u.isPresent()) {
+//	        throw new InvalidCredentialsException("Invalid email or password");
+//	    }
+		
+		if(u.get)
+
+	    return mapper.map(u.get(), UserDetailsDto.class);
+	}
+
+	@Override
+	public void signUp(User newUser) throws Exception {
+		// save user to db through repository
+		User u = repo.save(newUser);
+		
+		// if return stored user is null failed to save user
+	    if (u == null) {
+	        throw new RuntimeException("Invalid user credentials");
+	    }
+		
+	}
+	
+	@Override
+	public void updateUser(User changeUser){
+		// save user to db through repository
+		User u = repo.save(changeUser);
+		
+		// if return stored user is null failed to save user
+	    if (u == null) {
+	        throw new BadRequestException("Changed user credentials");
+	    }
+	}
+
+	@Override
+	public boolean emailExist(String email) {
+		if(repo.existsByEmail(email)) {
+			System.out.println(repo.findByEmail(email));
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		return repo.findByEmail(email).get();
+		
+	}
+	
+	@Override
+	public User findById(Long id) {
+		return repo.findById(id).get();
+	}
+	
+	@Override
+	public boolean ifExist(String userName) {
+		return repo.existsByUsername(userName);
+	}
+
+	
+}
