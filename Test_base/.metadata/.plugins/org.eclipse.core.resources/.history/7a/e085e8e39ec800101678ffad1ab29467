@@ -1,9 +1,0 @@
-package com.healthcare.service;
-
-import com.healthcare.dto.ApiResponse;
-
-public interface YoutubeApiService {
-	
-	public ApiResponse<?> verifyURL(String vID);
-	
-}

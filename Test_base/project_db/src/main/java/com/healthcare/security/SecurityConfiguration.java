@@ -60,7 +60,9 @@ public class SecurityConfiguration {
 		                "/creators/{creator_id}/newPost/**",
 		                "/users/signIn/**",
 		                "/users/signin/**",
-		                "/auth/login/**"
+		                "/auth/login/**",
+		                "/foodies/{foodie_id}/followCreator/**",
+		                "/foodies/{foodie_id}/unfollowCreator/**"
 		        ).permitAll()
 		        .anyRequest().authenticated());
 //				
@@ -87,7 +89,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:4001"));
         config.setAllowedMethods(Arrays.asList("GET","POST"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
