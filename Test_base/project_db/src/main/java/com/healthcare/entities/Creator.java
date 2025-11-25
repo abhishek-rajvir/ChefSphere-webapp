@@ -45,6 +45,7 @@ public class Creator{
 	 *
 	*/
 	@ManyToMany(mappedBy = "creators", fetch = FetchType.LAZY)
+	@JsonManagedReference
 	@JsonBackReference // to bind json to the object
 	private Set<Foodie> foodies = new HashSet<>();;
 	
@@ -53,7 +54,6 @@ public class Creator{
 	 *  But each post will only have one creator
 	 */
 
-//	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
 	@OneToMany(mappedBy = "creators", cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
 	@JsonManagedReference
 	@JsonBackReference
@@ -66,13 +66,22 @@ public class Creator{
 	private User userId;
 	
     // helper method
+	
+	// followers
+	
+	public void addFollower(Foodie f) {
+		foodies.add(f);
+	}
+	
+	// posts
     public void addPost(Post post) {
         posts.add(post);
         post.setCreators(this);
     }
     
-    public boolean removePost(Post post) {
-    	return posts.remove(post);
+    public void removePost(Post post) {
+    	posts.remove(post);
+    	post.setCreators(null);
     }
     
     public List<Post> getAllPost() {

@@ -2,6 +2,7 @@ package com.healthcare.entities;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -15,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -63,5 +65,29 @@ public class Foodie {
 	@OneToOne(cascade = CascadeType.ALL) // if user is deleted so is creator
 	@JoinColumn( name = "user_id", nullable = false,unique = true) // fk is stored here
 	private User userId;
+	
+	/*
+	 * One post has many comments
+	 */
+	@OneToMany(mappedBy = "foodies",cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Comment> comments;
+	
+	// helper methods
+	
+	// following
+	public void addCreator(Creator c) {
+		creators.add(c);
+	}
+	
+	// comments
+	public void addComment(Comment c) {
+		comments.add(c);
+		c.setFoodie(this);
+	}
+
+	public void removeComment(Comment c) {
+		comments.remove(c);
+		c.setFoodie(null);
+	}
 	
 }

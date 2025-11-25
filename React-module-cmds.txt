@@ -1,0 +1,5 @@
+Delete node-modules before upload
+
+npm prune
+npm install
+npm run dev
