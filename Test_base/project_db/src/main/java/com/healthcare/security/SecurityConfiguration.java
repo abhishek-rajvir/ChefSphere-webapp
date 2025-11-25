@@ -57,7 +57,7 @@ public class SecurityConfiguration {
 		                "/foodies/signUp",
 		                "/creators/list/**",
 		                "/creators/signUp/**",
-		                "/creators/{creator_id}/newPost/**",
+		                "/creators/{creator_id}/posts/**",
 		                "/users/signIn/**",
 		                "/users/signin/**",
 		                "/auth/login/**",

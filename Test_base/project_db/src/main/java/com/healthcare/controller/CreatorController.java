@@ -2,6 +2,7 @@ package com.healthcare.controller;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,9 +114,20 @@ public class CreatorController {
 		}
 	}
 	
-	@PostMapping("{creator_id}/newPost")
+	@GetMapping("{creator_id}/posts/list")
+	public ResponseEntity<?> getAllPost(@PathVariable(name = "creator_id") Long id){
+		return ResponseEntity.ok(creatorService.listOfPost(id));
+	}
+	
+	@DeleteMapping("{creator_id}/posts/{post_id}/delete")
+	public ResponseEntity<?> deletPostByID(@PathVariable(name = "creator_id") Long cid, @PathVariable(name = "post_id") Long pid){
+		return ResponseEntity.ok(creatorService.deletePostById(cid,pid));
+	}
+	
+	
+	@PostMapping("{creator_id}/posts/new")
 	public ResponseEntity<?> createPost(@Valid @RequestBody videoPostDto vdto, @PathVariable(name = "creator_id") Long id){
-		Creator c = creatorService.findById(id);
+//		Creator c = creatorService.findById(id);
 //		System.out.println(vdto.getVideoUrl());
 		Post p = modelMapper.map(vdto, Post.class);
 		p.setPostType(PostType.VIDEO);
@@ -124,8 +136,8 @@ public class CreatorController {
 		int len = p.getPost_title().length();
 		if(len >=30 && len <=60) {
 			p.setVideoTag(apiService.verifyURL(vdto.getVideoUrl()));
-			p.setCreators(c);
-			creatorService.newPost(p,c.getC_id());
+//			p.setCreators(c);
+			creatorService.newPost(p,id);
 //			creatorService.newPost(Post p);
 			return ResponseEntity.ok(p);
 		}

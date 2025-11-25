@@ -1,2 +1,3 @@
-2025/11/24-23:16:06.553 53ec Creating DB E:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
-2025/11/24-23:16:06.569 53ec Reusing MANIFEST E:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/25-19:45:18.800 32b0 Reusing MANIFEST D:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
+2025/11/25-19:45:18.874 32b0 Recovering log #3
+2025/11/25-19:45:18.917 32b0 Reusing old log D:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 

@@ -14,6 +14,6 @@ public interface CreatorRepo extends JpaRepository<Creator, Long>{
 	Optional<Creator> findByIdWithFoodies(@Param("id") Long id);
 	
 	@Query("SELECT c FROM Creator c LEFT JOIN FETCH c.posts WHERE c.c_id = :id")
-	Creator findByIdWithPosts(@Param("id") Long id);
+	Optional<Creator> findByIdWithPosts(@Param("id") Long id);
 
 }

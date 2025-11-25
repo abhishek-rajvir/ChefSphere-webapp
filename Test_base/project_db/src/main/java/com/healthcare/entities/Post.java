@@ -37,7 +37,7 @@ public class Post {
 	
 	private String videoTag;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn( name = "creator_id", nullable = false,unique = true) // fk is stored here
+	@ManyToOne( fetch = FetchType.LAZY)
+	@JoinColumn( name = "creator_id", nullable = false) // fk is stored here
 	private Creator creators;
 }

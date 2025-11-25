@@ -1,9 +1,12 @@
 package com.healthcare.entities;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -49,8 +52,12 @@ public class Creator{
 	 *  one creator can have many posts
 	 *  But each post will only have one creator
 	 */
+
+//	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
 	@OneToMany(mappedBy = "creators", cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
-    private Set<Post> posts = new HashSet<>();
+	@JsonManagedReference
+	@JsonBackReference
+    private List<Post> posts = new ArrayList<>();
 	
 	
 	// User is a Creator
@@ -58,4 +65,17 @@ public class Creator{
 	@JoinColumn(name = "user_id", nullable = false,unique = true) // fk is stored here
 	private User userId;
 	
+    // helper method
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setCreators(this);
+    }
+    
+    public boolean removePost(Post post) {
+    	return posts.remove(post);
+    }
+    
+    public List<Post> getAllPost() {
+    	return posts;
+    }
 }
