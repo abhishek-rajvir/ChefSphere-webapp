@@ -26,11 +26,10 @@ public class Comment {
 	@Column(columnDefinition="TEXT")
 	private String comment_text;
 	
-
-	@ManyToOne
-	@JoinColumn(name = "foodie_id", nullable = false)
-	private Foodie foodie;
+	// who commented on the post
+	private Long foodie_id;
 	
+	// post where it was commented
 	@ManyToOne
 	@JoinColumn(name = "postId",nullable = false)
 	private Post post;

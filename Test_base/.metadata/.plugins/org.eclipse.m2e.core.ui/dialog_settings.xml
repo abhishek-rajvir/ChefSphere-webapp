@@ -2,8 +2,8 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
-			<item value="E:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\project_db"/>
 			<item value="D:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base"/>
+			<item value="E:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base\project_db"/>
 			<item value="E:\CDAC\Project\Project-Git\ChefSphere-backup\Test_base"/>
 			<item value="E:\CDAC\Project\Test_base\healtcare_backend"/>
 		</list>

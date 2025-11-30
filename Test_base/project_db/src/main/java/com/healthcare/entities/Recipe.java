@@ -46,8 +46,7 @@ public class Recipe {
 	
 	private String category;
 	
-	@DateTimeFormat
-	private LocalTime prep_time;
+	private Integer prep_time;
 	
 	private Integer number_of_servings;
 	
@@ -57,8 +56,8 @@ public class Recipe {
 	@JsonBackReference
 	private List<Ingredient> ingredients = new ArrayList<>();
 	
-	@Column(columnDefinition="BYTEA")
-	private byte[] image;
+//	@Column(columnDefinition="BYTEA")
+	private String image_url;
 	
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")

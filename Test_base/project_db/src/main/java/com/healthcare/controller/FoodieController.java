@@ -165,5 +165,9 @@ public class FoodieController {
 		
 	}
 	
-	
+	@PostMapping("{foodie_id}/comment/new/{post_id}")
+	public ResponseEntity<?> newComment(@PathVariable Long foodie_id, ,@PathVariable Long post_id,@Valid @RequestBody CommentRequestDto dto  ){
+		
+		return ResponseEntity.ok("Foodie: "+foodie_id+" has commented on post: "+post_id);
+		
 }
