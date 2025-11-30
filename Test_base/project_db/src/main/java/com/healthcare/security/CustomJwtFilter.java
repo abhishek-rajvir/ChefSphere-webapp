@@ -11,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.healthcare.dto.JwtDTO;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,12 +36,16 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 			log.info("JWT found! ");
 			String jwt=authHeaderValue.substring(7);
 			//validate JWT
-			Claims claims = jwtUtils.validateToken(jwt);
-			//get user id , email , role - DTO
-			Long userId=claims.get("userId", Long.class);
-			String role=claims.get("role",String.class);
-			String email=claims.getSubject();
-			JwtDTO dto=new JwtDTO(userId, email, role);
+//			Claims claims = jwtUtils.validateToken(jwt);
+			JwtDTO dto = null;
+			String role = "";
+			if(jwtUtils.isTokenValid(jwt)) {				
+				//get user id , email , role - DTO
+				Long userId=jwtUtils.extractAllClaims(jwt).get("userId", Long.class);
+				role=jwtUtils.extractAllClaims(jwt).get("role",String.class);
+				String email=jwtUtils.extractAllClaims(jwt).getSubject();
+				dto=new JwtDTO(userId, email, role);
+			}
 			//create Authentication object
 			UsernamePasswordAuthenticationToken token=
 					new UsernamePasswordAuthenticationToken(dto, 

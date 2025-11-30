@@ -27,19 +27,6 @@ public class UserController /*~~(Could not parse as Java)~~>*/{
 	private JwtUtils jwtUtils;
 	
 	private final UserService serviceImpl;
-//	private final CreatorService creatorService;
-//	private final FoodieService foodieService;
-	
-	
-//	@GetMapping("/csrf")
-//	public CsrfToken getCsrf(HttpServletRequest request ) {
-//		return (CsrfToken) request.getAttribute("s:_csrf");
-//	}
-	
-//	@GetMapping("/greet")
-//	public String greet(HttpServletRequest request) {
-//		return "welcome user "+ request.getSession().getId();
-//	}
 	
 	@PostMapping("/signIn")
 	public ResponseEntity<?> login(@Valid @RequestBody UserLoginDto dto){

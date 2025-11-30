@@ -7,11 +7,8 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.healthcare.dto.ApiResponse;
 import com.healthcare.dto.CreatorDetailsDto;
-import com.healthcare.dto.PostResponseDto;
 import com.healthcare.entities.Creator;
-import com.healthcare.entities.Post;
 import com.healthcare.exception_handler.InvalidDetailsException;
 import com.healthcare.exception_handler.NoContentException;
 import com.healthcare.exception_handler.ResourceNotFoundException;
@@ -23,7 +20,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CreatorServiceImpl implements CreatorService {
-
+	
 	// dependencies
 	private final CreatorRepo creator_repo;
 	private final PostRepo post_repo;
@@ -62,7 +59,7 @@ public class CreatorServiceImpl implements CreatorService {
 		if(!(c.isEmpty())) {
 			return c.stream()
 					.map(m -> {
-			        	Long cid = m.getC_id();
+			        	Long cid = m.getCid();
 			        	CreatorDetailsDto mappedToDto = mapper.map(m.getUserId(), CreatorDetailsDto.class);
 			        	mappedToDto.setC_id(cid);
 			        	return mappedToDto;
@@ -73,61 +70,31 @@ public class CreatorServiceImpl implements CreatorService {
 	}
 	
 
-	@Override
-	public void newPost(Post p,Long Creator_id) {
-
-		Optional<Creator> c2 = creator_repo.findByIdWithPosts(Creator_id);
-		if(c2.isPresent()) {
-			c2.get().addPost(p);
-			post_repo.save(p);
-			creator_repo.save(c2.get());
-		}
-		else {
-			throw new ResourceNotFoundException("Creator "+Creator_id+" doesnt exist");
-		}
-	}
+//	@Override
+//	public void newPost(Post p,Long Creator_id) {
+//		Creator c = creator_repo.findByIdWithPosts(Creator_id);
+//		
+//		p.setCreators(c);
+//		Post savedPost = post_repo.save(p);
+//		
+////		if(savedPost==null) {
+////			throw new RuntimeException("Invalid Post details");
+////		}
+////		else {
+//				c.addPost(savedPost);
+//				creator_repo.save(c);
+////			}
+//		
+//	}
 	
-	public List<PostResponseDto> listOfPost(Long Creator_id){
-		
-		Optional<Creator> c = creator_repo.findByIdWithPosts(Creator_id);
-		if(c.isPresent()) {			
-			List<Post> list = c.get().getAllPost();
-			if(list == null) {
-				throw new ResourceNotFoundException("Creator "+Creator_id+" has no posts");
-			}
-			else {
-				return list.stream().map(p->(mapper.map(p,PostResponseDto.class))).toList();
-			}
-		}
-		else {
-			throw new ResourceNotFoundException("Creator "+Creator_id+" doesnt exist");
-		}
-	}
-
-	@Override
-	public ApiResponse<String> deletePostById(Long cid, Long pid) {
-		
-		// reference obj of post
-		Optional<Post> p = post_repo.findById(pid);
-		if(p.isPresent()) {
-			// find the creator by id and also fetch his posts
-			Optional<Creator> c = creator_repo.findByIdWithPosts(cid);
-			if(c.isPresent()) {				
-				// delete specific post
-				c.get().removePost(p.get());
-				post_repo.delete(p.get());
-				return new ApiResponse<>("Post "+pid+" deleted", true, "delete success"); 
-			}
-			else {
-				throw new ResourceNotFoundException("Creator "+cid+" doesnt exist");
-			}
-
-		}
-		else {
-			throw new ResourceNotFoundException("Post "+pid+" doesnt exist");
-		}
-		
-	}
+//	@Override
+//	public List<PostRequestDto> findAllPostById(Creator c) {
+//		List<Post> list = c.getPosts();
+//		if(list != null) {
+//			return list.stream().map(s->mapper.map(c, PostRequestDto.class)).toList();
+//		}
+//		throw new ResourceNotFoundException("Creator Id:"+c.getC_id()+" doesn't have any posts");
+//	}
 	
 	
 }

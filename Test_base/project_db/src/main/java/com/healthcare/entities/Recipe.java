@@ -1,24 +1,14 @@
 package com.healthcare.entities;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -32,34 +22,67 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @Table(name = "recipes")
-@ToString(exclude = {"ingredients","comments"})
 public class Recipe {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long recipe_id;
+	private Long recipeId;
 	
-	private String recipe_title;
+	private String recipeName;
 	
-	@Column(columnDefinition="TEXT")
 	private String description;
-	
-	private String category;
 	
 	private Integer prep_time;
 	
 	private Integer number_of_servings;
 	
-	// One recipe has many ingredients
-	@OneToMany(mappedBy = "recipes", cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
-	@JsonManagedReference
-	@JsonBackReference
-	private List<Ingredient> ingredients = new ArrayList<>();
+//	// One recipe has many steps
+	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<RecipeSteps> steps_required = new ArrayList<>();	
 	
-//	@Column(columnDefinition="BYTEA")
-	private String image_url;
 	
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
-    private Recipe recipe;
+//	// One recipe has many ingredients
+	@OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Ingredients> ingredients_required = new ArrayList<>();	
+	
+	@Lob
+	private byte[] image;
+	
+	// one recipe has one category
+	@OneToOne(
+			// name of the owner in foodcategory entity
+			mappedBy = "recipe",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+	private FoodCategory categories;
+	
+//	// one post has one recipe
+//	@OneToOne( mappedBy = "recipe", cascade = CascadeType.ALL)
+//	@JoinColumn( name = "post_id") // fk is stored here	
+//	private Post post;
+
+	
+//	 helper method
+	public void addIngredient(Ingredients ingredients) {
+		ingredients_required.add(ingredients);
+	}
+	
+	public List<Ingredients> getAllIngredients(){
+		return ingredients_required;
+	}
+	
+	
+	public void removeIngredient(Ingredients ingredients) {
+		ingredients_required.remove(ingredients);
+	}
+	
+//	public void setFoodCategory(FoodCategory fc) {
+//		setCategories(fc);
+//		fc.setRecipe(this);
+//	}
+//	
+//	public void removeFoodCategory(FoodCategory fc) {
+//		setCategories(null);
+//		fc.setRecipe(null);
+//	}
 }

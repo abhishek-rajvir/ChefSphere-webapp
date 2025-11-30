@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 //	    }
 		
 		if(u.getPassword().equals(userLoginDto.getPassword())) {
-			String token = jwtUtils.genrateToken(u);
+			String token = jwtUtils.generateToken(u.getId(),u.getEmail(),u.getType().name());
 			UserDetailsDto dto= mapper.map(u, UserDetailsDto.class);
 			dto.setToken(token);
 			return dto;

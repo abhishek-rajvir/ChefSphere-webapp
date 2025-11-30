@@ -1,39 +1,40 @@
 package com.healthcare.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name =  "comments")
-public class Comment {
+@ToString(exclude = "recipe")
+public class RecipeSteps {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long comment_id;
+	private Long id;
+	private Long step_no;
 	
-	@Column(columnDefinition="TEXT")
-	private String comment_text;
+	private String step_name;
+
+	// allows storing large contents of data
+	@Lob
+	private String Content;
+	private String img_url;
 	
-	// who commented on the post
-	private Long foodie_id;
-	
-	// post where it was commented
-	@ManyToOne
-	@JoinColumn(name = "postId",nullable = false)
-	private Post post;
-	
-	
-	
+	@ManyToOne 
+    @JoinColumn(name = "recipe_id") // Foreign key column
+	private Recipe recipe;
+
+
 }

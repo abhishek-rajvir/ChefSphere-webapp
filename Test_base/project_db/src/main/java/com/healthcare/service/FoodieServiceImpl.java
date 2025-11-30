@@ -80,7 +80,7 @@ public class FoodieServiceImpl implements FoodieService {
 		if(!(f.isEmpty())) {
 			return f.stream()
 			        .map(m -> {
-			        	Long fid = m.getF_id();
+			        	Long fid = m.getFid();
 			        	FoodieDetailsDto mappedToDto = mapper.map(m.getUserId(), FoodieDetailsDto.class);
 			        	mappedToDto.setF_id(fid);
 			        	return mappedToDto;

@@ -122,7 +122,7 @@ public class FoodieController {
 		if(
 			f.getCreators()
 		    .stream()
-		    .anyMatch(s -> s.getC_id()==(creator_id))	
+		    .anyMatch(s -> s.getCid()==(creator_id))	
 			) {
 			throw new FoodieConflictException("Foodie is already following creator: "+creator_id);
 		}
@@ -147,7 +147,7 @@ public class FoodieController {
 		if(
 			f.getCreators()
 		    .stream()
-		    .anyMatch(s -> s.getC_id()==(creator_id))	
+		    .anyMatch(s -> s.getCid()==(creator_id))	
 			) {
 			
 			// 
@@ -165,9 +165,5 @@ public class FoodieController {
 		
 	}
 	
-	@PostMapping("{foodie_id}/comment/new/{post_id}")
-	public ResponseEntity<?> newComment(@PathVariable Long foodie_id, ,@PathVariable Long post_id,@Valid @RequestBody CommentRequestDto dto  ){
-		
-		return ResponseEntity.ok("Foodie: "+foodie_id+" has commented on post: "+post_id);
-		
+	
 }

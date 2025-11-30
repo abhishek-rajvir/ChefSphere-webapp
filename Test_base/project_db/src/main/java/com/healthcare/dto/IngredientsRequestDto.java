@@ -3,12 +3,14 @@ package com.healthcare.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentRequestDto {
-	
-	private String comment_text;
-	
+@ToString
+public class IngredientsRequestDto {	
+	private String name;
+	private String description;
+	private Long Qty;
 }

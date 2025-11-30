@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -29,14 +28,14 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @Table(name =  "creators")
-@ToString(exclude = {"foodies","posts"})
+@ToString(exclude = "foodies")
 public class Creator{
 	
 	
 	// primary key of creator
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long c_id;
+	private Long cid;
 	
 	/*
 	 *	no need to define details in child like parent 
@@ -45,7 +44,6 @@ public class Creator{
 	 *
 	*/
 	@ManyToMany(mappedBy = "creators", fetch = FetchType.LAZY)
-	@JsonManagedReference
 	@JsonBackReference // to bind json to the object
 	private Set<Foodie> foodies = new HashSet<>();;
 	
@@ -53,10 +51,7 @@ public class Creator{
 	 *  one creator can have many posts
 	 *  But each post will only have one creator
 	 */
-
-	@OneToMany(mappedBy = "creators", cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
-	@JsonManagedReference
-	@JsonBackReference
+	@OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true) // if creator is deleted so are his posts
     private List<Post> posts = new ArrayList<>();
 	
 	
@@ -65,26 +60,8 @@ public class Creator{
 	@JoinColumn(name = "user_id", nullable = false,unique = true) // fk is stored here
 	private User userId;
 	
-    // helper method
-	
-	// followers
-	
-	public void addFollower(Foodie f) {
-		foodies.add(f);
-	}
-	
-	// posts
-    public void addPost(Post post) {
-        posts.add(post);
-        post.setCreators(this);
-    }
-    
-    public void removePost(Post post) {
-    	posts.remove(post);
-    	post.setCreators(null);
-    }
-    
-    public List<Post> getAllPost() {
-    	return posts;
-    }
+//	public void addPost(Post p) {
+//		posts.add(p);
+////		p.setCreators(this);
+//	}
 }
