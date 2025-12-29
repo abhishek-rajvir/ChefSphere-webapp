@@ -1,0 +1,42 @@
+[
+  {
+    "firstName": "Ava",
+    "lastName": "Marin",
+    "username": "avamakes",
+    "email": "ava.marin.creator1@example.com",
+    "password": "Cr3ative!2025",
+    "gender": "female"
+  },
+  {
+    "firstName": "Rafael",
+    "lastName": "Kwan",
+    "username": "rafcrafts",
+    "email": "rafael.kwan.creator2@example.com",
+    "password": "Raf#Design88",
+    "gender": "male"
+  },
+  {
+    "firstName": "Imani",
+    "lastName": "Bowie",
+    "username": "imani.codes",
+    "email": "imani.bowie.creator3@example.com",
+    "password": "Im4niBuild$",
+    "gender": "non-binary"
+  },
+  {
+    "firstName": "Luca",
+    "lastName": "Ortega",
+    "username": "luca.visuals",
+    "email": "luca.ortega.creator4@example.com",
+    "password": "L0uca!Art",
+    "gender": "male"
+  },
+  {
+    "firstName": "Sofia",
+    "lastName": "Green",
+    "username": "sofia.storytells",
+    "email": "sofia.green.creator5@example.com",
+    "password": "S0fia_Tales7",
+    "gender": "female"
+  }
+]

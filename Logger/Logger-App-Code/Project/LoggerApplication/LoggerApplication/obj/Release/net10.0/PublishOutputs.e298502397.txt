@@ -1,0 +1,7 @@
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\LoggerApplication.exe
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\appsettings.Development.json
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\appsettings.json
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\LoggerApplication.dll
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\LoggerApplication.deps.json
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\LoggerApplication.runtimeconfig.json
+E:\CDAC\Project\Project-Git\Logger-App\Project\LoggerApplication\LoggerApplication\obj\Release\net10.0\PubTmp\Out\LoggerApplication.pdb

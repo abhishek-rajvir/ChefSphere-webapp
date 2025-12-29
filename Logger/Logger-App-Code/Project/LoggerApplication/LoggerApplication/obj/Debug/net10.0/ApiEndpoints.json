@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "LoggerApplication.Controllers.LogController",
+    "Method": "Log",
+    "RelativePath": "Log",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "logModel",
+        "Type": "LoggerApplication.Controllers.LogModelDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

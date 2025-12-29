@@ -1,0 +1,16 @@
+const LogAPI = axios.create({
+    // .NET logger
+    baseURL: "http://localhost:5001/Log",
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
+});
+
+export const requestLog = (messageToLog) => {
+    LogAPI.post("", { logMessage: messageToLog })
+    .catch(() => {
+        console.warn("Log operation failed");
+        return false;
+    });
+}
