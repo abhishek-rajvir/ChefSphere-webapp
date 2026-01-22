@@ -1,13 +1,11 @@
 import React from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import NotFoundPage from "../../error/NotFoundPage";
-import CreatorPage from "./CreatorPage";
-import CreatorSignUp from "./CreatorSignUp";
 import UserPage from "../../Root/UserPage";
 // import LoginForm from "../../Auth/LoginForm";
 // import LoginPage from "../../Auth/LoginPage";
 
-export default function CreatorNavigationLayout({
+export default function FoodieNavigationLayout({
   postPage,
   newPost,
   updatePost,
@@ -41,12 +39,17 @@ export default function CreatorNavigationLayout({
   // Handle keyword routes
   switch (parmeter) {
     case "home":
+      return <UserPage home={true} user={user} />;
     case "posts":
       return <UserPage posts={true} user={user} />;
     case "profile":
       return <UserPage profile={true} user={user} />;
-    case "followers":
-      return <UserPage followers={true} user={user} />;
+    case "categories":
+      return <UserPage categories={true} user={user} />;
+    case "creators":
+      return <UserPage creators={true} user={user} />;
+    case "following":
+      return <UserPage following={true} user={user} />;
     // case "update":
     //   return <CreatorUpdate />;
     // case "delete":

@@ -1,26 +1,10 @@
-import { useState } from 'react'
-import { FoodieList } from './components/FoodieList'
-import { FoodieInput } from './components/FoodieInput'
-import LoginForm from '../form/LoginForm'
+import "./App.css";
 
-// import {} from 'reac'
-
+import { ThemeProvider } from "@/components/theme-provider";
+import SideBar from "./pages/Root/SideBar";
+// import UploadImage from "./service/ImagekitApi";
 function App() {
-  // const [count, setCount] = useState(0)
-
-  return (
-    <>
-    <h4 align='center'>Welcome to Chefsphere</h4>
-    <Router>
-      <Routes>
-        <Route path/>
-      </Routes>
-    </Router>
-    <LoginForm/>
-    {/* <FoodieInput/>
-    <FoodieList/> */}
-    </>
-  )
+  return <>{/* <UploadImage src="/default-image.jpg" /> */}</>;
 }
 
-export default App
+export default App;

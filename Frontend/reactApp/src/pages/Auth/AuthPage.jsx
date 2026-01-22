@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import UserService from "../service/UserService";
-import { useDispatch, useSelector } from "react-redux";
+import UserService from "../../service/UserService";
+// import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [forms, setForms] = useState({
@@ -15,9 +14,9 @@ export default function LoginPage() {
   const [err, setErr] = useState({});
 
   useEffect(() => {
-    const data = sessionStorage.getItem('userCred');
+    const data = sessionStorage.getItem("userCred");
     if (data) {
-      console("User is already logged in")
+      console("User is already logged in");
       const user = JSON.parse(data); // parse string to object
       if (user.type === "CREATOR") {
         navigate(`/creators/`, { replace: true });
@@ -26,10 +25,9 @@ export default function LoginPage() {
         navigate(`/foodies/`, { replace: true });
       }
     }
-  }, []); // run once 
+  }, []); // run once
 
   const dispatch = useDispatch();
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,13 +38,14 @@ export default function LoginPage() {
       const res = await UserService.loginUser(forms);
       alert("Login successful");
       console.log(res);
-      sessionStorage.setItem('userCred', 
+      sessionStorage.setItem(
+        "userCred",
         JSON.stringify({
-            id: res.id,
-            name: res.username,
-            token: res.token,
-            type : res.type,
-        })
+          id: res.id,
+          name: res.username,
+          token: res.token,
+          type: res.type,
+        }),
       );
       // Redirect based on user type
       if (res.type === "CREATOR") {
@@ -84,8 +83,7 @@ export default function LoginPage() {
       <form
         onSubmit={handleSubmit}
         className="p-4 bg-white rounded shadow"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
+        style={{ maxWidth: "400px", width: "100%" }}>
         <h3 className="text-center mb-4">User Login</h3>
 
         {/* Email */}
@@ -123,8 +121,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="btn btn-outline-secondary"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+              onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>

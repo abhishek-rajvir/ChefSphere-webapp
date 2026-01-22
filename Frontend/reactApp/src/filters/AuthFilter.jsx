@@ -1,26 +1,17 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import AuthService from "../service/AuthService";
 
-export default function AuthFilter({ navUri, Component }) {
-    const navigate = useNavigate();
-    const data = AuthService.Get();
-
-    useEffect(() => {
-        if (!data) {
-            navigate("/login", { replace: true });
-        } else if (navUri) {
-            navigate(navUri, { replace: true });
-        }
-    }, [data, navUri, navigate]);
-
-    if (!data) {
-        return null;
+export default function AuthFilter({ Component, ...props }) {
+  let data = AuthService.Get();
+  data = JSON.parse(data);
+  if (!data) {
+    return <Navigate to="/login" replace />;
+  }
+  if (Component === "empty") {
+    if (data.type.toUpperCase() === "CREATOR") {
+      return <Navigate to="/creators" replace />;
     }
-
-    if (navUri) {
-        return null;
-    }
-
-    return <Component/>;
+    return <Navigate to="/foodies" replace />;
+  }
+  return <Component {...props} />;
 }
