@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.chefsphere.ums.dto.CreatorDetailsDto;
 import com.chefsphere.ums.dto.FoodieDetailsDto;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
@@ -27,7 +28,7 @@ public class FoodieServiceImpl implements FoodieService {
 
 	// dependencies
 	private final FoodieRepo foodie_repo;
-	private final CreatorRepo creator_repo;
+	private final CreatorRepo creatorRepo;
 	private final ModelMapper mapper;
 	private final JwtUtils jwtUtils;
 
@@ -74,10 +75,12 @@ public class FoodieServiceImpl implements FoodieService {
 		}
 		throw new ResourceNotFoundException("Foodie Id doesn't exist");
 	}
+	
+
 
 	@Override
 	public Creator findCreatorWithFoodies(Long id) throws RuntimeException {
-		Optional<Creator> c = creator_repo.findByIdWithFoodies(id);
+		Optional<Creator> c = creatorRepo.findByIdWithFoodies(id);
 		if (c.isPresent()) {
 			return c.get();
 		}
@@ -91,7 +94,7 @@ public class FoodieServiceImpl implements FoodieService {
 			return f.stream().map(m -> {
 				Long fid = m.getFid();
 				FoodieDetailsDto mappedToDto = mapper.map(m.getUserId(), FoodieDetailsDto.class);
-				mappedToDto.setF_id(fid);
+				mappedToDto.setFid(fid);
 				return mappedToDto;
 			}).collect(Collectors.toList());
 		}
@@ -139,11 +142,15 @@ public class FoodieServiceImpl implements FoodieService {
 		Foodie f = helperFindByUserIdWithCreators(Userid);
 
 		Long fid = f.getFid();
+		
+		Optional<Creator> c = f.getCreators()
+			    .stream()
+			    .filter(s -> s.getCid()==creator_id)
+			    .findAny();
 
-		if (f.getCreators().stream().anyMatch(s -> s.getCid() == (creator_id))) {
+		if (c.isPresent()) {
 
-			Creator c = findCreatorWithFoodies(creator_id);
-			f.getCreators().remove(c);
+			f.getCreators().remove(c.get());
 
 			// commit changes
 			updateFoodie(f);
@@ -153,7 +160,7 @@ public class FoodieServiceImpl implements FoodieService {
 		}
 		throw new FoodieConflictException("Foodie doesn't follow creator: " + creator_id);
 	}
-	
+
 	@Override
 	public Long whetherfollowCreator(HttpServletRequest req, Long creator_id) {
 
@@ -169,12 +176,34 @@ public class FoodieServiceImpl implements FoodieService {
 		Long fid = f.getFid();
 
 		if (f.getCreators().stream().anyMatch(s -> s.getCid() == (creator_id))) {
-			
+
 			f = null;
 
 			return fid;
 
 		}
 		throw new FoodieConflictException("Foodie doesn't follow creator: " + creator_id);
+	}
+
+	@Override
+	public List<CreatorDetailsDto> allFollowing(HttpServletRequest req) {
+		// get token
+		String token = jwtUtils.extractToken(req);
+
+		// get user id
+		Long Userid = jwtUtils.extractUserId(token);
+
+		// find creator by user id
+		Foodie f = helperFindByUserIdWithCreators(Userid);
+		
+		if(f.getCreators().isEmpty()) {
+			throw new NoContentException("Foodie doesnt follow any one");
+		}
+		return f.getCreators().stream().map(c->{
+			CreatorDetailsDto cdd = mapper.map(c.getUserId(),CreatorDetailsDto.class);
+			cdd.setCid(c.getCid());
+			return cdd;
+		}
+		).toList();
 	}
 }

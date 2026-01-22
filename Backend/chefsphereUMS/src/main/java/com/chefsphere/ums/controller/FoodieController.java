@@ -112,6 +112,7 @@ public class FoodieController {
 	@PostMapping("/followCreator/{creator_id}")
 	public ResponseEntity<?> followCreator(HttpServletRequest req, @PathVariable Long creator_id){			
 		// get persistant foodie by id
+		System.out.println("In follow creator");
 		long fid = foodieService.followCreator(req,creator_id);
 		
 		return ResponseEntity.ok("Foodie: "+fid+" now follows Creator: "+creator_id);
@@ -121,6 +122,7 @@ public class FoodieController {
 	@DeleteMapping("/unFollowCreator/{creator_id}")
 	public ResponseEntity<?> unfollowCreator(HttpServletRequest req, @PathVariable Long creator_id){
 		// get persistant foodie by id
+		System.out.println("In unfollow creator");
 		long fid = foodieService.unfollowCreator(req,creator_id);
 		return ResponseEntity.ok("Foodie: "+fid+" has unfollowed Creator: "+creator_id);
 	}
@@ -131,6 +133,13 @@ public class FoodieController {
 		long fid = foodieService.whetherfollowCreator(req,creator_id);
 		return ResponseEntity.ok("Foodie: "+fid+" does follow Creator: "+creator_id);
 	}
+		
+	@GetMapping("/allFollowing")
+	public ResponseEntity<?> allfollowingFoodie(HttpServletRequest req){
+		// get persistant foodie by id
+		return ResponseEntity.ok(foodieService.allFollowing(req));
+	}
 	
+
 	
 }

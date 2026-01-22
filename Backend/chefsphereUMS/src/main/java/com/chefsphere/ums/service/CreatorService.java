@@ -8,6 +8,8 @@ import com.chefsphere.ums.dto.CreatorRandomDto;
 import com.chefsphere.ums.dto.FoodieDetailsDto;
 import com.chefsphere.ums.entities.Creator;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface CreatorService {
 
 	Long addCreator(Creator newCreator);
@@ -23,8 +25,7 @@ public interface CreatorService {
 	Creator findByUserId(Long id);
 
 	List<CreatorRandomDto> findRandomCreatorByQty(Long qty);
-	
-//	void newPost(Post p,Long Creator_id);
 
-//	List<PostRequestDto> findAllPostById(Creator c);
+	List<FoodieDetailsDto> allFollowers(HttpServletRequest req);
+	
 }

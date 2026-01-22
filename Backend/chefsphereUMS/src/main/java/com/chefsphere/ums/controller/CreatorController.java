@@ -22,6 +22,7 @@ import com.chefsphere.ums.exception_handler.ResourceAlreadyExistsException;
 import com.chefsphere.ums.service.CreatorService;
 import com.chefsphere.ums.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -124,4 +125,11 @@ public class CreatorController {
 	public ResponseEntity<?> findCreatorByRange(@PathVariable Long qty) {
 		return ResponseEntity.ok(creatorService.findRandomCreatorByQty(qty));
 	}
+	
+	@GetMapping("/allFollowers")
+	public ResponseEntity<?> allfollowersCreator(HttpServletRequest req){
+		// get persistant foodie by id
+		return ResponseEntity.ok(creatorService.allFollowers(req));
+	}
+	
 }

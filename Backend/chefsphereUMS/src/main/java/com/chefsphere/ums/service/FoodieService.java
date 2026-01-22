@@ -3,6 +3,7 @@ package com.chefsphere.ums.service;
 
 import java.util.List;
 
+import com.chefsphere.ums.dto.CreatorDetailsDto;
 import com.chefsphere.ums.dto.FoodieDetailsDto;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
@@ -28,5 +29,6 @@ public interface FoodieService {
 	Long unfollowCreator(HttpServletRequest req, Long creator_id);
 
 	Long whetherfollowCreator(HttpServletRequest req, Long creator_id);
-	
+
+	List<CreatorDetailsDto> allFollowing(HttpServletRequest req);
 }
