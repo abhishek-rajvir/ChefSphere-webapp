@@ -59,12 +59,15 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.GET,"/foodies/listAll").permitAll()
 				.requestMatchers(HttpMethod.POST,"/foodies/signUp").permitAll()
 				.requestMatchers(HttpMethod.GET,"/foodies/doesFollow/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.GET,"/foodies/allFollowing").permitAll()
+				.requestMatchers(HttpMethod.GET,"/foodies/allFollowers").permitAll()
 				.requestMatchers(HttpMethod.POST,"/foodies/followCreator/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.DELETE,"/foodies/unFollowCreator/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.POST,"/creators/signUp/**").permitAll()
 
 				// to handle posts - public
+				.requestMatchers(HttpMethod.GET,"/posts/{post_no}").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list/recipeRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/listAll").permitAll()

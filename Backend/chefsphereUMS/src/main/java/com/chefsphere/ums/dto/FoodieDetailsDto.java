@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class FoodieDetailsDto {
 
-	private Long f_id;
+	private Long fid;
 	
 	private String firstName;
 	

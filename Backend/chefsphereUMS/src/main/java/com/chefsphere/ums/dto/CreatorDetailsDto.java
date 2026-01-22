@@ -1,4 +1,5 @@
 package com.chefsphere.ums.dto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,10 +8,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class CreatorDetailsDto {
 
-	private Long c_id;
+	private Long cid;
 		
 	private String firstName;
 	
