@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import FoodieService from "@/service/FoodieService";
 import {
   Table,
   TableBody,
@@ -10,7 +11,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 
-export default function FollowingTable({ followings }) {
+export default function FollowingTable() {
+  const [followings, setFollowings] = useState([]);
+
+  // Fetch followings for current user
+  useEffect(() => {
+    (async () => {
+      try {
+        const item = sessionStorage.getItem("userCred");
+        const user = item ? JSON.parse(item) : null;
+        const uid = user?.id || user?.cid;
+        if (uid) {
+          const data = await FoodieService.getAllFollowing(uid);
+          setFollowings(data);
+        }
+      } catch (error) {
+        console.error("Error fetching followings:", error);
+      }
+    })();
+  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -22,6 +41,19 @@ export default function FollowingTable({ followings }) {
     startIndex,
     startIndex + itemsPerPage,
   );
+
+  const handleUnfollow = async (creatorId) => {
+    try {
+      await FoodieService.unFollowCreator(creatorId);
+      // Remove the unfollowed creator from the list
+      setFollowings((prev) =>
+        prev.filter((item) => (item.cid || item.id) !== creatorId),
+      );
+    } catch (error) {
+      console.error("Unfollow failed:", error);
+      alert("Failed to unfollow. Please try again.");
+    }
+  };
 
   return saferFollowings.length > 0 ? (
     <div className="space-y-4 max-w-lg mx-auto">
@@ -44,39 +76,50 @@ export default function FollowingTable({ followings }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentFollowings.map((following) => (
-              <TableRow key={following.id}>
-                <TableCell className="h-full text-center font-medium">
-                  {following.id}
-                </TableCell>
-                <TableCell className="h-full text-center">
-                  <div className="flex justify-center items-center">
-                    {following.icon ? (
-                      <img
-                        src={following.icon}
-                        alt={following.name}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <User className="h-6 w-6" />
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="h-full text-left font-medium">
-                  {following.name}
-                </TableCell>
-                <TableCell className="h-full text-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600">
-                    Unfollow
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {currentFollowings.map((following) => {
+              const id = following.cid || following.id;
+              const name =
+                following.username ||
+                (following.firstName
+                  ? `${following.firstName} ${following.lastName}`
+                  : "Unknown");
+              const icon = following.pic;
+
+              return (
+                <TableRow key={id}>
+                  <TableCell className="h-full text-center font-medium">
+                    {id}
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <div className="flex justify-center items-center">
+                      {icon ? (
+                        <img
+                          src={icon}
+                          alt={name}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                          <User className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="h-full text-left font-medium">
+                    {name}
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleUnfollow(id)}
+                      className="w-full text-xs border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600">
+                      Unfollow
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

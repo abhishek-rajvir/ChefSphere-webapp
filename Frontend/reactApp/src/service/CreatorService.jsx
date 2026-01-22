@@ -82,6 +82,15 @@ const getFollowers = async (cid) => {
   }
 };
 
+const getAllFollowers = async () => {
+  try {
+    const res = await requestJwt("GET", "/creators/allFollowers");
+    return res.data;
+  } catch (err) {
+    throw new Error("failed to get all followers");
+  }
+};
+
 export default {
   RegisterCreator,
   getCreatorsPosts,
@@ -91,4 +100,5 @@ export default {
   updateCreatorPost,
   deletePost,
   getAllPosts,
+  getAllFollowers,
 };

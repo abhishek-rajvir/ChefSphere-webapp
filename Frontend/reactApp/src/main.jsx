@@ -73,16 +73,16 @@ const router = createBrowserRouter([
         path: ":param",
         element: <AuthFilter Component={FoodieNavigationLayout} />,
       },
-      // {
-      //   path: "posts/new",
-      //   element: (
-      //     <AuthFilter
-      //       Component={FoodieNavigationLayout}
-      //       postPage={true}
-      //       newPost={true}
-      //     />
-      //   ),
-      // },
+      {
+        path: "posts/:id",
+        element: (
+          <AuthFilter
+            Component={FoodieNavigationLayout}
+            postPage={true}
+            viewPost={true}
+          />
+        ),
+      },
       // {
       //   path: "posts/:id/edit",
       //   element: (

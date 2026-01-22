@@ -15,6 +15,7 @@ import CategoryPage from "@/pages/user/foodie/CategoryPage";
 import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
 import AllPostPage from "@/pages/user/foodie/AllPostPage";
 import FollowingTable from "../../user/foodie/FollowingTable";
+import PostPage from "../../user/creator/post/PostPage";
 
 export default function FoodieSideBar({
   name,
@@ -26,6 +27,7 @@ export default function FoodieSideBar({
   details,
   categoriesPage,
   creatorsPage,
+  viewPost,
 }) {
   const [following, setFollowing] = useState([]);
   const navigate = useNavigate();
@@ -76,6 +78,7 @@ export default function FoodieSideBar({
         <div className="p-4">
           {homePage && <DashBoard />}
           {postPage && <AllPostPage />}
+          {viewPost && <PostPage post={viewPost} />}
           {profilePage && <ProfileForm initialData={details} />}
           {followingPage && <FollowingTable />}
           {categoriesPage && <CategoryPage />}

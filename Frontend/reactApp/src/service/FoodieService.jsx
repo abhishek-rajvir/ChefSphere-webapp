@@ -151,6 +151,15 @@ const unFollowCreator = async (cid) => {
   }
 };
 
+const getAllFollowing = async () => {
+  try {
+    const res = await requestJwt("GET", "/foodies/allFollowing");
+    return res.data;
+  } catch (err) {
+    throw new Error("failed to get all following");
+  }
+};
+
 export default {
   RegisterFoodie,
   getPostsByNo,
@@ -168,4 +177,5 @@ export default {
   followCreator,
   unFollowCreator,
   doesFollowCreator,
+  getAllFollowing,
 };

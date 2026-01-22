@@ -10,6 +10,11 @@ export default function DashBoard() {
   const [creators, setCreators] = useState([]);
   const [categories, setCategories] = useState([]);
   const [followingState, setFollowingState] = useState({});
+
+  const loadUser = () => {
+    const data = sessionStorage.getItem("userCred");
+    return data ? JSON.parse(data) : null;
+  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +33,31 @@ export default function DashBoard() {
       try {
         const data = await FoodieService.getCreatorsByRange(20);
         setCreators(data);
+        // Fetch follow status for each creator
+        (async () => {
+          try {
+            const followPromises = data.map(async (creator) => {
+              const creatorId = creator.cid || creator.id;
+              try {
+                const follows =
+                  await FoodieService.doesFollowCreator(creatorId);
+                setFollowingState((prev) => ({
+                  ...prev,
+                  [creatorId]: !!follows,
+                }));
+              } catch (e) {
+                console.error(
+                  "Error checking follow status for creator",
+                  creatorId,
+                  e,
+                );
+              }
+            });
+            await Promise.all(followPromises);
+          } catch (e) {
+            console.error("Error fetching follow statuses:", e);
+          }
+        })();
       } catch (error) {
         console.error("Error fetching creators:", error);
       }
@@ -38,6 +68,20 @@ export default function DashBoard() {
       try {
         const data = await FoodieService.getCategoryByRange(16);
         setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    })();
+
+    // Fetch followings
+    (async () => {
+      try {
+        const user = loadUser();
+        const uid = user?.id || user?.cid;
+        if (uid) {
+          const data = await FoodieService.getAllFollowing(uid);
+          setFollowings(data);
+        }
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -53,31 +97,40 @@ export default function DashBoard() {
         </Button>
       </div>
       <div className="flex flex-wrap items-center gap-4 justify-center">
-        {posts.map((post, idx) => (
-          <Card
-            key={idx}
-            className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-            <div className="h-[200px] w-full overflow-hidden">
-              <img
-                src={
-                  "https://img.youtube.com/vi/" +
-                  post.videoUrl +
-                  "/mqdefault.jpg"
-                }
-                alt="Image not found"
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-            </div>
-            <CardContent className="p-3 text-center">
-              <p className="font-semibold text-sm truncate">
-                {post.recipeName}
-              </p>
-              <p className="font-semibold text-sm truncate">
-                {post.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {posts.map((post, idx) => {
+          // Debug post ID
+          console.log("Post structure:", post);
+          return (
+            <Card
+              key={idx}
+              onClick={() => {
+                const id = post.pid || post.id || post.postId;
+                console.log("Navigating to post:", id);
+                navigate(`/foodies/posts/${id}`);
+              }}
+              className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+              <div className="h-[200px] w-full overflow-hidden">
+                <img
+                  src={
+                    "https://img.youtube.com/vi/" +
+                    post.videoUrl +
+                    "/mqdefault.jpg"
+                  }
+                  alt="Image not found"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+              <CardContent className="p-3 text-center">
+                <p className="font-semibold text-sm truncate">
+                  {post.recipeName}
+                </p>
+                <p className="font-semibold text-sm truncate">
+                  {post.description}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="mt-8">
@@ -143,7 +196,7 @@ export default function DashBoard() {
                 }
               } catch (error) {
                 console.error("Follow action failed:", error);
-                throw error;
+                alert("Failed to follow/unfollow. Please try again.");
               }
             };
 
@@ -163,7 +216,7 @@ export default function DashBoard() {
                   onClick={handleFollowClick}
                   className={`text-xs px-3 py-1 rounded-full transition-colors ${
                     isFollowing
-                      ? "bg-white text-primary border border-primary"
+                      ? "bg-black text-white dark:bg-white dark:text-black border border-primary"
                       : "text-primary border border-primary hover:bg-primary hover:text-white"
                   }`}>
                   {isFollowing ? "Following" : "Follow"}

@@ -13,6 +13,32 @@ export default function CreatorsPage() {
       try {
         const data = await FoodieService.getCreatorsByRange(100);
         setCreators(data);
+
+        // Fetch follow status for all loaded creators
+        (async () => {
+          try {
+            const followPromises = data.map(async (creator) => {
+              const creatorId = creator.cid || creator.id;
+              try {
+                const follows =
+                  await FoodieService.doesFollowCreator(creatorId);
+                setFollowingState((prev) => ({
+                  ...prev,
+                  [creatorId]: !!follows,
+                }));
+              } catch (e) {
+                console.error(
+                  "Error checking follow status for creator",
+                  creatorId,
+                  e,
+                );
+              }
+            });
+            await Promise.all(followPromises);
+          } catch (e) {
+            console.error("Error fetching follow statuses:", e);
+          }
+        })();
       } catch (error) {
         console.error("Error fetching creators:", error);
       }
@@ -44,7 +70,7 @@ export default function CreatorsPage() {
       }
     } catch (error) {
       console.error("Follow action failed:", error);
-      throw error;
+      alert("Failed to follow/unfollow. Please try again.");
     }
   };
 
@@ -80,7 +106,7 @@ export default function CreatorsPage() {
                 onClick={() => handleFollowClick(creatorId, isFollowing)}
                 className={`text-xs px-3 py-1 rounded-full transition-colors ${
                   isFollowing
-                    ? "bg-white text-primary border border-primary"
+                    ? "bg-black text-white dark:bg-white dark:text-black border border-primary"
                     : "text-primary border border-primary hover:bg-primary hover:text-white"
                 }`}>
                 {isFollowing ? "Following" : "Follow"}

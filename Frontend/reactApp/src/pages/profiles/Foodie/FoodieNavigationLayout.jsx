@@ -5,11 +5,7 @@ import UserPage from "../../Root/UserPage";
 // import LoginForm from "../../Auth/LoginForm";
 // import LoginPage from "../../Auth/LoginPage";
 
-export default function FoodieNavigationLayout({
-  postPage,
-  newPost,
-  updatePost,
-}) {
+export default function FoodieNavigationLayout({ postPage, viewPost }) {
   // param is the name of key
   const parmeter = useParams().param;
 
@@ -25,16 +21,11 @@ export default function FoodieNavigationLayout({
   const user = data ? JSON.parse(data) : null;
 
   if (postPage) {
-    if (newPost) {
-      return <UserPage posts={true} newPost={true} user={user} />;
-    }
-    if (updatePost) {
-      // Use "id" because the route is "posts/:id/edit"
+    if (viewPost) {
       const id = parseInt(useParams().id);
-      console.log("updating post id", id);
-      return <UserPage posts={true} updatePost={id} user={user} />;
+      console.log("viewing post by id", id);
+      return <UserPage viewPost={id} user={user} />;
     }
-    return <UserPage posts={true} user={user} />;
   }
   // Handle keyword routes
   switch (parmeter) {

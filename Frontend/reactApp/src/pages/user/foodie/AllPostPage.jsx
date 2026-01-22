@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
+import { useNavigate } from "react-router-dom";
 
 export default function AllPostPage() {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 20;
 
@@ -46,7 +48,11 @@ export default function AllPostPage() {
         {currentPosts.map((post, idx) => (
           <Card
             key={idx}
-            className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            onClick={() => {
+              const id = post.pid || post.id || post.postId;
+              navigate(`/foodies/posts/${id}`);
+            }}
+            className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
             <div className="h-[200px] w-full overflow-hidden">
               <img
                 src={

@@ -16,6 +16,7 @@ export default function UserPage({
   categories,
   creators,
   following,
+  viewPost,
 }) {
   return (
     <>
@@ -39,6 +40,7 @@ export default function UserPage({
             categoriesPage={categories}
             creatorsPage={creators}
             profilePage={profile}
+            viewPost={viewPost}
             details={user}
           />
         )}
