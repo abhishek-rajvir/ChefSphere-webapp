@@ -25,5 +25,8 @@ public interface PostRepo extends JpaRepository<Post, Long>{
 	@Query("SELECT p FROM Post p LEFT JOIN FETCH p.recipe")
 	List<Post> findAll();
 	
-	List<Post> findByRecipeIn(Set<Recipe> recipe);
+	List<Post> findByRecipeIn(Set<Recipe> recList);
+
+	List<Post> findByPostTitleContainingIgnoreCase(String postTitle);
+
 }

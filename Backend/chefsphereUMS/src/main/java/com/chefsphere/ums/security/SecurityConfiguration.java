@@ -68,6 +68,8 @@ public class SecurityConfiguration {
 
 				// to handle posts - public
 				.requestMatchers(HttpMethod.GET,"/posts/{post_no}").permitAll()
+				.requestMatchers(HttpMethod.GET,"/posts/search/title").permitAll()
+				.requestMatchers(HttpMethod.GET,"/posts/search/category").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list/recipeRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/listAll").permitAll()

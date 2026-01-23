@@ -13,6 +13,7 @@ import com.chefsphere.ums.dto.FoodCategoryDto;
 import com.chefsphere.ums.dto.IngredientsRequestDto;
 import com.chefsphere.ums.dto.PostRequestDto;
 import com.chefsphere.ums.dto.PostResponseDto;
+import com.chefsphere.ums.dto.PostSearchDto;
 import com.chefsphere.ums.dto.RecipeRandRespDto;
 import com.chefsphere.ums.dto.RecipeRequestDto;
 import com.chefsphere.ums.dto.RecipeStepsDto;
@@ -413,16 +414,24 @@ public class PostServiceImpl {
 
 	public List<PostResponseDto> findAllByCategory(String category) {
 
-		Optional<FoodCategory> fc = foodCategoryRepo.findByNameIgnoreCase(category);
-
-		if (fc.isPresent()) {
-			Set<Recipe> recList = fc.get().getRecipe();
-			if (!recList.isEmpty()) {
-				return postRepo.findByRecipeIn(recList).stream().map(s -> mapper.map(s, PostResponseDto.class))
-						.toList();
-			}
+//		Optional<FoodCategory> fc = foodCategoryRepo.findTopByNameIgnoreCaseOrderByCategoryIdAsc(category);
+//		Optional<FoodCategory> fc = foodCategoryRepo.findTopByNameIgnoreCaseOrderByCategoryIdAsc(category);
+//		if (fc.isEmpty()) {
+//		    throw new ResourceNotFoundException("Category not found: [" + category + "]");
+//		}
+		Set<Recipe> recList = recipeRepo.findByFoodCategories_NameIgnoreCase(category);
+		System.out.println(recList);
+		if (recList.isEmpty()) {
+		    throw new ResourceNotFoundException(
+		        "No recipes found for category [" + category + "]"
+		    );
 		}
-		throw new ResourceNotFoundException("No posts by category " + category);
+
+		return postRepo.findByRecipeIn(recList)
+		    .stream()
+		    .map(s -> mapper.map(s, PostResponseDto.class))
+		    .toList();
+
 	}
 
 	// le,gt,eq prep time
@@ -454,19 +463,20 @@ public class PostServiceImpl {
 
 	public List<RecipeRandRespDto> findRandomRecipeByQty(Integer qty) {
 		List<Recipe> rec = recipeRepo.findRandomPosts(qty);
-		
-		
+
 		if (rec != null || !rec.isEmpty()) {
 			return rec.stream().map(r -> {
-			    RecipeRandRespDto r2 = mapper.map(r, RecipeRandRespDto.class);
+				RecipeRandRespDto r2 = mapper.map(r, RecipeRandRespDto.class);
 
-			    String videoId = r.getPost().getVideoUrl(); // contains only videoId
+				String videoId = r.getPost().getVideoUrl(); // contains only videoId
 
-			    if (videoId != null && !videoId.isBlank()) {
-			        r2.setVideoUrl( videoId );
-			    }
+				if (videoId != null && !videoId.isBlank()) {
+					r2.setVideoUrl(videoId);
+				}
 
-			    return r2;
+				r2.setPid(r.getPost().getPid());
+
+				return r2;
 			}).toList();
 		}
 		throw new ResourceNotFoundException("No posts in db");
@@ -474,21 +484,32 @@ public class PostServiceImpl {
 
 	public List<FoodCategoryDto> findAllCategories() {
 		List<FoodCategoryDto> fc = foodCategoryRepo.findAllDistinct();
-		if(fc.isEmpty()) {			
+		if (fc.isEmpty()) {
 			throw new ResourceNotFoundException("No foodcategories in db");
 		}
 		return fc;
 	}
- 
+
 	public List<FoodCategoryDto> findRandomCategoriesByQty(Long qty) {
 		Pageable pageable = PageRequest.of(0, qty.intValue());
 		List<FoodCategoryDto> fc = foodCategoryRepo.findAllDistinct(pageable);
-		if(fc!=null||!fc.isEmpty() ) {
+		if (fc != null || !fc.isEmpty()) {
 			return fc;
 		}
 		throw new ResourceNotFoundException("No foodcategories in db");
 	}
 
+	public List<PostSearchDto> findAllByPostTitle(String postName) {
+		List<Post> pList = postRepo.findByPostTitleContainingIgnoreCase(postName);
+		if(pList!=null||!pList.isEmpty() ) {
+			return pList.stream().map(s->
+				mapper.map(s,PostSearchDto.class)
+			).toList();
+		}
+		throw new ResourceNotFoundException("No posts titles containing "+postName);
+	}
+
+	
 //		List<Post> postlist = c.getPosts();
 //		if (!postlist.isEmpty()) {
 //			List<PostResponseDto> list = postlist.stream().map(s -> {

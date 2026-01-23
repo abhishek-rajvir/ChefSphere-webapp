@@ -17,7 +17,8 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 
 	List<FoodCategory> findByNameInIgnoreCase(List<String> name);
 
-	Optional<FoodCategory> findByNameIgnoreCase(String name);
+	Optional<FoodCategory> findTopByNameIgnoreCaseOrderByCategoryIdAsc(String name);
+
 
 //	@Query("""
 //		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(

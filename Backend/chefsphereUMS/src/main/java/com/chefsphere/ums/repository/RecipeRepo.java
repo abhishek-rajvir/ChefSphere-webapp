@@ -19,4 +19,10 @@ public interface RecipeRepo extends JpaRepository<Recipe, Long> {
 
 	@Query("SELECT r FROM Recipe r ORDER BY RAND() LIMIT :qty")
 	List<Recipe> findRandomPosts(@Param("qty") Integer qty);
+
+	// foodCategories → collection
+	// _Name → FoodCategory.name (String)
+	// IgnoreCase → applied to name
+	Set<Recipe> findByFoodCategories_NameIgnoreCase(String categoryName);
+
 }

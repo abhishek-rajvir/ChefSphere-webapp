@@ -9,11 +9,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RecipeRandRespDto {
 
-		private Long recipeId;
-		
-		private String recipeName;
-		
-		private String description;
-		
-		private String videoUrl;
+	private Long pid;
+	
+	private Long recipeId;
+
+	private String recipeName;
+
+	private String description;
+
+	private String videoUrl;
+
 }

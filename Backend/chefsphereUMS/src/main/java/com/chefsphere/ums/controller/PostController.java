@@ -1,5 +1,8 @@
 package com.chefsphere.ums.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,10 +63,19 @@ public class PostController {
 	// if id is 1 converted to 0 for indexing
 //		return ResponseEntity.ok(postService.findByUserIdAndPostNo(post_no-1,req));
 
+	// findAll post by name
+	@GetMapping("/search/title")
+	public ResponseEntity<?> findAllByPostTitle(@RequestParam String title) {
+		String decoded = URLDecoder.decode(title, StandardCharsets.UTF_8);
+		return ResponseEntity.ok(postService.findAllByPostTitle(decoded));
+	}
+
+	
 	// findAll post by category
-	@GetMapping("/{post_no}/category")
-	public ResponseEntity<?> findUserPostByCategory(@RequestParam String category_name) {
-		return ResponseEntity.ok(postService.findAllByCategory(category_name));
+	@GetMapping("/search/category")
+	public ResponseEntity<?> findUserPostByCategory(@RequestParam String categoryName) {
+		System.out.println(categoryName);
+		return ResponseEntity.ok(postService.findAllByCategory(categoryName));
 	}
 
 	// findAll post by ingredient
