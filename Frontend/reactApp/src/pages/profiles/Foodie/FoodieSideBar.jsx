@@ -7,15 +7,18 @@ import { AppSidebar } from "@/components/app-sidebar";
 import InputClearDemo from "@/core/template/InputClear";
 import FoodieConfig from "@/pages/user/foodie/FoodieConfig";
 import DashBoard from "@/pages/user/foodie/DashBoard";
-import { FollowerTable } from "@/pages/user/creator/FollowerTable";
 import { ProfileForm } from "@/pages/user/creator/ProfileForm";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CategoryPage from "@/pages/user/foodie/CategoryPage";
-import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
+import AllCategoryPage from "@/pages/user/foodie/AllCategoryPage";
+// import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
+import CreatorPostTable from "@/pages/user/foodie/CreatorPostTable";
 import AllPostPage from "@/pages/user/foodie/AllPostPage";
 import FollowingTable from "../../user/foodie/FollowingTable";
 import PostPage from "../../user/creator/post/PostPage";
+import SearchPage from "@/pages/user/foodie/SearchPage";
+import CategoryPageByName from "@/pages/user/foodie/CategoryPageByName";
+import NotFoundPage from "../../error/NotFoundPage";
 
 export default function FoodieSideBar({
   name,
@@ -28,6 +31,7 @@ export default function FoodieSideBar({
   categoriesPage,
   creatorsPage,
   viewPost,
+  categoryPage,
 }) {
   const [following, setFollowing] = useState([]);
   const navigate = useNavigate();
@@ -81,8 +85,22 @@ export default function FoodieSideBar({
           {viewPost && <PostPage post={viewPost} />}
           {profilePage && <ProfileForm initialData={details} />}
           {followingPage && <FollowingTable />}
-          {categoriesPage && <CategoryPage />}
-          {creatorsPage && <CreatorsPage />}
+          {categoriesPage && <AllCategoryPage />}
+          {categoryPage && <CategoryPageByName categoryName={categoryPage} />}
+          {creatorsPage && <CreatorPostTable />}
+          {searchPage &&
+            (() => {
+              switch (searchPage.sortBy) {
+                case "title":
+                  return <SearchPage sortBy="title" query={searchPage.query} />;
+                case "category":
+                  return (
+                    <SearchPage sortBy="category" query={searchPage.query} />
+                  );
+                default:
+                  return <NotFoundPage />;
+              }
+            })()}
         </div>
         <hr />
         <footer>

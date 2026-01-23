@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { getYoutubeId } from "@/lib/utils";
 
 import FoodieService from "@/service/FoodieService";
 
@@ -33,31 +34,6 @@ export default function DashBoard() {
       try {
         const data = await FoodieService.getCreatorsByRange(20);
         setCreators(data);
-        // Fetch follow status for each creator
-        (async () => {
-          try {
-            const followPromises = data.map(async (creator) => {
-              const creatorId = creator.cid || creator.id;
-              try {
-                const follows =
-                  await FoodieService.doesFollowCreator(creatorId);
-                setFollowingState((prev) => ({
-                  ...prev,
-                  [creatorId]: !!follows,
-                }));
-              } catch (e) {
-                console.error(
-                  "Error checking follow status for creator",
-                  creatorId,
-                  e,
-                );
-              }
-            });
-            await Promise.all(followPromises);
-          } catch (e) {
-            console.error("Error fetching follow statuses:", e);
-          }
-        })();
       } catch (error) {
         console.error("Error fetching creators:", error);
       }
@@ -80,7 +56,12 @@ export default function DashBoard() {
         const uid = user?.id || user?.cid;
         if (uid) {
           const data = await FoodieService.getAllFollowing(uid);
-          setFollowings(data);
+          const followState = {};
+          data.forEach((creator) => {
+            const cid = creator.cid || creator.id;
+            followState[cid] = true;
+          });
+          setFollowingState(followState);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -98,22 +79,18 @@ export default function DashBoard() {
       </div>
       <div className="flex flex-wrap items-center gap-4 justify-center">
         {posts.map((post, idx) => {
-          // Debug post ID
-          console.log("Post structure:", post);
           return (
             <Card
               key={idx}
               onClick={() => {
-                const id = post.pid || post.id || post.postId;
-                console.log("Navigating to post:", id);
-                navigate(`/foodies/posts/${id}`);
+                navigate(`/foodies/posts/${post.pid}`);
               }}
               className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
               <div className="h-[200px] w-full overflow-hidden">
                 <img
                   src={
                     "https://img.youtube.com/vi/" +
-                    post.videoUrl +
+                    getYoutubeId(post.videoUrl || post.videoURL) +
                     "/mqdefault.jpg"
                   }
                   alt="Image not found"
@@ -144,22 +121,28 @@ export default function DashBoard() {
         </div>
         <div className="flex flex-wrap gap-4 justify-center">
           {categories.map((cat, idx) => {
-            // Replace special characters for URL compatibility
-            const safeText = cat.name.replace(/&/g, "+").replace(/\s+/g, "+");
             const imageUrl =
               cat.image ||
-              `https://dummyjson.com/image/150x150/fdf2f8/000000?text=${safeText}&fontSize=18`;
+              `https://placehold.jp/22/fdf2f8/000000/150x150.png?text=${encodeURIComponent(cat.name.trim())}`;
             return (
               <div
                 key={idx}
+                onClick={() =>
+                  navigate(
+                    `/foodies/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                  )
+                }
                 className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md">
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
                   <img
                     src={imageUrl}
                     alt={cat.name}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${cat.image ? "object-cover" : "object-contain p-2"}`}
                   />
                 </div>
+                <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
+                  {cat.name}
+                </span>
               </div>
             );
           })}

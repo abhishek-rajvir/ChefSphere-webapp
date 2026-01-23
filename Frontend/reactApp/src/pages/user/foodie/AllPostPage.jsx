@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
 import { useNavigate } from "react-router-dom";
+import { getYoutubeId } from "@/lib/utils";
 
 export default function AllPostPage() {
   const [posts, setPosts] = useState([]);
@@ -49,15 +50,14 @@ export default function AllPostPage() {
           <Card
             key={idx}
             onClick={() => {
-              const id = post.pid || post.id || post.postId;
-              navigate(`/foodies/posts/${id}`);
+              navigate(`/foodies/posts/${post.pid}`);
             }}
             className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
             <div className="h-[200px] w-full overflow-hidden">
               <img
                 src={
                   "https://img.youtube.com/vi/" +
-                  post.videoURL +
+                  getYoutubeId(post.videoUrl || post.videoURL) +
                   "/mqdefault.jpg"
                 }
                 alt="Image not found"

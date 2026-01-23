@@ -40,9 +40,9 @@ const getAllPosts = async () => {
   }
 };
 
-const getAllPostsByCategory = async (category) => {
+const getAllPostsByCategory = async (categoryName) => {
   try {
-    const res = await requestJwt("GET", "/posts/category/" + category);
+    const res = await requestJwt("GET", "/posts/category/" + categoryName);
     return res.data;
   } catch (err) {
     throw new Error("Post fetch failed");
@@ -160,6 +160,35 @@ const getAllFollowing = async () => {
   }
 };
 
+const getPostsContainingTitle = async (title) => {
+  try {
+    const res = await requestParamJwt(
+      "GET",
+      "/posts/search/title",
+      {},
+      {
+        title: title,
+      },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("failed to get posts containing title");
+  }
+};
+const getPostsContainingCategory = async (category) => {
+  try {
+    const res = await requestParamJwt(
+      "GET",
+      "/posts/search/category",
+      {},
+      { categoryName: category },
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("failed to get posts containing category");
+  }
+};
+
 export default {
   RegisterFoodie,
   getPostsByNo,
@@ -178,4 +207,6 @@ export default {
   unFollowCreator,
   doesFollowCreator,
   getAllFollowing,
+  getPostsContainingTitle,
+  getPostsContainingCategory,
 };

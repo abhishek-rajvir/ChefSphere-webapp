@@ -16,7 +16,7 @@ import { ProfileForm } from "../user/creator/ProfileForm";
 import PostPage from "../user/creator/post/PostPage";
 import DashBoard from "../user/foodie/DashBoard";
 import FollowingTable from "../user/foodie/FollowingTable";
-import SearchPostCard from "../user/foodie/SearchPostCard";
+import SearchPostCard from "../user/foodie/SearchPage";
 import CreatorTableCard from "../user/foodie/CreatorTableCard";
 
 export default function SideBar({

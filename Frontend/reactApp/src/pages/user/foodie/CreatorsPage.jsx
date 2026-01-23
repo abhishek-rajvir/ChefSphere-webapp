@@ -14,31 +14,22 @@ export default function CreatorsPage() {
         const data = await FoodieService.getCreatorsByRange(100);
         setCreators(data);
 
-        // Fetch follow status for all loaded creators
-        (async () => {
+        // Optimize follow status fetching
+        const user = JSON.parse(sessionStorage.getItem("userCred"));
+        const uid = user?.id || user?.cid;
+        if (uid) {
           try {
-            const followPromises = data.map(async (creator) => {
-              const creatorId = creator.cid || creator.id;
-              try {
-                const follows =
-                  await FoodieService.doesFollowCreator(creatorId);
-                setFollowingState((prev) => ({
-                  ...prev,
-                  [creatorId]: !!follows,
-                }));
-              } catch (e) {
-                console.error(
-                  "Error checking follow status for creator",
-                  creatorId,
-                  e,
-                );
-              }
+            const allFollowing = await FoodieService.getAllFollowing(uid);
+            const followState = {};
+            allFollowing.forEach((f) => {
+              const fid = f.cid || f.id;
+              followState[fid] = true;
             });
-            await Promise.all(followPromises);
+            setFollowingState(followState);
           } catch (e) {
-            console.error("Error fetching follow statuses:", e);
+            console.error("Error fetching following status:", e);
           }
-        })();
+        }
       } catch (error) {
         console.error("Error fetching creators:", error);
       }

@@ -70,8 +70,20 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Navigate to="/foodies/posts" replace /> },
       {
+        path: "search",
+        element: (
+          <AuthFilter Component={FoodieNavigationLayout} searchPage={true} />
+        ),
+      },
+      {
         path: ":param",
         element: <AuthFilter Component={FoodieNavigationLayout} />,
+      },
+      {
+        path: "creators/:id",
+        element: (
+          <AuthFilter Component={FoodieNavigationLayout} creatorPage={true} />
+        ),
       },
       {
         path: "posts/:id",
@@ -81,6 +93,12 @@ const router = createBrowserRouter([
             postPage={true}
             viewPost={true}
           />
+        ),
+      },
+      {
+        path: "category/:categoryName",
+        element: (
+          <AuthFilter Component={FoodieNavigationLayout} categoryPage={true} />
         ),
       },
       // {

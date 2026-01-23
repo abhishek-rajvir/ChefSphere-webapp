@@ -72,22 +72,22 @@ export const requestJwt = (method, url, data = {}, messageToLog = "") => {
       throw err; // rethrow original error without wrapping
     });
 };
-
 export const requestParamJwt = (
   method,
   url,
   data = {},
-  params = 0,
+  params = {},
   messageToLog = "",
 ) => {
   const item = sessionStorage.getItem("userCred");
   const userCred = item ? JSON.parse(item) : null;
   const token = userCred ? userCred.token : "";
+
   return BackendAPI({
     method,
     url,
     data,
-    params,
+    params, //?key=value
     headers: {
       Authorization: `Bearer ${token}`,
     },

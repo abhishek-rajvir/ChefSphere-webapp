@@ -1,13 +1,19 @@
 import React from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import NotFoundPage from "../../error/NotFoundPage";
 import UserPage from "../../Root/UserPage";
-// import LoginForm from "../../Auth/LoginForm";
-// import LoginPage from "../../Auth/LoginPage";
 
-export default function FoodieNavigationLayout({ postPage, viewPost }) {
+export default function FoodieNavigationLayout({
+  postPage,
+  viewPost,
+  categoryPage,
+  searchPage,
+  creatorPage,
+}) {
   // param is the name of key
-  const parmeter = useParams().param;
+  const params = useParams();
+  const [searchParams] = useSearchParams();
+  const parmeter = params.param;
 
   // // If there is no param (route is /creators), show 404
   // // handle invalid ? # urls
@@ -22,10 +28,26 @@ export default function FoodieNavigationLayout({ postPage, viewPost }) {
 
   if (postPage) {
     if (viewPost) {
-      const id = parseInt(useParams().id);
+      const id = parseInt(params.id);
       console.log("viewing post by id", id);
       return <UserPage viewPost={id} user={user} />;
     }
+  }
+  if (categoryPage) {
+    const categoryName = params.categoryName;
+    console.log("viewing post by categoryName", categoryName);
+    return <UserPage category={categoryName} user={user} />;
+  }
+  if (creatorPage) {
+    const creatorId = parseInt(params.id);
+    console.log("viewing creator by id", creatorId);
+    return <UserPage creator={creatorId} user={user} />;
+  }
+  if (searchPage) {
+    const sortBy = searchParams.get("sortBy");
+    const query = searchParams.get("query");
+    console.log("searching by", sortBy, query);
+    return <UserPage search={{ query, sortBy }} user={user} />;
   }
   // Handle keyword routes
   switch (parmeter) {
@@ -41,10 +63,6 @@ export default function FoodieNavigationLayout({ postPage, viewPost }) {
       return <UserPage creators={true} user={user} />;
     case "following":
       return <UserPage following={true} user={user} />;
-    // case "update":
-    //   return <CreatorUpdate />;
-    // case "delete":
-    //   return <CreatorDelete />;
     default:
       return <NotFoundPage />;
   }

@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CircleXIcon, SearchIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ const InputClearDemo = () => {
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const id = useId();
+  const navigate = useNavigate();
 
   const handleClearInput = () => {
     setValue("");
@@ -15,7 +17,11 @@ const InputClearDemo = () => {
   };
 
   const handleSearch = () => {
-    console.log("Searching for:", value);
+    if (value.trim()) {
+      navigate(
+        `/foodies/search?sortBy=title&query=${encodeURIComponent(value.trim())}`,
+      );
+    }
   };
 
   return (
@@ -37,8 +43,7 @@ const InputClearDemo = () => {
           variant="ghost"
           size="icon"
           onClick={handleSearch}
-          className="absolute inset-y-0 right-8 text-muted-foreground hover:bg-transparent"
-        >
+          className="absolute inset-y-0 right-8 text-muted-foreground hover:bg-transparent">
           <SearchIcon size={18} />
           <span className="sr-only">Search</span>
         </Button>
@@ -50,8 +55,7 @@ const InputClearDemo = () => {
             variant="ghost"
             size="icon"
             onClick={handleClearInput}
-            className="absolute inset-y-0 right-0 rounded-l-none text-muted-foreground hover:bg-transparent"
-          >
+            className="absolute inset-y-0 right-0 rounded-l-none text-muted-foreground hover:bg-transparent">
             <CircleXIcon size={18} />
             <span className="sr-only">Clear input</span>
           </Button>

@@ -17,6 +17,8 @@ export default function UserPage({
   creators,
   following,
   viewPost,
+  search,
+  category,
 }) {
   return (
     <>
@@ -42,6 +44,8 @@ export default function UserPage({
             profilePage={profile}
             viewPost={viewPost}
             details={user}
+            searchPage={search}
+            categoryPage={category}
           />
         )}
       </ThemeProvider>
