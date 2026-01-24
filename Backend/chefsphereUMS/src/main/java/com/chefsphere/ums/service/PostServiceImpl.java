@@ -116,7 +116,6 @@ public class PostServiceImpl {
 
 			postRepo.save(post);
 		} else {
-			System.out.println(len);
 			throw new RuntimeException("Post title should be 30 to 60 characters long");
 		}
 
@@ -347,7 +346,6 @@ public class PostServiceImpl {
 
 			}).toList();
 
-			System.out.println(list);
 
 			return list;
 
@@ -420,7 +418,6 @@ public class PostServiceImpl {
 //		    throw new ResourceNotFoundException("Category not found: [" + category + "]");
 //		}
 		Set<Recipe> recList = recipeRepo.findByFoodCategories_NameIgnoreCase(category);
-		System.out.println(recList);
 		if (recList.isEmpty()) {
 		    throw new ResourceNotFoundException(
 		        "No recipes found for category [" + category + "]"

@@ -76,8 +76,6 @@ public class FoodieServiceImpl implements FoodieService {
 		throw new ResourceNotFoundException("Foodie Id doesn't exist");
 	}
 	
-
-
 	@Override
 	public Creator findCreatorWithFoodies(Long id) throws RuntimeException {
 		Optional<Creator> c = creatorRepo.findByIdWithFoodies(id);

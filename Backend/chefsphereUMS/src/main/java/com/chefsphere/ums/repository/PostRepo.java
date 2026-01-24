@@ -9,24 +9,29 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.chefsphere.ums.entities.Post;
+import com.chefsphere.ums.entities.Rating;
 import com.chefsphere.ums.entities.Recipe;
 
-public interface PostRepo extends JpaRepository<Post, Long>{
+public interface PostRepo extends JpaRepository<Post, Long> {
 	List<Post> findByCreatorCid(Long id);
 
 //	@Query("SELECT p FROM Post p WHERE p.pid =:postid and ")
-	Optional<Post> findByCreatorCidAndPid(Long creatorid,Long postid);
-	
+	Optional<Post> findByCreatorCidAndPid(Long creatorid, Long postid);
+
 	@Query("SELECT p.recipe FROM Post p WHERE p.pid =:postId")
 	Optional<Recipe> findRecipeByPostId(@Param("postId") Long postId);
-	
+
 	boolean existsByPidAndCreatorCid(Long postId, Long creatorId);
-	
+
 	@Query("SELECT p FROM Post p LEFT JOIN FETCH p.recipe")
 	List<Post> findAll();
-	
+
 	List<Post> findByRecipeIn(Set<Recipe> recList);
 
 	List<Post> findByPostTitleContainingIgnoreCase(String postTitle);
 
+	@Query("SELECT p FROM Post p LEFT JOIN FETCH p.rating WHERE p.pid =:postId")
+	Optional<Post> findByPostIdWithRating(@Param("postId") Long postId);
+
+	
 }

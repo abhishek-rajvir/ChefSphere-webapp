@@ -1,5 +1,8 @@
 package com.chefsphere.ums.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -45,6 +49,39 @@ public class Post {
 	@JoinColumn( name = "creator_id") // fk is stored here	
 	private Creator creator;
 
+	/*
+	 * one post can have many comments But each comment will only have one post
+	 */
+	// mapped by Comment.post [holds the key]
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments = new ArrayList<>();
+	
+	
+	/*
+	 * one post can have one ratings 
+	 */
+	// mapped by Comment.rating [holds the key]
+	@OneToOne(cascade = CascadeType.ALL) // if user is deleted so is creator
+	private Rating rating;
+	
+	
+	
+	public void addRating(Rating rating) {
+		this.rating = rating;
+	}
+
+	public void removeRating(Rating rating) {
+		this.rating = null;
+	}
+	
+	public void addComment(Comment comment) {
+		comments.add(comment);
+	}
+
+	public void removeComment(Comment comment) {
+		comments.remove(comment);
+	}
+	
 	// helper method
 	public void addRecipe(Recipe rec) {
 		recipe = rec;

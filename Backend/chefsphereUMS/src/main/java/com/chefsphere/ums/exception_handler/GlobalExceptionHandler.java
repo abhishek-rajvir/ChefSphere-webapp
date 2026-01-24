@@ -19,7 +19,7 @@ import com.chefsphere.ums.dto.ApiResponse;
 //try block - rest controller methods
 //catch block - exc handler
 public class GlobalExceptionHandler {
-
+	
 	// add exception handling method - to handle ResourceNotFoundException
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
@@ -81,16 +81,23 @@ public class GlobalExceptionHandler {
 	
 	// add exception handling method - to handleP.L validation failure - for req body (JSON payload)
 
-		@ExceptionHandler(MethodArgumentNotValidException.class)
-		public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-			System.out.println("in handle @Valid ");
-			//1. get list of rejected fields
-			List<FieldError> fieldErrors = e.getFieldErrors();
-			//2. Covert it to Map <Key - field Name , Value - err mesg>
-			Map<String, String> errorFieldMap = fieldErrors.stream() //Stream<FieldError>
-			.collect(Collectors.toMap(FieldError::getField,FieldError::getDefaultMessage));//f -> f.getField(), f -> f.getDefaultMessage()
-			
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorFieldMap);
-		}
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<?> handleMethodArgumentNotValidException(
+	        MethodArgumentNotValidException e
+	) {
+	    Map<String, List<String>> errors =
+	        e.getBindingResult()
+	         .getFieldErrors()
+	         .stream()
+	         .collect(Collectors.groupingBy(
+	             FieldError::getField,
+	             Collectors.mapping(
+	                 FieldError::getDefaultMessage,
+	                 Collectors.toList()
+	             )
+	         ));
+
+	    return ResponseEntity.badRequest().body(errors);
+	}
 
 }

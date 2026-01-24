@@ -12,8 +12,8 @@ public interface FoodieRepo extends JpaRepository<Foodie, Long> {
 	
 	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.fid = :id")
 	Optional<Foodie> findByIdWithCreators(@Param("id") Long id);
-
+	
 	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.userId.id = :id")
 	Optional<Foodie> findByUserIdWithCreators(@Param("id") Long id);
-	
+
 }

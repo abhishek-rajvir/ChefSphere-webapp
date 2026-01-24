@@ -1,8 +1,5 @@
 package com.chefsphere.ums.controller;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,8 +63,7 @@ public class PostController {
 	// findAll post by name
 	@GetMapping("/search/title")
 	public ResponseEntity<?> findAllByPostTitle(@RequestParam String title) {
-		String decoded = URLDecoder.decode(title, StandardCharsets.UTF_8);
-		return ResponseEntity.ok(postService.findAllByPostTitle(decoded));
+		return ResponseEntity.ok(postService.findAllByPostTitle(title));
 	}
 
 	
@@ -103,10 +99,10 @@ public class PostController {
 		return ResponseEntity.ok(postService.findAllByUserId(req));
 	}
 
-	// get list of all post of current logged creator
-	@GetMapping("{creator_id}/list")
+	// get list of all post of specific creator
+	@GetMapping("/{creator_id}/list")
 	public ResponseEntity<?> findAllUserPosts(@PathVariable Long creator_id) {
-		System.out.println("in user/post/{param}/list ");
+		System.out.println("[ in user/post/{param}/list cid = "+creator_id+" ]");
 		return ResponseEntity.ok(postService.findAllByUserId(creator_id));
 	}
 

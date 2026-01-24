@@ -70,6 +70,7 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.GET,"/posts/{post_no}").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/search/title").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/search/category").permitAll()
+				.requestMatchers(HttpMethod.GET,"/posts/{creator_id}/list").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/list/recipeRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.GET,"/posts/listAll").permitAll()
@@ -79,6 +80,13 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.POST,"/posts/new/").permitAll()
 				.requestMatchers(HttpMethod.PUT,"/posts/*/update/").permitAll()
 				.requestMatchers(HttpMethod.DELETE,"/posts/*/delete/").permitAll()
+				
+				
+				.requestMatchers(HttpMethod.GET,"/engagement/comment/{post_id}/listAll").permitAll()
+				.requestMatchers(HttpMethod.DELETE,"/engagement/comment/{comment_id}/delete").permitAll()
+				.requestMatchers(HttpMethod.GET,"/engagement/rating/{post_id}").permitAll()
+				.requestMatchers(HttpMethod.DELETE,"/engagement/rating/{rating_id}/delete").permitAll()
+//				.requestMatchers(HttpMethod.POST,"/engagement/comment/new").permitAll()
 		// only admin should be able to see all patients
 				// with hasRole use ADMIN else use ROLE_ADMIN
 				// for more than 1 rule order matter

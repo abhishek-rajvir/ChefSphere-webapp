@@ -31,4 +31,5 @@ public interface FoodieService {
 	Long whetherfollowCreator(HttpServletRequest req, Long creator_id);
 
 	List<CreatorDetailsDto> allFollowing(HttpServletRequest req);
+
 }
