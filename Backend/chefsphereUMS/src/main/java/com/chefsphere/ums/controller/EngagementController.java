@@ -60,7 +60,7 @@ public class EngagementController {
 	// get list of all comments under a post
 	@GetMapping("/rating/{post_id}")
 	public ResponseEntity<?> findAllRatings(@PathVariable Long post_id) {
-		return ResponseEntity.ok(ratingServiceImpl.findAllRatingByPostId(post_id));
+		return ResponseEntity.ok(ratingServiceImpl.findRatingByPostId(post_id));
 	}
 
 }

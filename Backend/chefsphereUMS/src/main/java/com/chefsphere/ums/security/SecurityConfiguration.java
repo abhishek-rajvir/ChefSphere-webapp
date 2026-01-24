@@ -82,8 +82,10 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.DELETE,"/posts/*/delete/").permitAll()
 				
 				
+				.requestMatchers(HttpMethod.GET,"/engagement/comment/new").permitAll()
 				.requestMatchers(HttpMethod.GET,"/engagement/comment/{post_id}/listAll").permitAll()
 				.requestMatchers(HttpMethod.DELETE,"/engagement/comment/{comment_id}/delete").permitAll()
+				.requestMatchers(HttpMethod.GET,"/engagement/rating/new").permitAll()
 				.requestMatchers(HttpMethod.GET,"/engagement/rating/{post_id}").permitAll()
 				.requestMatchers(HttpMethod.DELETE,"/engagement/rating/{rating_id}/delete").permitAll()
 //				.requestMatchers(HttpMethod.POST,"/engagement/comment/new").permitAll()

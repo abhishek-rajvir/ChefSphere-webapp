@@ -2,17 +2,14 @@ package com.chefsphere.ums.service;
 
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.chefsphere.ums.dto.RatingRequestDto;
-import com.chefsphere.ums.dto.RatingResponseDto;
 import com.chefsphere.ums.entities.Post;
-import com.chefsphere.ums.entities.Rating;
+import com.chefsphere.ums.exception_handler.BadRequestException;
 import com.chefsphere.ums.exception_handler.InvalidIdException;
-import com.chefsphere.ums.exception_handler.NoContentException;
+import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
 import com.chefsphere.ums.repository.PostRepo;
-import com.chefsphere.ums.repository.RatingRepo;
 import com.chefsphere.ums.security.JwtUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +22,7 @@ import lombok.AllArgsConstructor;
 public class RatingServiceImpl {
 
 	private final PostRepo postRepo;
-	private final RatingRepo ratingRepo;
 	private final JwtUtils jwtUtils;
-	private final ModelMapper mapper;
 
 	// @Override
 	public void newRating(RatingRequestDto c_dto, HttpServletRequest req) {
@@ -44,21 +39,9 @@ public class RatingServiceImpl {
 		        .orElseThrow(() ->
 		            new InvalidIdException("Post id " + c_dto.getPostId() + " doesnt exists")
 		        );
-
-		Rating rating = ratingRepo
-				.findByPostId(post.getPid())
-		        .orElseGet(() -> {
-		            Rating r = new Rating();
-		            r.setFoodieName(uname);
-		            r.setPost(post);
-		            return r;
-		        });
-
-		rating.setRating(c_dto.getRating());
-		ratingRepo.save(rating);
-
-
-
+		
+		post.addRating(c_dto.getRating());
+		postRepo.save(post);
 	}
 
 	// @Override
@@ -68,10 +51,11 @@ public class RatingServiceImpl {
 		if (p.isEmpty()) {
 			throw new InvalidIdException("Post id " + postId + " doesnt exists");
 		}
-		Rating r = p.get().getRating();
-		p.get().removeRating(r);
+		if(p.get().getAvgRating()==0.0) {
+			throw new BadRequestException("Post id "+postId+ " has no ratings yet");			
+		}
+		p.get().removeRating();
 		postRepo.save(p.get());
-		ratingRepo.delete(r);
 	}
 
 //	// @Override
@@ -97,13 +81,14 @@ public class RatingServiceImpl {
 //	}
 
 	// @Override
-	public RatingResponseDto findAllRatingByPostId(Long pid) {
-		Optional<Rating> c = ratingRepo.findByPostId(pid);
-		if (c.isEmpty()) {
-			throw new NoContentException("Post has no comments");
+	public Double findRatingByPostId(Long pid) {
+		Optional<Post> p = postRepo.findById(pid);
+		if (p.isEmpty()) {
+			throw new ResourceNotFoundException("No post by id "+pid);
 		}
-		RatingResponseDto cdto = mapper.map(c, RatingResponseDto.class);
-		cdto.setPostId(pid);
-		return cdto;
+		if(p.get().getAvgRating()==0.0) {
+			throw new BadRequestException("Post has no ratings");			
+		}
+		return p.get().getAvgRating();
 	}
 }

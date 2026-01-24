@@ -14,12 +14,11 @@ public class PostResponseDto {
 
 	private String pid;
 	
-	@NotBlank
+	private String creatorName;
+	
 	private String postTitle;
 	
-	@NotBlank
 	private String description;
-	
 	
 	private String videoURL; 
 	
@@ -27,10 +26,13 @@ public class PostResponseDto {
 	
 	private RecipeRequestDto recipe_Details;
 	
-	
 	private List<IngredientsRequestDto> list_Of_Ingredients;
 
 	private List<RecipeStepsDto> list_of_Steps;
 	
 	private List<FoodCategoryDto> list_of_categorys;
+	
+	private List<CommentResponseDto> list_of_comments;
+	
+	private Double rating;
 }

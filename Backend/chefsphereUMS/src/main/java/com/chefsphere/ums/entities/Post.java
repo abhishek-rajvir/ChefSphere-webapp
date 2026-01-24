@@ -55,23 +55,23 @@ public class Post {
 	// mapped by Comment.post [holds the key]
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Comment> comments = new ArrayList<>();
+
+	// avg of all ratings
+	private Double avgRating = 0.0;
+	
+	// no of foodies have rated the post
+	private Long ratingCount = 0l;
 	
 	
-	/*
-	 * one post can have one ratings 
-	 */
-	// mapped by Comment.rating [holds the key]
-	@OneToOne(cascade = CascadeType.ALL) // if user is deleted so is creator
-	private Rating rating;
-	
-	
-	
-	public void addRating(Rating rating) {
-		this.rating = rating;
+	public void addRating(int newRating) {
+	    avgRating =
+	        ((avgRating * ratingCount) + newRating) / (ratingCount + 1);
+	    ratingCount++;
 	}
 
-	public void removeRating(Rating rating) {
-		this.rating = null;
+	public void removeRating() {
+		avgRating = 0.0;
+		ratingCount = 0L;
 	}
 	
 	public void addComment(Comment comment) {

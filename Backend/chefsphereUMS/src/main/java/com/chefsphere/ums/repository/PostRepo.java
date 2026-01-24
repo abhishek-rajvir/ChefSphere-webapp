@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.chefsphere.ums.entities.Post;
-import com.chefsphere.ums.entities.Rating;
 import com.chefsphere.ums.entities.Recipe;
 
 public interface PostRepo extends JpaRepository<Post, Long> {
@@ -30,8 +29,4 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 
 	List<Post> findByPostTitleContainingIgnoreCase(String postTitle);
 
-	@Query("SELECT p FROM Post p LEFT JOIN FETCH p.rating WHERE p.pid =:postId")
-	Optional<Post> findByPostIdWithRating(@Param("postId") Long postId);
-
-	
 }

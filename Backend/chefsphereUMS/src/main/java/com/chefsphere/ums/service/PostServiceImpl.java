@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.chefsphere.ums.dto.CommentResponseDto;
 import com.chefsphere.ums.dto.FoodCategoryDto;
 import com.chefsphere.ums.dto.IngredientsRequestDto;
 import com.chefsphere.ums.dto.PostRequestDto;
@@ -357,11 +358,6 @@ public class PostServiceImpl {
 	// @Override
 	public List<PostResponseDto> findAllPostsWithIngredients(List<String> ingredient_names, HttpServletRequest req) {
 
-//		String token = jwtUtils.extractToken(req);
-//		Long Userid = jwtUtils.extractUserId(token);
-
-//		List<Ingredients> ing_list = ingredientRepo.findByNameInIgnoreCase(ingredient_names);
-
 		List<Post> postlist = postRepo.findAll();
 		List<PostResponseDto> list = postlist.stream().map(s -> mapper.map(s, PostResponseDto.class)).toList();
 
@@ -398,13 +394,18 @@ public class PostServiceImpl {
 					.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
 
 			List<FoodCategoryDto> food_category_list = recipe.getFoodCategories().stream()
-					.map(rc -> mapper.map(rc, FoodCategoryDto.class)).toList();
-
+					.map(fc -> mapper.map(fc, FoodCategoryDto.class)).toList();
+			List<CommentResponseDto> comment_list = post.get().getComments().stream()
+					.map(c -> mapper.map(c, CommentResponseDto.class)).toList();
+			
 			PostResponseDto s2 = mapper.map(post, PostResponseDto.class);
 			s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDto.class));
 			s2.setList_Of_Ingredients(ing_list);
 			s2.setList_of_Steps(rec_steps_list);
 			s2.setList_of_categorys(food_category_list);
+			s2.setList_of_comments(comment_list);
+			s2.setRating(post.get().getAvgRating());
+			s2.setCreatorName(post.get().getCreator().getUserId().getUsername());
 			return s2;
 		}
 		throw new ResourceNotFoundException("Invalid post id");
