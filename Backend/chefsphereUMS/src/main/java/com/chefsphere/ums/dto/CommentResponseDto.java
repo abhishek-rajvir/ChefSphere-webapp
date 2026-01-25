@@ -13,7 +13,7 @@ public class CommentResponseDto {
 	
 	private Long commentId;
 	
-	private String foodieName;
+	private String authorName;
 
 	private String message;
 

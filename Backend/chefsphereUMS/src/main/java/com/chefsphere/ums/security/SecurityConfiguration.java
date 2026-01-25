@@ -64,6 +64,8 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.POST,"/foodies/followCreator/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.DELETE,"/foodies/unFollowCreator/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
+				.requestMatchers(HttpMethod.GET,"/creators/followers").permitAll()
+				.requestMatchers(HttpMethod.GET,"/creators//totalfollowers/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.POST,"/creators/signUp/**").permitAll()
 
 				// to handle posts - public

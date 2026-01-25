@@ -97,7 +97,7 @@ public class JwtUtils {
 	}
 
 	public String extractRole(String token) {
-		return extractAllClaims(token).get("role", String.class);
+		return extractAllClaims(token).get("user_role", String.class);
 	}
 
 	public boolean isTokenValid(String token) {

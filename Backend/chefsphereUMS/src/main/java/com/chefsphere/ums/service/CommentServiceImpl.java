@@ -32,13 +32,47 @@ public class CommentServiceImpl {
 
 	// @Override
 	public void createComment(CommentRequestDto c_dto, HttpServletRequest req) {
+		
+		// get token
+		String token = jwtUtils.extractToken(req);
+		
+		// get user id
+		String uname = jwtUtils.extractUsername(token);
+		
+		String type = jwtUtils.extractRole(token);
+		// find creator by user id
+		
+		Optional<Post> p = postRepo.findById(c_dto.getPostId());
+		
+		if (p.isEmpty()) {
+			throw new InvalidIdException("Post id " + c_dto.getPostId() + " doesnt exists");
+		}
+		Comment newComment = mapper.map(c_dto, Comment.class);
+		
+		newComment.setPost(p.get());
+		System.out.println(type);
+		if(type.equalsIgnoreCase("CREATOR") ){
+			newComment.setAuthorName(uname+"[‍🧑‍🍳]");			
+		}
+		else {
+			newComment.setAuthorName(uname);			
+		}
+		
+		Comment persistentComment = commentRepo.save(newComment);
+		
+		p.get().addComment(persistentComment);
+		postRepo.save(p.get());
+		
+	}
+	// @Override
+	public void createCommentAuthor(CommentRequestDto c_dto, HttpServletRequest req) {
 
 		// get token
 		String token = jwtUtils.extractToken(req);
 
 		// get user id
-		String uname = jwtUtils.extractUsername(token);
-
+		String uname = jwtUtils.extractUsername(token).split("@")[0];
+		
 		// find creator by user id
 
 		Optional<Post> p = postRepo.findById(c_dto.getPostId());
@@ -49,7 +83,7 @@ public class CommentServiceImpl {
 		Comment newComment = mapper.map(c_dto, Comment.class);
 
 		newComment.setPost(p.get());
-		newComment.setFoodieName(uname);
+		newComment.setAuthorName(uname);
 
 		Comment persistentComment = commentRepo.save(newComment);
 

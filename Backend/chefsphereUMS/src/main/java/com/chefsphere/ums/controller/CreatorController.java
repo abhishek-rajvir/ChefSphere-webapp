@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chefsphere.ums.dto.ApiResponse;
@@ -115,9 +114,9 @@ public class CreatorController {
 	
 	
 	@GetMapping("/followers")
-	public ResponseEntity<?> getFollowers(@RequestParam Long creator_id){
+	public ResponseEntity<?> getFollowers(HttpServletRequest req){
 		return ResponseEntity.ok(
-			Map.of("foodies",creatorService.getFollowersById(creator_id))
+			Map.of("foodies",creatorService.getFollowersById(req))
 		);
 	}
 	
@@ -126,10 +125,10 @@ public class CreatorController {
 		return ResponseEntity.ok(creatorService.findRandomCreatorByQty(qty));
 	}
 	
-	@GetMapping("/allFollowers")
-	public ResponseEntity<?> allfollowersCreator(HttpServletRequest req){
+	@GetMapping("/totalfollowers/{creator_id}")
+	public ResponseEntity<?> allfollowersCreator(Long cid){
 		// get persistant foodie by id
-		return ResponseEntity.ok(creatorService.allFollowers(req));
+		return ResponseEntity.ok(creatorService.totalFollowers(cid));
 	}
 	
 }

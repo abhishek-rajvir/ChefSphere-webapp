@@ -20,12 +20,14 @@ public interface CreatorService {
 
 	void updateCreator(Creator changedCreator) throws Exception;
 
-	List<FoodieDetailsDto> getFollowersById(Long creator_id);
+	List<FoodieDetailsDto> getFollowersById();
 
 	Creator findByUserId(Long id);
 
 	List<CreatorRandomDto> findRandomCreatorByQty(Long qty);
 
-	List<FoodieDetailsDto> allFollowers(HttpServletRequest req);
+	List<FoodieDetailsDto> getFollowersById(HttpServletRequest req);
+
+	Long totalFollowers(Long cid);
 	
 }
