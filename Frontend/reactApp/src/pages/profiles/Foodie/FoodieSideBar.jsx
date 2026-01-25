@@ -8,11 +8,12 @@ import InputClearDemo from "@/core/template/InputClear";
 import FoodieConfig from "@/pages/user/foodie/FoodieConfig";
 import DashBoard from "@/pages/user/foodie/DashBoard";
 import { ProfileForm } from "@/pages/user/creator/ProfileForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AllCategoryPage from "@/pages/user/foodie/AllCategoryPage";
-// import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
 import CreatorPostTable from "@/pages/user/foodie/CreatorPostTable";
+import CreatorPage from "@/pages/user/foodie/CreatorPage";
+import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
 import AllPostPage from "@/pages/user/foodie/AllPostPage";
 import FollowingTable from "../../user/foodie/FollowingTable";
 import PostPage from "../../user/creator/post/PostPage";
@@ -32,6 +33,7 @@ export default function FoodieSideBar({
   creatorsPage,
   viewPost,
   categoryPage,
+  creatorPage,
 }) {
   const [following, setFollowing] = useState([]);
   const navigate = useNavigate();
@@ -87,7 +89,8 @@ export default function FoodieSideBar({
           {followingPage && <FollowingTable />}
           {categoriesPage && <AllCategoryPage />}
           {categoryPage && <CategoryPageByName categoryName={categoryPage} />}
-          {creatorsPage && <CreatorPostTable />}
+          {creatorsPage && <CreatorsPage />}
+          {creatorPage && <CreatorPage cid={creatorPage} />}
           {searchPage &&
             (() => {
               switch (searchPage.sortBy) {
@@ -104,9 +107,13 @@ export default function FoodieSideBar({
         </div>
         <hr />
         <footer>
-          <br />
           <h6 className="text-center">
-            Copyright © 2026 ChefSphere. All rights reserved.
+            Copyright © 2026 ChefSphere. All rights reserved.{" "}
+            <Link
+              to="/about"
+              style={{ textDecoration: "underline", color: "lightblue" }}>
+              about us
+            </Link>
           </h6>
         </footer>
       </main>

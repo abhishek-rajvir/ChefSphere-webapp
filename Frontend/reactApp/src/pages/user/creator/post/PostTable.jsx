@@ -79,7 +79,10 @@ export default function PostTable({ cid }) {
           </TableHeader>
           <TableBody>
             {currentPosts.map((post) => (
-              <TableRow key={post.pid}>
+              <TableRow
+                key={post.pid}
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => navigate(`/foodies/posts/${post.pid}`)}>
                 <TableCell className="h-full text-center">{post.pid}</TableCell>
                 <TableCell className="h-full text-center max-w-[200px] break-words whitespace-normal">
                   {post.post_title}
@@ -91,10 +94,13 @@ export default function PostTable({ cid }) {
                   <div
                     dangerouslySetInnerHTML={{ __html: post.videoTag }}
                     className="flex justify-center items-center"
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </TableCell>
                 <TableCell className="h-full text-center">
-                  <div className="flex justify-center items-center gap-2">
+                  <div
+                    className="flex justify-center items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="icon"

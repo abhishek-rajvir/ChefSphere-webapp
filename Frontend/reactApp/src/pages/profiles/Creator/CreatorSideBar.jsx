@@ -5,16 +5,18 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import InputClearDemo from "@/core/template/InputClear";
-import NavBar from "@/pages/Root/NavBar";
+import { Link } from "react-router-dom";
 import FoodieConfig from "@/pages/user/foodie/FoodieConfig";
 import CreatorConfig from "@/pages/user/creator/CreatorConfig";
-import PostCard from "@/core/template/PostCard";
+import FoodieService from "@/service/FoodieService";
+import { requestLog } from "@/jwt/axios_helper";
 import { Button } from "@/components/ui/button";
-import PostTable from "@/pages/user/creator/post/PostTable";
 import { FollowerTable } from "@/pages/user/creator/FollowerTable";
 import { ProfileForm } from "@/pages/user/creator/ProfileForm";
 import { NewPostForm } from "@/pages/user/creator/post/NewPostForm";
 import { UpdatePostForm } from "@/pages/user/creator/post/UpdatePostForm";
+import CreatorPage from "./CreatorPage";
+import PostPage from "@/pages/user/creator/post/PostPage";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -26,6 +28,7 @@ export default function CreatorSideBar({
   followersPage,
   profilePage,
   details,
+  viewPost,
 }) {
   const [followers, setFollowers] = useState([]);
 
@@ -34,7 +37,7 @@ export default function CreatorSideBar({
   const getListOfFollowers = async (name, id) => {
     try {
       requestLog("Fetched all followers of creator " + name + " ID: " + id);
-      const data = await CreatorService.getFollowers(id);
+      const data = await FoodieService.getFollowers();
       console.log(data);
       return data;
     } catch (err) {
@@ -46,17 +49,6 @@ export default function CreatorSideBar({
     const data = sessionStorage.getItem("userCred");
     return data;
   };
-
-  // const getPostsById = async (name, id) => {
-  //   try {
-  //     requestLog("Fetched creator posts for " + name);
-  //     const data = await CreatorService.getCreatorsPosts(id);
-  //     console.log(data);
-  //     return data;
-  //   } catch (err) {
-  //     return [];
-  //   }
-  // };
 
   useEffect(() => {
     const u = loadUser();
@@ -71,7 +63,7 @@ export default function CreatorSideBar({
         setFollowers(f);
       })();
     }
-  }, [postPage, followersPage, profilePage]);
+  }, [postPage, followersPage, profilePage, viewPost]);
 
   return (
     <SidebarProvider>
@@ -102,49 +94,30 @@ export default function CreatorSideBar({
         {/* <div className="min-h-screen flex-col flex center items-center"> */}
         <div className="p-4">
           {postPage &&
-            (newPost ? (
+            (viewPost ? (
+              <PostPage post={viewPost} />
+            ) : newPost ? (
               <NewPostForm />
             ) : updatePost > 0 ? (
               <UpdatePostForm id={updatePost} />
             ) : (
               <>
-                <div className="flex justify-end mb-4">
-                  <Button onClick={() => navigate("/creators/posts/new")}>
-                    New Post
-                  </Button>
-                </div>
-                <PostTable cid={details.id} />
+                <CreatorPage cid={details?.id} />
               </>
             ))}
           {profilePage && <ProfileForm initialData={details} />}
           {followersPage && <FollowerTable followers={followers} />}
-          {/* <div>
-            <header className="flex justify-between items-center">
-              <h4>Top Categories</h4>
-              <Button>Show all</Button>
-            </header>
-            <div className="container py-6">
-              <PostCard limit={3} />
-              <br />
-              <hr />
-              <br />
-            </div>
-          </div>
-          <div>
-            <h4 className="text-left">Top Creators </h4>
-            <div className="container py-6">
-              <PostCard limit={3} />
-              <br />
-              <hr />
-              <br />
-            </div>
-          </div> */}
         </div>
         <hr />
         <footer>
           <br />
           <h6 className="text-center">
-            Copyright © 2026 ChefSphere. All rights reserved.
+            Copyright © 2026 ChefSphere. All rights reserved.{" "}
+            <Link
+              to="/about"
+              style={{ textDecoration: "underline", color: "blue" }}>
+              about us
+            </Link>
           </h6>
         </footer>
       </main>

@@ -1,5 +1,11 @@
 // Menu items.
-import { UsersRoundIcon, UserPenIcon, HomeIcon, ChefHat } from "lucide-react";
+import {
+  UsersRoundIcon,
+  UserPenIcon,
+  HomeIcon,
+  ChefHat,
+  InfoIcon,
+} from "lucide-react";
 
 const items = [
   {
@@ -21,6 +27,11 @@ const items = [
     title: "Creators",
     url: "/foodies/creators",
     icon: ChefHat,
+  },
+  {
+    title: "About us",
+    url: "/about",
+    icon: InfoIcon,
   },
 ];
 

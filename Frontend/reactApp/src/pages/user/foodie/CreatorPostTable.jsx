@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
-import CreatorService from "@/service/CreatorService";
+import FoodieService from "@/service/FoodieService";
 import { requestLog } from "@/jwt/axios_helper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function CreatorPostTable({ cid }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +23,7 @@ export default function CreatorPostTable({ cid }) {
     (async () => {
       try {
         requestLog("Fetched creator posts for creatorId: " + cid);
-        const data = await CreatorService.getCreatorsPosts();
+        const data = await FoodieService.getCreatorsPosts(cid);
         console.log(data);
         setPosts(data || []);
       } catch (err) {
@@ -33,6 +33,9 @@ export default function CreatorPostTable({ cid }) {
   }, [cid]);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const isFoodie = location.pathname.includes("/foodies");
+  const basePath = isFoodie ? "/foodies" : "/creators";
 
   // Handle case where posts is null or undefined
   const safePosts = posts;
@@ -47,7 +50,7 @@ export default function CreatorPostTable({ cid }) {
           <TableHeader className="mb-4">
             <TableRow>
               <TableHead className="h-full text-center py-4 text-primary font-bold">
-                ID
+                pid
               </TableHead>
               <TableHead className="h-full text-center py-4 text-primary font-bold">
                 Title
@@ -62,10 +65,13 @@ export default function CreatorPostTable({ cid }) {
           </TableHeader>
           <TableBody>
             {currentPosts.map((post) => (
-              <TableRow key={post.pid}>
+              <TableRow
+                key={post.pid}
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => navigate(`${basePath}/post/${post.pid}`)}>
                 <TableCell className="h-full text-center">{post.pid}</TableCell>
                 <TableCell className="h-full text-center max-w-[200px] break-words whitespace-normal">
-                  {post.post_title}
+                  {post.postTitle}
                 </TableCell>
                 <TableCell className="h-full text-center max-w-[300px] break-words whitespace-normal">
                   {post.description}
@@ -74,6 +80,7 @@ export default function CreatorPostTable({ cid }) {
                   <div
                     dangerouslySetInnerHTML={{ __html: post.videoTag }}
                     className="flex justify-center items-center"
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </TableCell>
               </TableRow>

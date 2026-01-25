@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import FoodieService from "@/service/FoodieService";
-import CreatorPostTable from "@/pages/user/foodie/CreatorPostTable";
-import { Star, Mail, User, Loader2 } from "lucide-react";
+import CreatorPostTable from "./CreatorPostTable";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star, Mail, MapPin, User, Loader2 } from "lucide-react";
 
 export default function CreatorPage({ cid }) {
   const [creator, setCreator] = useState(null);

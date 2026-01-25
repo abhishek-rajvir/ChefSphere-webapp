@@ -18,6 +18,7 @@ import DashBoard from "../user/foodie/DashBoard";
 import FollowingTable from "../user/foodie/FollowingTable";
 import SearchPostCard from "../user/foodie/SearchPage";
 import CreatorTableCard from "../user/foodie/CreatorTableCard";
+import { Link } from "react-router-dom";
 
 export default function SideBar({
   name,
@@ -30,7 +31,7 @@ export default function SideBar({
   return type === "creator" ? (
     <SidebarProvider>
       <AppSidebar name={name} items={CreatorConfig} />
-      <main className="w-full">
+      <main className="flex flex-col min-h-screen w-full">
         <div className="flex h-14 items-start pt-0 border-b px-4">
           {/* LEFT */}
           <div className="flex items-center gap-3">
@@ -54,7 +55,7 @@ export default function SideBar({
 
         {/* Page content */}
         {/* <div className="min-h-screen flex-col flex center items-center"> */}
-        <div className="p-4">
+        <div className="flex-1 p-4">
           {posts && (
             <>
               <div className="flex justify-end mb-4">
@@ -91,8 +92,14 @@ export default function SideBar({
         <footer>
           <br />
           <h6 className="text-center">
-            Copyright © 2026 ChefSphere. All rights reserved.
+            Copyright © 2026 ChefSphere. All rights reserved.{" "}
           </h6>
+          <Button
+            // variant="outline"
+            size="sm"
+            onClick={() => navigate("/about")}>
+            Contact Us
+          </Button>
         </footer>
       </main>
     </SidebarProvider>
@@ -101,7 +108,7 @@ export default function SideBar({
       <SidebarProvider>
         <AppSidebar name={name} items={FoodieConfig} />
 
-        <main className="w-full">
+        <main className="flex flex-col min-h-screen w-full">
           <div className="flex h-14 items-start pt-0 border-b px-4">
             {/* LEFT */}
             <div className="flex items-center gap-3">
@@ -126,7 +133,7 @@ export default function SideBar({
           </div>
 
           {/* Page content */}
-          <div className="min-h-screen flex justify-center">
+          <div className="flex-1 flex justify-center">
             <div className="container py-6">
               <CreatorTableCard creators={creators} />
               {/* <SearchPostCard posts={posts} /> */}
@@ -139,7 +146,11 @@ export default function SideBar({
           <footer>
             <br />
             <h6 className="text-center">
-              Copyright © 2026 ChefSphere. All rights reserved.
+              Copyright © 2026 ChefSphere. All rights reserved.{" "}
+              <Button variant="outline" size="sm">
+                Contact
+              </Button>{" "}
+              <Link to="/about">About Us</Link>
             </h6>
           </footer>
         </main>

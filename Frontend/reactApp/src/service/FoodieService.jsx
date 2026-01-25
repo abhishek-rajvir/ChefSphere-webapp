@@ -23,12 +23,12 @@ const getPostsByNo = async (pno) => {
     throw new Error("Post fetch failed");
   }
 };
-const getCreatorsPosts = async () => {
+const getCreatorsPosts = async (id) => {
   try {
-    const res = await requestJwt("GET", "/posts/list");
+    const res = await requestJwt("GET", "/posts/" + id + "/list");
     return res.data;
   } catch (err) {
-    throw new Error("Post fetch failed");
+    throw new Error("Post fetch failed for creator id: " + id);
   }
 };
 const getAllPosts = async () => {
@@ -109,18 +109,21 @@ const updateCreatorPost = async (id, details) => {
   }
 };
 
-const getFollowers = async (cid) => {
+const getFollowers = async () => {
   try {
-    const res = await requestParamJwt(
-      "GET",
-      "/creators/followers",
-      {},
-      cid,
-      "",
-    );
-    return res.data;
+    const res = await requestJwt("GET", "/creators/followers");
+    return res.data.foodies;
   } catch (err) {
     throw new Error("failed to fetch all followers");
+  }
+};
+
+const getTotalFollowers = async (cid) => {
+  try {
+    const res = await requestJwt("GET", "/creators/totalfollowers/" + cid);
+    return res.data;
+  } catch (err) {
+    throw new Error("failed to fetch total followers");
   }
 };
 
@@ -189,6 +192,82 @@ const getPostsContainingCategory = async (category) => {
   }
 };
 
+const getCreatorById = async (id) => {
+  try {
+    const res = await requestJwt("GET", "/creators/" + id);
+    return res.data;
+  } catch (err) {
+    throw new Error("Creator fetch failed for id: " + id);
+  }
+};
+
+export const addRating = async (ratingData) => {
+  try {
+    const res = await requestJwt("POST", "/engagement/rating/new", ratingData);
+    return res.data;
+  } catch (err) {
+    throw new Error("Rating submission failed");
+  }
+};
+
+export const deleteRatingByPostId = async (postId) => {
+  try {
+    const res = await requestJwt(
+      "DELETE",
+      "/engagement/rating/" + postId + "/delete",
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("Rating deletion failed");
+  }
+};
+
+export const getRatingByPostId = async (postId) => {
+  try {
+    const res = await requestJwt("GET", "/engagement/rating/" + postId);
+    return res.data;
+  } catch (err) {
+    throw new Error("Fetching rating failed");
+  }
+};
+
+export const createComment = async (commentData) => {
+  try {
+    const res = await requestJwt(
+      "POST",
+      "/engagement/comment/new",
+      commentData,
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("Comment creation failed");
+  }
+};
+
+export const getCommentsByPostId = async (postId) => {
+  try {
+    const res = await requestJwt(
+      "GET",
+      "/engagement/comment/" + postId + "/listAll",
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("Fetching comments failed");
+  }
+};
+
+export const deleteComment = async (commentId) => {
+  try {
+    const res = await requestJwt(
+      "DELETE",
+      "/engagement/comment/" + commentId + "/delete",
+    );
+    return res.data;
+  } catch (err) {
+    throw new Error("Comment deletion failed");
+  }
+};
+
 export default {
   RegisterFoodie,
   getPostsByNo,
@@ -197,6 +276,7 @@ export default {
   getAllPostsByCategory,
   getRecipeByRange,
   getCreatorsByRange,
+  getCreatorById,
   newCreatorPost,
   deletePost,
   updateCreatorPost,
@@ -209,4 +289,11 @@ export default {
   getAllFollowing,
   getPostsContainingTitle,
   getPostsContainingCategory,
+
+  addRating,
+  deleteRatingByPostId,
+  getRatingByPostId,
+  createComment,
+  getCommentsByPostId,
+  deleteComment,
 };

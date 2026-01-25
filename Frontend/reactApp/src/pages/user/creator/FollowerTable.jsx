@@ -15,7 +15,8 @@ export function FollowerTable({ followers }) {
   const itemsPerPage = 5;
 
   // Handle case where followers is null or undefined
-  const saferFollowers = followers || [];
+  // Handle case where followers is null or undefined or not an array
+  const saferFollowers = Array.isArray(followers) ? followers : [];
   const totalPages = Math.ceil(saferFollowers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentFollowers = saferFollowers.slice(
@@ -42,29 +43,10 @@ export function FollowerTable({ followers }) {
           </TableHeader>
           <TableBody>
             {currentFollowers.map((follower) => (
-              <TableRow key={follower.id}>
-                <TableCell className="h-full text-center font-medium">
-                  {follower.id}
-                </TableCell>
-                <TableCell className="h-full text-center">
-                  <div className="flex justify-center items-center">
-                    {follower.icon ? (
-                      <img
-                        src={follower.icon}
-                        alt={follower.name}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <User className="h-6 w-6" />
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="h-full text-left">
-                  {follower.name}
-                </TableCell>
-              </TableRow>
+              <FollowerRow
+                key={follower.fid || follower.id}
+                follower={follower}
+              />
             ))}
           </TableBody>
         </Table>
@@ -93,5 +75,37 @@ export function FollowerTable({ followers }) {
     </div>
   ) : (
     <h4 className="text-center">No followers found.</h4>
+  );
+}
+
+function FollowerRow({ follower }) {
+  const displayName =
+    `${follower.firstName} ${follower.lastName}`.trim() ||
+    follower.username ||
+    follower.name;
+  const displayId = follower.fid || follower.id;
+
+  return (
+    <TableRow>
+      <TableCell className="h-full text-center font-medium">
+        {displayId}
+      </TableCell>
+      <TableCell className="h-full text-center">
+        <div className="flex justify-center items-center">
+          {follower.icon ? (
+            <img
+              src={follower.icon}
+              alt={displayName}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <User className="h-6 w-6" />
+            </div>
+          )}
+        </div>
+      </TableCell>
+      <TableCell className="h-full text-left">{displayName}</TableCell>
+    </TableRow>
   );
 }

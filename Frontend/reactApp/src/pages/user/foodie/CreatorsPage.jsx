@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatorsPage() {
   const [creators, setCreators] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [followingState, setFollowingState] = useState({});
   const itemsPerPage = 20;
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -84,6 +86,7 @@ export default function CreatorsPage() {
           return (
             <div
               key={idx}
+              onClick={() => navigate(`/foodies/creators/${creatorId}`)}
               className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
               <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
                 <img
@@ -94,7 +97,10 @@ export default function CreatorsPage() {
               </div>
               <span className="font-semibold text-sm">{name}</span>
               <button
-                onClick={() => handleFollowClick(creatorId, isFollowing)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFollowClick(creatorId, isFollowing);
+                }}
                 className={`text-xs px-3 py-1 rounded-full transition-colors ${
                   isFollowing
                     ? "bg-black text-white dark:bg-white dark:text-black border border-primary"

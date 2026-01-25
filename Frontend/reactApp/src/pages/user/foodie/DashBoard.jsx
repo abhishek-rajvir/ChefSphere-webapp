@@ -159,13 +159,14 @@ export default function DashBoard() {
         <div className="flex flex-wrap gap-6 justify-center">
           {creators.map((creator, idx) => {
             const name = creator.username || "Creator";
-            const creatorId = creator.cid || creator.id;
+            const creatorId = creator.cid;
             const isFollowing = followingState[creatorId] || false;
             const imageUrl =
               creator.pic ||
               `https://dummyjson.com/image/150x150/dcfce7/000000?text=${encodeURIComponent(name.charAt(0).toUpperCase())}&fontSize=40`;
 
-            const handleFollowClick = async () => {
+            const handleFollowClick = async (e) => {
+              e.stopPropagation(); // Prevent card navigation
               try {
                 if (isFollowing) {
                   await FoodieService.unFollowCreator(creatorId);
@@ -186,6 +187,7 @@ export default function DashBoard() {
             return (
               <div
                 key={idx}
+                onClick={() => navigate(`/foodies/creators/${creatorId}`)}
                 className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
                 <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
                   <img

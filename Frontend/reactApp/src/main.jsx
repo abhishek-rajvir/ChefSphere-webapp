@@ -18,6 +18,7 @@ import FoodieNavigationLayout from "./pages/profiles/Foodie/FoodieNavigationLayo
 import LoginForm from "./pages/Auth/LoginForm.jsx";
 import RegisterPage from "./pages/Auth/RegisterPage.jsx";
 import LoginPage from "./pages/Auth/LoginPage.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
 
 const router = createBrowserRouter([
   {
@@ -31,19 +32,31 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
     errorElement: <NotFoundPage />,
   },
+  { path: "/about", element: <AuthFilter Component={AboutUs} /> },
   { path: "/home", element: <AuthFilter Component={HomePage} /> },
   { path: "/auth", element: <AuthFilter Component={AuthPage} /> },
   // Creators routes
   {
     path: "/creators",
     children: [
-      { path: "", element: <Navigate to="/creators/posts" replace /> },
+      {
+        path: "",
+        element: (
+          <AuthFilter Component={CreatorNavigationLayout} postPage={true} />
+        ),
+      },
       {
         path: ":param",
         element: <AuthFilter Component={CreatorNavigationLayout} />,
       },
       {
-        path: "posts/new",
+        path: "posts",
+        element: (
+          <AuthFilter Component={CreatorNavigationLayout} postPage={true} />
+        ),
+      },
+      {
+        path: "post/new",
         element: (
           <AuthFilter
             Component={CreatorNavigationLayout}
@@ -53,7 +66,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "posts/:id/edit",
+        path: "post/:id/edit",
         element: (
           <AuthFilter
             Component={CreatorNavigationLayout}
@@ -62,13 +75,29 @@ const router = createBrowserRouter([
           />
         ),
       },
+      {
+        path: "post/:id",
+        element: (
+          <AuthFilter
+            Component={CreatorNavigationLayout}
+            postPage={true}
+            viewPost={true}
+          />
+        ),
+      },
+      {
+        path: "posts/:id",
+        element: (
+          <AuthFilter Component={CreatorNavigationLayout} postPage={true} />
+        ),
+      },
     ],
   },
   // Foodies routes
   {
     path: "/foodies",
     children: [
-      { path: "", element: <Navigate to="/foodies/posts" replace /> },
+      { path: "", element: <Navigate to="/foodies/home" replace /> },
       {
         path: "search",
         element: (
@@ -86,7 +115,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "posts/:id",
+        path: "post/:id",
         element: (
           <AuthFilter
             Component={FoodieNavigationLayout}

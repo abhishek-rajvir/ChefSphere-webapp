@@ -1,19 +1,16 @@
-import React from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import NotFoundPage from "../../error/NotFoundPage";
-import CreatorPage from "./CreatorPage";
-import CreatorSignUp from "./CreatorSignUp";
 import UserPage from "../../Root/UserPage";
-// import LoginForm from "../../Auth/LoginForm";
-// import LoginPage from "../../Auth/LoginPage";
 
 export default function CreatorNavigationLayout({
   postPage,
   newPost,
   updatePost,
+  viewPost,
 }) {
   // param is the name of key
-  const parmeter = useParams().param;
+  const params = useParams();
+  const parmeter = params.param;
 
   // // If there is no param (route is /creators), show 404
   // // handle invalid ? # urls
@@ -29,28 +26,28 @@ export default function CreatorNavigationLayout({
   if (postPage) {
     if (newPost) {
       return <UserPage posts={true} newPost={true} user={user} />;
-    }
-    if (updatePost) {
-      // Use "id" because the route is "posts/:id/edit"
+    } else if (updatePost) {
+      // Use "id" because the route is "post/:id/edit"
       const id = parseInt(useParams().id);
       console.log("updating post id", id);
       return <UserPage posts={true} updatePost={id} user={user} />;
+    } else if (viewPost) {
+      // Use "id" because the route is "post/:id"
+      const id = parseInt(useParams().id);
+      console.log("viewing post id", id);
+      return <UserPage posts={true} viewPost={id} user={user} />;
+    } else {
+      return <UserPage posts={true} user={user} />;
     }
-    return <UserPage posts={true} user={user} />;
   }
   // Handle keyword routes
   switch (parmeter) {
     case "home":
-    case "posts":
       return <UserPage posts={true} user={user} />;
     case "profile":
       return <UserPage profile={true} user={user} />;
     case "followers":
       return <UserPage followers={true} user={user} />;
-    // case "update":
-    //   return <CreatorUpdate />;
-    // case "delete":
-    //   return <CreatorDelete />;
     default:
       return <NotFoundPage />;
   }
