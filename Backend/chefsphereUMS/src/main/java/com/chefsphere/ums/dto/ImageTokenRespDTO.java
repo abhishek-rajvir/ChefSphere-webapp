@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ImageTokenResp {
+public class ImageTokenRespDTO {
 	private String token;
 	private String expire;
 	private String signature;

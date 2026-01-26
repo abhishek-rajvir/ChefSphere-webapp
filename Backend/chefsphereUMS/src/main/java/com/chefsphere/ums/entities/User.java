@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,9 +35,10 @@ public class User extends BaseEntity {//implements UserDetails{
 	
 	private String gender;
 	
-	@Lob
-	@Column(nullable = true)
-	private byte[] pic;
+	private String pic;
+	
+	// boolen instead of Boolean ,since active state should be null 
+	private boolean isActive = true;
 //	
 //	@Override
 //	public Collection<? extends GrantedAuthority> getAuthorities() {

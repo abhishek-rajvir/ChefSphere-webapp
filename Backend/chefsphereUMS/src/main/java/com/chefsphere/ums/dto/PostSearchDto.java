@@ -1,7 +1,5 @@
 package com.chefsphere.ums.dto;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PostSearchDto {
+public class PostSearchDTO {
 
 	private String pid;
 	

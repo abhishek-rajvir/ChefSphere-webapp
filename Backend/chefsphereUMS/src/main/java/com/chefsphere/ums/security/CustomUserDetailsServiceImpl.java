@@ -25,7 +25,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		log.info("********* in load user ");
-		User user=userRepo.findByEmail(email)
+		User user=userRepo.findByEmailAndIsActiveTrue(email)
 				.orElseThrow(() -> new UsernameNotFoundException("User by this email doesn't exist!!!!!!!!"));
 		// email verified
 		// userprincipal object to store id,email,grantAuthority

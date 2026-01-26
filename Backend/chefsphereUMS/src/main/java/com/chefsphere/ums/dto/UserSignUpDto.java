@@ -1,10 +1,7 @@
 package com.chefsphere.ums.dto;
 
-import com.chefsphere.ums.entities.UserType;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,8 +29,8 @@ public class UserSignUpDto {
 	@NotBlank(message = "Password is required")
 	private String password;
 	
-	@NotNull(message = "User type is required")
-	private UserType type;
+//	@NotNull(message = "User type is required")
+//	private UserType type;
 	
 	@NotBlank(message = "Gender is required")
 	private String gender;

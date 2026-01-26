@@ -62,6 +62,12 @@ public class Post {
 	// no of foodies have rated the post
 	private Long ratingCount = 0l;
 	
+	// boolen instead of Boolean ,since active state should be null 
+	private boolean isActive = true;
+	
+	/*
+	 * Helper methods
+	 */
 	
 	public void addRating(int newRating) {
 	    avgRating =

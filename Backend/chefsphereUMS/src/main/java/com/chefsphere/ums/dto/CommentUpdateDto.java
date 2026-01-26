@@ -13,7 +13,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class CommentUpdateDto {
+public class CommentUpdateDTO {
 	
 	@NotNull(message = "Comment id is required")
 	@Positive(message = "Comment id must be greater than 0")

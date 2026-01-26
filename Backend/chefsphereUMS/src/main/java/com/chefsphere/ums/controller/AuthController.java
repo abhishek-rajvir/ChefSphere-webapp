@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chefsphere.ums.dto.AuthRequest;
-import com.chefsphere.ums.dto.AuthResp;
+import com.chefsphere.ums.dto.AuthRequestDTO;
+import com.chefsphere.ums.dto.AuthRespDTO;
 import com.chefsphere.ums.dto.UserDTO;
+import com.chefsphere.ums.entities.User;
 import com.chefsphere.ums.security.JwtUtils;
 import com.chefsphere.ums.security.UserPrincipal;
 import com.chefsphere.ums.service.ImageKitServiceImpl;
@@ -66,7 +67,7 @@ public class AuthController {
 
 	@PostMapping("/signIn")
 	@Operation(description = "User Authentication With Spring Security")
-	public ResponseEntity<?> userSignIn(@RequestBody @Valid AuthRequest request) {
+	public ResponseEntity<?> userSignIn(@RequestBody @Valid AuthRequestDTO request) {
 		System.out.println("in user sign in " + request);
 		/*
 		 * 1. Create Authentication object (UsernamePasswordAuthToken) to store - email
@@ -87,17 +88,15 @@ public class AuthController {
 		// 3. In case of success, create JWT send it to the REST Client (using JWT Utils
 		// - helper class)
 		
-		return ResponseEntity.ok(new AuthResp(principal.getUserId(), principal.getNameOfUser(),jwtUtils.generateToken(principal), principal.getUserRole()));
+		return ResponseEntity.ok(new AuthRespDTO(principal.getUserId(), principal.getNameOfUser(),jwtUtils.generateToken(principal), principal.getUserRole()));
 	}
 
 	@GetMapping("/{username}")
 	public ResponseEntity<?> userExists(@PathVariable String username) {
-		if (userService.existsByUsername(username)) {
-			return ResponseEntity.ok("Username doesn't exists");
-		} else {
-			return ResponseEntity.badRequest().body("Username already exists");
-		}
-
+		if (userService.userNameExist(username)) {
+			return ResponseEntity.ok("Username: "+username +" exists");
+		} 
+		return ResponseEntity.ok("Username: "+username+" doesn't exist");
 	}
 
 	/*
@@ -125,8 +124,9 @@ public class AuthController {
 	public ResponseEntity<?> encryptUserPassword(@PathVariable Long id) {
 		log.info("encrypting users password ");
 		// invoke service layer method
-		return ResponseEntity.ok(userService.encryptPassword(id));
-
+		User u = userService.findById(id);
+		userService.encryptPassword(u);
+		return ResponseEntity.ok("Encrypted password of User:"+u.getUsername());
 	}
 	
 	@GetMapping("/imgkToken")

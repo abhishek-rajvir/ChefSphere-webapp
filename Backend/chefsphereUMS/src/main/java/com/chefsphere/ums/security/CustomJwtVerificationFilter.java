@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.chefsphere.ums.dto.ApiResponse;
+import com.chefsphere.ums.dto.ApiResponseDTO;
 import com.chefsphere.ums.exception_handler.InvalidJWTException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,7 +49,7 @@ public class CustomJwtVerificationFilter extends OncePerRequestFilter {
 				String role = claims.get("user_role", String.class);
 				List<SimpleGrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(role));
 				// 4. add these details UserPrincipal
-				UserPrincipal principal = new UserPrincipal(userId, claims.getSubject(),null,null, null, role);
+				UserPrincipal principal = new UserPrincipal(userId, claims.getSubject(),userName,null, null, role);
 				Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null,
 						grantedAuthorities);
 				log.info("*******auth {}",authentication);
@@ -72,7 +72,7 @@ public class CustomJwtVerificationFilter extends OncePerRequestFilter {
 			SecurityContextHolder.clearContext();// important
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
-			ApiResponse<String> resp=new ApiResponse<String>(e.getMessage(),false,"Failed");
+			ApiResponseDTO<String> resp=new ApiResponseDTO<String>(e.getMessage(),false,"Failed");
 			//printwriter
 			response.getWriter().write(objectMapper.writeValueAsString(resp));
 			return;

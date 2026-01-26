@@ -9,13 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CreatorDetailsDto;
-import com.chefsphere.ums.dto.CreatorRandomDto;
-import com.chefsphere.ums.dto.FoodieDetailsDto;
+import com.chefsphere.ums.dto.CreatorDetailsDTO;
+import com.chefsphere.ums.dto.CreatorRandomDTO;
 import com.chefsphere.ums.entities.Creator;
-import com.chefsphere.ums.exception_handler.InvalidDetailsException;
+import com.chefsphere.ums.entities.User;
+import com.chefsphere.ums.exception_handler.InvalidCredentialsException;
 import com.chefsphere.ums.exception_handler.NoContentException;
-import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
+import com.chefsphere.ums.exception_handler.UserNotFoundException;
 import com.chefsphere.ums.repository.CreatorRepo;
 import com.chefsphere.ums.security.JwtUtils;
 
@@ -32,49 +32,61 @@ public class CreatorServiceImpl implements CreatorService {
 	private final ModelMapper mapper;
 
 	@Override
-	public Long addCreator(Creator newCreator) {
-		Creator c = creatorRepo.save(newCreator);
-
-		if (c == null) {
-			throw new InvalidDetailsException("Invalid Creator credentials");
-		}
-		return c.getUserId().getId();
+	public String createCreator(User user) {
+		Creator c = new Creator();
+		c.setUserId(user);
+		creatorRepo.save(c);
+		return "Welcome " + user.getFirstName()+ "SignUp successfull";
 	}
 
 	@Override
-	public void updateCreator(Creator changedCreator) throws Exception {
+	public void updateCreator(Creator changedCreator) {
 		Creator c = creatorRepo.save(changedCreator);
 
 		if (c == null) {
-			throw new RuntimeException("Invalid Creator credentials");
+			throw new InvalidCredentialsException("Invalid Creator credentials");
 		}
+	}
+
+	// get logged creator
+	@Override
+	public Creator findById(HttpServletRequest req) {
+		// get user id
+		Long uid = jwtUtils.extractUidFromReq(req);
+		
+		Optional<Creator> c = creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid);
+		if (c.isPresent()) {
+			return c.get();
+		}
+		throw new UserNotFoundException("Creator Id doesn't exist");
 	}
 
 	@Override
 	public Creator findById(Long id) {
+		
 		Optional<Creator> c = creatorRepo.findById(id);
 		if (c.isPresent()) {
 			return c.get();
 		}
-		throw new ResourceNotFoundException("Creator Id doesn't exist");
+		throw new UserNotFoundException("Creator Id doesn't exist");
 	}
 
 	@Override
-	public Creator findByUserId(Long id) {
-		Optional<Creator> c = creatorRepo.findByUserId(id);
+	public Creator findByUserId(Long cid) {
+		Optional<Creator> c = creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(cid);
 		if (c.isPresent()) {
 			return c.get();
 		}
-		throw new ResourceNotFoundException("Creator Id doesn't exist");
+		throw new UserNotFoundException("Creator Id doesn't exist");
 	}
 
 	@Override
-	public List<CreatorDetailsDto> findAll() {
+	public List<CreatorDetailsDTO> findAll() {
 		List<Creator> c = creatorRepo.findAll();
 		if (!(c.isEmpty())) {
 			return c.stream().map(m -> {
 				Long cid = m.getCid();
-				CreatorDetailsDto mappedToDto = mapper.map(m.getUserId(), CreatorDetailsDto.class);
+				CreatorDetailsDTO mappedToDto = mapper.map(m.getUserId(), CreatorDetailsDTO.class);
 				mappedToDto.setCid(cid);
 				return mappedToDto;
 			}).collect(Collectors.toList());
@@ -83,52 +95,12 @@ public class CreatorServiceImpl implements CreatorService {
 	}
 
 	@Override
-	public Long totalFollowers(Long cid) {
-		// find creator by user id
-		Optional<Creator> c = creatorRepo.findByIdWithFoodies(cid);
-		if (c.isPresent()) {
-			return (long) c.get().getFoodies().size();
-		}
-		throw new ResourceNotFoundException("Creator ID:" + c.get().getCid() + " doesnt exists");
-	}
-
-	@Override
-	public List<FoodieDetailsDto> getFollowersById(HttpServletRequest req) {
-
-		// get token
-		String token = jwtUtils.extractToken(req);
-
-		// get user id
-		Long uid = jwtUtils.extractUserId(token);
-
-		// find creator by user id
-		Optional<Creator> c = creatorRepo.findByUserIdWithFoodies(uid);
-		if (c.isPresent()) {
-			return c.get().getFoodies().stream().map(f -> {
-				FoodieDetailsDto fd = mapper.map(f.getUserId(), FoodieDetailsDto.class);
-				fd.setFid(f.getFid());
-				return fd;
-			}).toList();
-		}
-		throw new ResourceNotFoundException("Creator ID:" + c.get().getCid() + " doesnt exists");
-	}
-
-	@Override
-	public List<CreatorRandomDto> findRandomCreatorByQty(Long qty) {
+	public List<CreatorRandomDTO> findRandomCreatorByQty(Long qty) {
 		Pageable pageable = PageRequest.of(0, qty.intValue());
-		List<CreatorRandomDto> cList = creatorRepo.findCreators(pageable);
-		if (cList != null || !cList.isEmpty()) {
+		List<CreatorRandomDTO> cList = creatorRepo.findCreators(pageable);
+		if (cList != null && !cList.isEmpty()) {
 			return cList;
 		}
-		throw new ResourceNotFoundException("No creators in db");
+		throw new NoContentException("No creators in db");
 	}
-
-//	private Creator helperFindByUserIdWithFoodies(Long UserId) {
-//		Optional<Creator> c = creatorRepo.findByUserIdWithFoodies(UserId);
-//		if (c.isPresent()) {
-//			return c.get();
-//		}
-//		throw new ResourceNotFoundException("Creator Id doesn't exist");
-//	}
-
 }

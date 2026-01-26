@@ -1,7 +1,5 @@
 package com.chefsphere.ums.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +28,8 @@ public class Ingredients {
 	private String description;
 	
 	private Double Qty;
+	
+	private String unit;
 
 	@ManyToOne(fetch = FetchType.LAZY) // Lazy loading is often preferred for performance
     @JoinColumn(name = "recipe_id") // Foreign key column

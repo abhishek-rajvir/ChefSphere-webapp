@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CommentRequestDto;
-import com.chefsphere.ums.dto.CommentResponseDto;
+import com.chefsphere.ums.dto.CommentRequestDTO;
+import com.chefsphere.ums.dto.CommentResponseDTO;
 import com.chefsphere.ums.entities.Comment;
 import com.chefsphere.ums.entities.Post;
 import com.chefsphere.ums.exception_handler.InvalidIdException;
@@ -23,15 +23,15 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class CommentServiceImpl {
+public class CommentServiceImpl implements CommentService {
 
 	private final PostRepo postRepo;
 	private final CommentRepo commentRepo;
 	private final JwtUtils jwtUtils;
 	private final ModelMapper mapper;
 
-	// @Override
-	public void createComment(CommentRequestDto c_dto, HttpServletRequest req) {
+	@Override
+	public void createComment(CommentRequestDTO c_dto, HttpServletRequest req) {
 		
 		// get token
 		String token = jwtUtils.extractToken(req);
@@ -64,8 +64,8 @@ public class CommentServiceImpl {
 		postRepo.save(p.get());
 		
 	}
-	// @Override
-	public void createCommentAuthor(CommentRequestDto c_dto, HttpServletRequest req) {
+	@Override
+	public void createCommentAuthor(CommentRequestDTO c_dto, HttpServletRequest req) {
 
 		// get token
 		String token = jwtUtils.extractToken(req);
@@ -92,7 +92,7 @@ public class CommentServiceImpl {
 
 	}
 
-	// @Override
+	@Override
 	public void deleteCommentById(Long commentId) {
 
 		Optional<Comment> c = commentRepo.findById(commentId);
@@ -106,36 +106,14 @@ public class CommentServiceImpl {
 
 	}
 
-//	// @Override
-//	public void updateComment(CommentUpdateDto c_dto, HttpServletRequest req) {
-//
-//		// post basic validation
-//		int len = c_dto.getMessage().length();
-//		// get token
-//		String token = jwtUtils.extractToken(req);
-//
-//		// get user id
-//		Long Userid = jwtUtils.extractUserId(token);
-//
-//		// find creator by user id
-//		Foodie f = foodieService.findByUserIdWithComments(Userid);
-//
-//		Optional<Comment> c = commentRepo.findById(c_dto.getCommentId());
-//		if (c.isPresent()) {
-//
-//			f.addComment(c.get());
-//			foodieRepo.save(f);
-//		}
-//	}
-
-	// @Override
-	public List<CommentResponseDto> findAllCommentByPostId(Long pid) {
-		List<Comment> comList = commentRepo.findByPostId(pid);
+	@Override
+	public List<CommentResponseDTO> findAllCommentByPostId(Long pid) {
+		List<Comment> comList = commentRepo.findByPost_Pid(pid);
 		if (comList.isEmpty() || comList == null) {
 			throw new NoContentException("Post has no comments");
 		}
 		return comList.stream().map(c -> {
-			CommentResponseDto cdto = mapper.map(c, CommentResponseDto.class);
+			CommentResponseDTO cdto = mapper.map(c, CommentResponseDTO.class);
 			cdto.setPostId(pid);
 			return cdto;
 		}).toList();

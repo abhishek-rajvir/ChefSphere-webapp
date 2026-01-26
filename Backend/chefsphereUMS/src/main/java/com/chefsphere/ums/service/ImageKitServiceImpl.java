@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.chefsphere.ums.exception_handler.ImageKitException;
 import com.chefsphere.ums.exception_handler.NoContentException;
 
 @Service
@@ -49,7 +50,7 @@ public class ImageKitServiceImpl {
 
             return response;
         } catch (Exception e) {
-            throw new NoContentException("Failed to generate ImageKit signature");
+            throw new ImageKitException("Failed to generate ImageKit signature");
         }
     }
 
@@ -61,44 +62,3 @@ public class ImageKitServiceImpl {
         return hex.toString();
     }
 }
-
-//package com.chefsphere.ums.service;
-//
-//import java.util.Map;
-//
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//
-//import com.chefsphere.ums.exception_handler.NoContentException;
-//
-//import io.imagekit.sdk.ImageKit;
-//import io.imagekit.sdk.config.Configuration;
-//
-//@Service
-//public class ImageKitServiceImpl {
-//
-//	private final ImageKit imageKit;
-//
-//	@Value("${imagekit.public-key}")
-//	private String pubKey;
-//	
-//	public ImageKitServiceImpl(@Value("${imagekit.public-key}") String publicKey,
-//			@Value("${imagekit.private-key}") String privateKey,
-//			@Value("${imagekit.url-endpoint}") String urlEndpoint) {
-//		Configuration config = new Configuration(publicKey, privateKey, urlEndpoint);
-//		this.imageKit = ImageKit.getInstance();
-//		this.imageKit.setConfig(config);
-//	}
-//
-//	public Map<String, String> authenticate() {
-//		Map<String, String> mp = imageKit.getAuthenticationParameters();
-//		if (mp.isEmpty()) {
-//			throw new NoContentException("Failed to generate token");
-//		}
-//		long expire = (System.currentTimeMillis() / 1000) + 600; // 10 minute
-//
-////		String exp = String.valueOf((Long.valueOf(mp.get("expire")) / 1000)+600);
-//		mp.put("expire", String.valueOf(expire));
-//		return mp;
-//	}
-//}

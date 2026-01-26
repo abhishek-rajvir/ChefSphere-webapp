@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeRandRespDto {
+public class RecipeRandRespDTO {
 
 	private Long pid;
 	

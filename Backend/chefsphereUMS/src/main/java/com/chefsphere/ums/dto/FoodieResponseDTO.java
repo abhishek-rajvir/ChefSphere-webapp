@@ -1,28 +1,25 @@
 package com.chefsphere.ums.dto;
-
-import com.chefsphere.ums.entities.UserType;
-
-import jakarta.validation.constraints.Email;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-public class FoodieUpdateDto {
+@NoArgsConstructor
+@ToString
+public class FoodieResponseDTO {
 
+	private Long fid;
+	
 	private String firstName;
 	
 	private String lastName;
-
+	
 	private String username;
 	
-	@Email(message = "Invalid email format")
 	private String email;
 	
-	private String password;
-	
-	private UserType type;
-	
 	private String gender;
-	
+
 }

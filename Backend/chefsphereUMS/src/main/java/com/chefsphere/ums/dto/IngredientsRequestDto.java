@@ -9,10 +9,12 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class IngredientsRequestDto {	
+public class IngredientsRequestDTO {	
 	private String name;
 	
 	private String description;
 	
 	private Double Qty;
+	
+	private String unit;
 }

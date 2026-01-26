@@ -11,7 +11,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class UserDetailsDto {
+public class UserResponseDTO {
 
 	private Long id;
 	

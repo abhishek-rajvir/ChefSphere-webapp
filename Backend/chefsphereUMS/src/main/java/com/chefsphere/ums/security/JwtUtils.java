@@ -111,5 +111,15 @@ public class JwtUtils {
 	public Claims extractAllClaims(String token) {
 		return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
 	}
+	
+	/*
+	 * Helper methods
+	 */
+	public Long extractUidFromReq(HttpServletRequest req) {
+		// get token
+		String token = extractToken(req);
 
+		// get user id
+		return extractUserId(token);
+	}
 }

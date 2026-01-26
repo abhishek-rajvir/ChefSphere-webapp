@@ -42,56 +42,57 @@ public class SecurityConfiguration {
 		log.info("********configuring spring sec filter chain*******");
 		// disable CSRF protection not needed in case of stateless REST api
 		http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable());
-				
+
 		// disable HttpSession creation no jesession id
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		// add url based authentication n authorization rules
 		http.authorizeHttpRequests(request ->
 //configure public end points [ unprotected public api no auth]
-		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**","/users/**",
-				"/users/pwd-encryption").permitAll()
+		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption").permitAll()
 				// in flight request from React front end extra request sent by react
 				.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
-				.requestMatchers(HttpMethod.GET,"/users/signIn").permitAll()
+				.requestMatchers(HttpMethod.GET, "/users/signIn").permitAll()
 				.requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/users/imgkToken").permitAll()
-				.requestMatchers(HttpMethod.GET,"/foodies/listAll").permitAll()
-				.requestMatchers(HttpMethod.POST,"/foodies/signUp").permitAll()
-				.requestMatchers(HttpMethod.GET,"/foodies/doesFollow/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.GET,"/foodies/allFollowing").permitAll()
-				.requestMatchers(HttpMethod.GET,"/foodies/allFollowers").permitAll()
-				.requestMatchers(HttpMethod.POST,"/foodies/followCreator/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.DELETE,"/foodies/unFollowCreator/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/foodies/listAll").permitAll()
+				.requestMatchers(HttpMethod.POST, "/foodies/signUp").permitAll()
+				.requestMatchers(HttpMethod.GET, "/foodies/doesFollow/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/foodies/allFollowing").permitAll()
+				.requestMatchers(HttpMethod.GET, "/foodies/allFollowers").permitAll()
+				.requestMatchers(HttpMethod.POST, "/foodies/followCreator/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/foodies/unFollowCreator/{creator_id}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
-				.requestMatchers(HttpMethod.GET,"/creators/followers").permitAll()
-				.requestMatchers(HttpMethod.GET,"/creators//totalfollowers/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.POST,"/creators/signUp/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/creators/{id}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/creators/followers").permitAll()
+				.requestMatchers(HttpMethod.GET, "/creators/totalfollowers/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.POST, "/creators/signUp").permitAll()
+				.requestMatchers(HttpMethod.PUT, "/creators/{id}/update").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/creators/{id}/delete").permitAll()
 
 				// to handle posts - public
-				.requestMatchers(HttpMethod.GET,"/posts/{post_no}").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/search/title").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/search/category").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/{creator_id}/list").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/list").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/list/recipeRange/{qty}").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/listAll").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/listAll/categories").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/list/categoryRange/{qty}").permitAll()
-				.requestMatchers(HttpMethod.GET,"/posts/*/list/").permitAll()
-				.requestMatchers(HttpMethod.POST,"/posts/new/").permitAll()
-				.requestMatchers(HttpMethod.PUT,"/posts/*/update/").permitAll()
-				.requestMatchers(HttpMethod.DELETE,"/posts/*/delete/").permitAll()
-				
-				
-				.requestMatchers(HttpMethod.GET,"/engagement/comment/new").permitAll()
-				.requestMatchers(HttpMethod.GET,"/engagement/comment/{post_id}/listAll").permitAll()
-				.requestMatchers(HttpMethod.DELETE,"/engagement/comment/{comment_id}/delete").permitAll()
-				.requestMatchers(HttpMethod.GET,"/engagement/rating/new").permitAll()
-				.requestMatchers(HttpMethod.GET,"/engagement/rating/{post_id}").permitAll()
-				.requestMatchers(HttpMethod.DELETE,"/engagement/rating/{rating_id}/delete").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/{post_no}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/search/title").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/search/category").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/{creator_id}/list").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/list").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/list/recipeRange/{qty}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/listAll").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/listAll/categories").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/list/categoryRange/{qty}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/*/list/").permitAll()
+				.requestMatchers(HttpMethod.POST, "/posts/new/").permitAll()
+				.requestMatchers(HttpMethod.PUT, "/posts/*/update/").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/posts/*/delete/").permitAll()
+
+				.requestMatchers(HttpMethod.GET, "/engagement/comment/new").permitAll()
+				.requestMatchers(HttpMethod.GET, "/engagement/comment/{post_id}/listAll").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/engagement/comment/{comment_id}/delete").permitAll()
+				.requestMatchers(HttpMethod.GET, "/engagement/rating/new").permitAll()
+				.requestMatchers(HttpMethod.GET, "/engagement/rating/{post_id}").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/engagement/rating/{rating_id}/delete").permitAll()
 //				.requestMatchers(HttpMethod.POST,"/engagement/comment/new").permitAll()
-		// only admin should be able to see all patients
+				// only admin should be able to see all patients
 				// with hasRole use ADMIN else use ROLE_ADMIN
 				// for more than 1 rule order matter
 

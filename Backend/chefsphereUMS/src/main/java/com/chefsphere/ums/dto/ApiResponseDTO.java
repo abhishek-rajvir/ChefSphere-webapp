@@ -7,13 +7,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiResponse<T> {
+public class ApiResponseDTO<T> {
 
 	private LocalDateTime timeStamp;
 	private T data;
 	private boolean status;// success | failed
 	private String message;
-	public ApiResponse(T data, boolean status, String message) {
+	public ApiResponseDTO(T data, boolean status, String message) {
 		this.timeStamp = LocalDateTime.now();
 		this.data = data;
 		this.status = status;

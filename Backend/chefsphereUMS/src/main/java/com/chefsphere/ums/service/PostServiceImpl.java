@@ -9,21 +9,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CommentResponseDto;
-import com.chefsphere.ums.dto.FoodCategoryDto;
-import com.chefsphere.ums.dto.IngredientsRequestDto;
-import com.chefsphere.ums.dto.PostRequestDto;
-import com.chefsphere.ums.dto.PostResponseDto;
-import com.chefsphere.ums.dto.PostSearchDto;
-import com.chefsphere.ums.dto.RecipeRandRespDto;
-import com.chefsphere.ums.dto.RecipeRequestDto;
-import com.chefsphere.ums.dto.RecipeStepsDto;
+import com.chefsphere.ums.dto.CommentResponseDTO;
+import com.chefsphere.ums.dto.FoodCategoryDTO;
+import com.chefsphere.ums.dto.IngredientsRequestDTO;
+import com.chefsphere.ums.dto.PostRequestDTO;
+import com.chefsphere.ums.dto.PostResponseDTO;
+import com.chefsphere.ums.dto.PostSearchDTO;
+import com.chefsphere.ums.dto.PostUpdateDTO;
+import com.chefsphere.ums.dto.RecipeRandRespDTO;
+import com.chefsphere.ums.dto.RecipeRequestDTO;
+import com.chefsphere.ums.dto.RecipeStepsDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.FoodCategory;
 import com.chefsphere.ums.entities.Ingredients;
 import com.chefsphere.ums.entities.Post;
 import com.chefsphere.ums.entities.Recipe;
 import com.chefsphere.ums.entities.RecipeSteps;
+import com.chefsphere.ums.exception_handler.InvalidFilterException;
+import com.chefsphere.ums.exception_handler.InvalidDetailsException;
 import com.chefsphere.ums.exception_handler.InvalidIdException;
 import com.chefsphere.ums.exception_handler.NoContentException;
 import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
@@ -42,7 +45,7 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-public class PostServiceImpl {
+public class PostServiceImpl implements PostService {
 
 	private final CreatorServiceImpl creatorService;
 	private final IngredientRepo ingredientRepo;
@@ -56,7 +59,7 @@ public class PostServiceImpl {
 	private final ModelMapper mapper;
 
 	// @Override
-	public void createPost(PostRequestDto p_dto, HttpServletRequest req) {
+	public void createPost(PostRequestDTO p_dto, HttpServletRequest req) {
 
 		// post basic validation
 		int len = p_dto.getPostTitle().length();
@@ -117,65 +120,82 @@ public class PostServiceImpl {
 
 			postRepo.save(post);
 		} else {
-			throw new RuntimeException("Post title should be 30 to 60 characters long");
+			throw new InvalidDetailsException("Post title should be 30 to 60 characters long");
 		}
 
 	}
 
-	// @Override
-	public void updatePostId(Long post_id, PostRequestDto dto, HttpServletRequest req) {
-		Post post = helperFindByUserIdAndPostNo(post_id, req);
+	@Transactional
+	public void updatePostId(Long postId, PostUpdateDTO dto, HttpServletRequest req) {
 
+		Post post = helperFindByUserIdAndPostNo(postId, req);
+
+		// ---------- Post fields ----------
 		if (dto.getDescription() != null) {
 			post.setDescription(dto.getDescription());
 		}
+
 		if (dto.getPostTitle() != null) {
 			post.setPostTitle(dto.getPostTitle());
 		}
+
 		if (dto.getVideoUrl() != null) {
 			post.setVideoTag(ytapiService.verifyURL(dto.getVideoUrl()));
 			post.setVideoUrl(ytapiService.extractYouTubeVideoId(dto.getVideoUrl()));
 		}
 
-		Recipe recipe = postRepo.findRecipeByPostId(post_id).get();
+		// ---------- Recipe ----------
+		Recipe recipe = recipeRepo.findByPost_pid(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Recipe not found for postId: " + postId));
+
 		if (dto.getRecipe_Details() != null) {
-//	    	final Recipe recipe2;
-
-			// smart update
 			mapper.map(dto.getRecipe_Details(), recipe);
-			recipe = recipeRepo.save(recipe);
 		}
 
-		if (!dto.getList_Of_Ingredients().isEmpty()) {
+		// ---------- Ingredients ----------
+		if (dto.getList_Of_Ingredients() != null && !dto.getList_Of_Ingredients().isEmpty()) {
 
-			// get list of ing
-			final Recipe recipe2 = recipe;
-			List<Ingredients> ingredients = dto.getList_Of_Ingredients().stream()
-					.map(s -> mapper.map(s, Ingredients.class)).toList();
+			// remove old ingredients
+			ingredientRepo.deleteByRecipe(recipe);
 
-			// add ing to recipe
-			ingredients.forEach(s -> {
-				s.setRecipe(recipe2);
-				ingredientRepo.save(s);
-			});
+			List<Ingredients> ingredients = dto.getList_Of_Ingredients().stream().map(i -> {
+				Ingredients ing = mapper.map(i, Ingredients.class);
+				ing.setRecipe(recipe);
+				return ing;
+			}).toList();
+
+			ingredientRepo.saveAll(ingredients);
 		}
 
-		if (!dto.getList_of_Steps().isEmpty()) {
-			final Recipe recipe2 = recipe;
-			// get List of steps
-			List<RecipeSteps> recipe_steps = dto.getList_of_Steps().stream().map(s -> mapper.map(s, RecipeSteps.class))
-					.toList();
+		// ---------- Steps ----------
+		if (dto.getList_of_Steps() != null && !dto.getList_of_Steps().isEmpty()) {
 
-			recipe_steps.forEach(s -> {
-				s.setRecipe(recipe2);
-				recipeStepsRepo.save(s);
-			});
+			// remove old steps
+			recipeStepsRepo.deleteByRecipe(recipe);
 
+			List<RecipeSteps> steps = dto.getList_of_Steps().stream().map(s -> {
+				RecipeSteps step = mapper.map(s, RecipeSteps.class);
+				step.setRecipe(recipe);
+				return step;
+			}).toList();
+
+			recipeStepsRepo.saveAll(steps);
 		}
 
 		post.setRecipe(recipe);
-
 		postRepo.save(post);
+	}
+
+	public String deletePost(Creator c) {
+
+		List<Post> pList = c.getPosts();
+		pList.stream().forEach(s->{
+			s.setActive(false);
+		});
+		
+		// save all modified persistent post
+		postRepo.saveAll(pList);
+		return "User post deleted succesfully";
 	}
 
 	// @Override
@@ -187,7 +207,7 @@ public class PostServiceImpl {
 		// get user id
 		Long Userid = jwtUtils.extractUserId(token);
 
-		if (postRepo.existsByPidAndCreatorCid(post_id, Userid)) {
+		if (postRepo.existsByPidAndCreator_CidAndIsActiveTrue(post_id, Userid)) {
 			Optional<Post> p = postRepo.findById(post_id);
 			Recipe recipe = p.get().getRecipe();
 			// remove all ingredients
@@ -205,7 +225,7 @@ public class PostServiceImpl {
 //				p.get().setRecipe(null);
 			postRepo.delete(p.get());
 		} else {
-			throw new ResourceNotFoundException("User has no posts by post_id: " + post_id);
+			throw new InvalidIdException("User has no posts by post_id: " + post_id);
 		}
 	}
 
@@ -228,14 +248,14 @@ public class PostServiceImpl {
 		throw new InvalidIdException("User has no posts no: " + post_no);
 	}
 
-	public PostResponseDto findByUserIdAndPostNo(Long post_no, HttpServletRequest req) {
+	public PostResponseDTO findByUserIdAndPostNo(Long post_no, HttpServletRequest req) {
 		String token = jwtUtils.extractToken(req);
 		Long Userid = jwtUtils.extractUserId(token);
 
 		Post p = null;
 
 		try {
-			p = creatorRepo.findByIdWithPosts(Userid).getPosts().get(Math.toIntExact(post_no));
+			p = creatorRepo.findByUserIdWithPosts(Userid).get().getPosts().get(Math.toIntExact(post_no));
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidIdException("Post id does not exist");
 		}
@@ -244,45 +264,45 @@ public class PostServiceImpl {
 
 			Recipe recipe = p.getRecipe();
 			// convert ing to dto
-			List<IngredientsRequestDto> ing_list = recipe.getAllIngredients().stream()
-					.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+			List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
+					.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
 			// convert steps to dto
-			List<RecipeStepsDto> rec_steps_list = p.getRecipe().getSteps_required().stream()
-					.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+			List<RecipeStepsDTO> rec_steps_list = p.getRecipe().getSteps_required().stream()
+					.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-			PostResponseDto resp_post = mapper.map(p, PostResponseDto.class);
-			resp_post.setRecipe_Details(mapper.map(recipe, RecipeRequestDto.class));
+			PostResponseDTO resp_post = mapper.map(p, PostResponseDTO.class);
+			resp_post.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
 			resp_post.setList_Of_Ingredients(ing_list);
 			resp_post.setList_of_Steps(rec_steps_list);
 
 			return resp_post;
 
 		} else {
-			throw new NoContentException("User has no posts no: " + post_no);
+			throw new InvalidIdException("User has no posts no: " + post_no);
 		}
 	}
 
 	// @Override
-	public List<PostResponseDto> findAllPosts() {
+	public List<PostResponseDTO> findAllPosts() {
 
 		List<Post> postlist = postRepo.findAll();
 
 		if (!postlist.isEmpty()) {
 
-			List<PostResponseDto> resp_list = postlist.stream().map(post -> {
+			List<PostResponseDTO> resp_list = postlist.stream().map(post -> {
 				Recipe recipe = post.getRecipe();
-				List<IngredientsRequestDto> ing_list = recipe.getAllIngredients().stream()
-						.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+				List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
+						.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
-				List<RecipeStepsDto> rec_steps_list = recipe.getSteps_required().stream()
-						.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+				List<RecipeStepsDTO> rec_steps_list = recipe.getSteps_required().stream()
+						.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-				List<FoodCategoryDto> food_category_list = recipe.getFoodCategories().stream()
-						.map(rc -> mapper.map(rc, FoodCategoryDto.class)).toList();
+				List<FoodCategoryDTO> food_category_list = recipe.getFoodCategories().stream()
+						.map(rc -> mapper.map(rc, FoodCategoryDTO.class)).toList();
 
-				PostResponseDto s2 = mapper.map(post, PostResponseDto.class);
-				s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDto.class));
+				PostResponseDTO s2 = mapper.map(post, PostResponseDTO.class);
+				s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
 				s2.setList_Of_Ingredients(ing_list);
 				s2.setList_of_Steps(rec_steps_list);
 				s2.setList_of_categorys(food_category_list);
@@ -297,79 +317,85 @@ public class PostServiceImpl {
 		}
 	}
 
-	public List<PostResponseDto> findAllByUserId(Long creatorId) {
+	public List<PostResponseDTO> findAllByUserId(Long creatorId) {
 
-		Creator c = creatorRepo.findByIdWithPosts(creatorId);
+		Optional<Creator> c = creatorRepo.findByIdWithPosts(creatorId);
+		if (c.isPresent()) {
+			List<Post> postlist = c.get().getPosts();
+			if (!postlist.isEmpty()) {
+				List<PostResponseDTO> list = postlist.stream().map(s -> {
+					List<IngredientsRequestDTO> ing_list = s.getRecipe().getSteps_required().stream()
+							.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
-		List<Post> postlist = c.getPosts();
-		if (!postlist.isEmpty()) {
-			List<PostResponseDto> list = postlist.stream().map(s -> {
-				List<IngredientsRequestDto> ing_list = s.getRecipe().getSteps_required().stream()
-						.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+					List<RecipeStepsDTO> rec_steps_list = s.getRecipe().getAllIngredients().stream()
+							.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-				List<RecipeStepsDto> rec_steps_list = s.getRecipe().getAllIngredients().stream()
-						.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+					PostResponseDTO s2 = mapper.map(s, PostResponseDTO.class);
+					s2.setList_Of_Ingredients(ing_list);
+					s2.setList_of_Steps(rec_steps_list);
+					return s2;
 
-				PostResponseDto s2 = mapper.map(s, PostResponseDto.class);
-				s2.setList_Of_Ingredients(ing_list);
-				s2.setList_of_Steps(rec_steps_list);
-				return s2;
+				}).toList();
 
-			}).toList();
+				return list;
 
-			return list;
+			} else {
+				throw new NoContentException("Creator has no posts");
+			}
 
-		} else {
-			throw new ResourceNotFoundException("User has no posts");
 		}
+		throw new NoContentException("Invalid Creator id " + creatorId);
+
 	}
 
-	public List<PostResponseDto> findAllByUserId(HttpServletRequest req) {
+	public List<PostResponseDTO> findAllByUserId(HttpServletRequest req) {
 
 		String token = jwtUtils.extractToken(req);
 		Long Userid = jwtUtils.extractUserId(token);
 
-		Creator c = creatorRepo.findByIdWithPosts(Userid);
+		Optional<Creator> c = creatorRepo.findByUserIdWithPosts(Userid);
 
-		List<Post> postlist = c.getPosts();
-		if (!postlist.isEmpty()) {
-			List<PostResponseDto> list = postlist.stream().map(s -> {
-				List<IngredientsRequestDto> ing_list = s.getRecipe().getSteps_required().stream()
-						.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+		if (c.isPresent()) {
+			List<Post> postlist = c.get().getPosts();
+			if (!postlist.isEmpty()) {
+				List<PostResponseDTO> list = postlist.stream().map(s -> {
+					List<IngredientsRequestDTO> ing_list = s.getRecipe().getSteps_required().stream()
+							.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
-				List<RecipeStepsDto> rec_steps_list = s.getRecipe().getAllIngredients().stream()
-						.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+					List<RecipeStepsDTO> rec_steps_list = s.getRecipe().getAllIngredients().stream()
+							.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-				PostResponseDto s2 = mapper.map(s, PostResponseDto.class);
-				s2.setList_Of_Ingredients(ing_list);
-				s2.setList_of_Steps(rec_steps_list);
-				return s2;
+					PostResponseDTO s2 = mapper.map(s, PostResponseDTO.class);
+					s2.setList_Of_Ingredients(ing_list);
+					s2.setList_of_Steps(rec_steps_list);
+					return s2;
 
-			}).toList();
+				}).toList();
 
+				return list;
 
-			return list;
-
-		} else {
-			throw new ResourceNotFoundException("User has no posts");
+			} else {
+				throw new NoContentException("User has no posts");
+			}
 		}
+		throw new NoContentException("Invalid User id " + Userid);
 	}
 
 	// @Override
-	public List<PostResponseDto> findAllPostsWithIngredients(List<String> ingredient_names, HttpServletRequest req) {
+	public List<PostResponseDTO> findAllPostsWithIngredients(List<String> ingredient_names, HttpServletRequest req) {
 
 		List<Post> postlist = postRepo.findAll();
-		List<PostResponseDto> list = postlist.stream().map(s -> mapper.map(s, PostResponseDto.class)).toList();
+		List<PostResponseDTO> list = postlist.stream().map(s -> mapper.map(s, PostResponseDTO.class)).toList();
 
 		if (!list.isEmpty()) {
-			List<PostResponseDto> post_list = postlist.stream().map(s -> {
-				List<IngredientsRequestDto> list1 = s.getRecipe().getSteps_required().stream()
-						.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+			List<PostResponseDTO> post_list = postlist.stream().map(s -> {
+				List<IngredientsRequestDTO> list1 = s.getRecipe().getSteps_required().stream()
+						.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
-				List<RecipeStepsDto> rec_steps_list = s.getRecipe().getAllIngredients().stream()
-						.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+				List<RecipeStepsDTO> rec_steps_list = s.getRecipe().getAllIngredients().stream()
+						.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-				PostResponseDto s2 = mapper.map(s, PostResponseDto.class);
+				PostResponseDTO s2 = mapper.map(s, PostResponseDTO.class);
 				s2.setList_Of_Ingredients(list1);
 				s2.setList_of_Steps(rec_steps_list);
 				return s2;
@@ -383,23 +409,23 @@ public class PostServiceImpl {
 		}
 	}
 
-	public PostResponseDto findByPostNo(Long post_no) {
+	public PostResponseDTO findByPostNo(Long post_no) {
 		Optional<Post> post = postRepo.findById(post_no);
 		if (post.isPresent()) {
 			Recipe recipe = post.get().getRecipe();
-			List<IngredientsRequestDto> ing_list = recipe.getAllIngredients().stream()
-					.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
+			List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
+					.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
 
-			List<RecipeStepsDto> rec_steps_list = recipe.getSteps_required().stream()
-					.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
+			List<RecipeStepsDTO> rec_steps_list = recipe.getSteps_required().stream()
+					.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
-			List<FoodCategoryDto> food_category_list = recipe.getFoodCategories().stream()
-					.map(fc -> mapper.map(fc, FoodCategoryDto.class)).toList();
-			List<CommentResponseDto> comment_list = post.get().getComments().stream()
-					.map(c -> mapper.map(c, CommentResponseDto.class)).toList();
-			
-			PostResponseDto s2 = mapper.map(post, PostResponseDto.class);
-			s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDto.class));
+			List<FoodCategoryDTO> food_category_list = recipe.getFoodCategories().stream()
+					.map(fc -> mapper.map(fc, FoodCategoryDTO.class)).toList();
+			List<CommentResponseDTO> comment_list = post.get().getComments().stream()
+					.map(c -> mapper.map(c, CommentResponseDTO.class)).toList();
+
+			PostResponseDTO s2 = mapper.map(post, PostResponseDTO.class);
+			s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
 			s2.setList_Of_Ingredients(ing_list);
 			s2.setList_of_Steps(rec_steps_list);
 			s2.setList_of_categorys(food_category_list);
@@ -408,32 +434,23 @@ public class PostServiceImpl {
 			s2.setCreatorName(post.get().getCreator().getUserId().getUsername());
 			return s2;
 		}
-		throw new ResourceNotFoundException("Invalid post id");
+		throw new InvalidIdException("Invalid post id");
 	}
 
-	public List<PostResponseDto> findAllByCategory(String category) {
+	public List<PostResponseDTO> findAllByCategory(String category) {
 
-//		Optional<FoodCategory> fc = foodCategoryRepo.findTopByNameIgnoreCaseOrderByCategoryIdAsc(category);
-//		Optional<FoodCategory> fc = foodCategoryRepo.findTopByNameIgnoreCaseOrderByCategoryIdAsc(category);
-//		if (fc.isEmpty()) {
-//		    throw new ResourceNotFoundException("Category not found: [" + category + "]");
-//		}
 		Set<Recipe> recList = recipeRepo.findByFoodCategories_NameIgnoreCase(category);
 		if (recList.isEmpty()) {
-		    throw new ResourceNotFoundException(
-		        "No recipes found for category [" + category + "]"
-		    );
+			throw new InvalidFilterException("No recipes found for category [" + category + "]");
 		}
 
-		return postRepo.findByRecipeIn(recList)
-		    .stream()
-		    .map(s -> mapper.map(s, PostResponseDto.class))
-		    .toList();
+		return postRepo.findByRecipeInAndIsActiveTrue(recList).stream().map(s -> mapper.map(s, PostResponseDTO.class))
+				.toList();
 
 	}
 
 	// le,gt,eq prep time
-	public List<PostResponseDto> findAllByDuration(Long prep_time, Integer range) {
+	public List<PostResponseDTO> findAllByDuration(Long prep_time, Integer range) {
 		if (prep_time > 0) {
 			Set<Recipe> recList = null;
 			if (range < 0) {
@@ -442,29 +459,30 @@ public class PostServiceImpl {
 				recList = recipeRepo.findByPrepTimeGreaterThan(prep_time);
 			}
 			if (!recList.isEmpty()) {
-				return postRepo.findByRecipeIn(recList).stream().map(s -> mapper.map(s, PostResponseDto.class))
-						.toList();
+				return postRepo.findByRecipeInAndIsActiveTrue(recList).stream()
+						.map(s -> mapper.map(s, PostResponseDTO.class)).toList();
 			}
 		}
-		throw new ResourceNotFoundException("No posts by prepTime: " + prep_time);
+		throw new InvalidFilterException("No posts by prepTime: " + prep_time);
 	}
 
-	public List<PostResponseDto> findAllByIngredient(String ingredient) {
+	public List<PostResponseDTO> findAllByIngredient(String ingredient) {
 
 		Set<Recipe> recList = ingredientRepo.findByNameIgnoreCase(ingredient);
 
 		if (!recList.isEmpty()) {
-			return postRepo.findByRecipeIn(recList).stream().map(s -> mapper.map(s, PostResponseDto.class)).toList();
+			return postRepo.findByRecipeInAndIsActiveTrue(recList).stream()
+					.map(s -> mapper.map(s, PostResponseDTO.class)).toList();
 		}
-		throw new ResourceNotFoundException("No posts by ingredient " + ingredient);
+		throw new InvalidFilterException("No posts by ingredient " + ingredient);
 	}
 
-	public List<RecipeRandRespDto> findRandomRecipeByQty(Integer qty) {
+	public List<RecipeRandRespDTO> findRandomRecipeByQty(Integer qty) {
 		List<Recipe> rec = recipeRepo.findRandomPosts(qty);
 
-		if (rec != null || !rec.isEmpty()) {
+		if (rec != null && !rec.isEmpty()) {
 			return rec.stream().map(r -> {
-				RecipeRandRespDto r2 = mapper.map(r, RecipeRandRespDto.class);
+				RecipeRandRespDTO r2 = mapper.map(r, RecipeRandRespDTO.class);
 
 				String videoId = r.getPost().getVideoUrl(); // contains only videoId
 
@@ -477,58 +495,32 @@ public class PostServiceImpl {
 				return r2;
 			}).toList();
 		}
-		throw new ResourceNotFoundException("No posts in db");
+		throw new NoContentException("No posts in db");
 	}
 
-	public List<FoodCategoryDto> findAllCategories() {
-		List<FoodCategoryDto> fc = foodCategoryRepo.findAllDistinct();
+	public List<FoodCategoryDTO> findAllCategories() {
+		List<FoodCategoryDTO> fc = foodCategoryRepo.findAllDistinct();
 		if (fc.isEmpty()) {
-			throw new ResourceNotFoundException("No foodcategories in db");
+			throw new NoContentException("No foodcategories in db");
 		}
 		return fc;
 	}
 
-	public List<FoodCategoryDto> findRandomCategoriesByQty(Long qty) {
+	public List<FoodCategoryDTO> findRandomCategoriesByQty(Long qty) {
 		Pageable pageable = PageRequest.of(0, qty.intValue());
-		List<FoodCategoryDto> fc = foodCategoryRepo.findAllDistinct(pageable);
-		if (fc != null || !fc.isEmpty()) {
+		List<FoodCategoryDTO> fc = foodCategoryRepo.findAllDistinct(pageable);
+		if (fc != null && !fc.isEmpty()) {
 			return fc;
 		}
-		throw new ResourceNotFoundException("No foodcategories in db");
+		throw new NoContentException("No foodcategories in db");
 	}
 
-	public List<PostSearchDto> findAllByPostTitle(String postName) {
-		List<Post> pList = postRepo.findByPostTitleContainingIgnoreCase(postName);
-		if(pList!=null||!pList.isEmpty() ) {
-			return pList.stream().map(s->
-				mapper.map(s,PostSearchDto.class)
-			).toList();
+	public List<PostSearchDTO> findAllByPostTitle(String postName) {
+		List<Post> pList = postRepo.findByPostTitleContainingIgnoreCaseAndIsActiveTrue(postName);
+		if (pList != null && !pList.isEmpty()) {
+			return pList.stream().map(s -> mapper.map(s, PostSearchDTO.class)).toList();
 		}
-		throw new ResourceNotFoundException("No posts titles containing "+postName);
+		throw new InvalidFilterException("No posts titles containing " + postName);
 	}
-
-	
-//		List<Post> postlist = c.getPosts();
-//		if (!postlist.isEmpty()) {
-//			List<PostResponseDto> list = postlist.stream().map(s -> {
-//				List<IngredientsRequestDto> ing_list = s.getRecipe().getSteps_required().stream()
-//						.map(i -> mapper.map(i, IngredientsRequestDto.class)).toList();
-//
-//				List<RecipeStepsDto> rec_steps_list = s.getRecipe().getAllIngredients().stream()
-//						.map(rc -> mapper.map(rc, RecipeStepsDto.class)).toList();
-//
-//				PostResponseDto s2 = mapper.map(s, PostResponseDto.class);
-//				s2.setList_Of_Ingredients(ing_list);
-//				s2.setList_of_Steps(rec_steps_list);
-//				return s2;
-//
-//			}).toList();
-
-//			return null;
-
-//		} else {
-//			throw new ResourceNotFoundException("User has no posts");
-//		}
-//	}
 
 }

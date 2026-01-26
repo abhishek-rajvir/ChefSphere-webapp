@@ -10,10 +10,11 @@ import com.chefsphere.ums.entities.Foodie;
 
 public interface FoodieRepo extends JpaRepository<Foodie, Long> {
 	
-	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.fid = :id")
+	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.fid = :id AND f.userId.isActive = true")
 	Optional<Foodie> findByIdWithCreators(@Param("id") Long id);
 	
-	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.userId.id = :id")
+	@Query("SELECT f FROM Foodie f LEFT JOIN FETCH f.creators WHERE f.userId.id = :id AND f.userId.isActive = true")
 	Optional<Foodie> findByUserIdWithCreators(@Param("id") Long id);
 
+	Optional<Foodie> findByUserId_IdAndUserId_IsActiveTrue(Long uid);
 }

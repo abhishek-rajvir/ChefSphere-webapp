@@ -1,7 +1,5 @@
 package com.chefsphere.ums.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodCategoryDto {
+public class FoodCategoryDTO {
 	
 	private String name;
 	
@@ -24,7 +22,7 @@ public class FoodCategoryDto {
 //
 //
 //
-//	public FoodCategoryDto(String name, String image) {
+//	public FoodCategoryDTO(String name, String image) {
 //		super();
 //		this.name = name;
 //		this.image = image;
@@ -32,7 +30,7 @@ public class FoodCategoryDto {
 //
 //
 //
-//	public FoodCategoryDto(String name, List<Long> recipteId, List<String> recipeName) {
+//	public FoodCategoryDTO(String name, List<Long> recipteId, List<String> recipeName) {
 //		super();
 //		this.name = name;
 //		this.recipteId = recipteId;

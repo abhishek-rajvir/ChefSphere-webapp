@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chefsphere.ums.dto.PostRequestDto;
+import com.chefsphere.ums.dto.PostRequestDTO;
+import com.chefsphere.ums.dto.PostUpdateDTO;
 import com.chefsphere.ums.service.PostServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +28,7 @@ public class PostController {
 //	private final PostRepo postRepo;
 
 	@PostMapping("/new")
-	public ResponseEntity<?> createPost(@Valid @RequestBody PostRequestDto vdto, HttpServletRequest req) {
-
+	public ResponseEntity<?> createPost(@Valid @RequestBody PostRequestDTO vdto, HttpServletRequest req) {
 		postService.createPost(vdto, req);
 		return ResponseEntity.ok("Post succesfully created");
 	}
@@ -40,7 +40,7 @@ public class PostController {
 	}
 
 	@PutMapping("/{post_id}/update")
-	public ResponseEntity<?> editPost(@PathVariable Long post_id, @RequestBody PostRequestDto pDto,
+	public ResponseEntity<?> editPost(@PathVariable Long post_id, @RequestBody PostUpdateDTO pDto,
 			HttpServletRequest req) {
 		System.out.println("In user/post/{id}/edit");
 		postService.updatePostId(post_id, pDto, req);
@@ -66,7 +66,6 @@ public class PostController {
 		return ResponseEntity.ok(postService.findAllByPostTitle(title));
 	}
 
-	
 	// findAll post by category
 	@GetMapping("/search/category")
 	public ResponseEntity<?> findUserPostByCategory(@RequestParam String categoryName) {
@@ -102,7 +101,7 @@ public class PostController {
 	// get list of all post of specific creator
 	@GetMapping("/{creator_id}/list")
 	public ResponseEntity<?> findAllUserPosts(@PathVariable Long creator_id) {
-		System.out.println("[ in user/post/{param}/list cid = "+creator_id+" ]");
+		System.out.println("[ in user/post/{param}/list cid = " + creator_id + " ]");
 		return ResponseEntity.ok(postService.findAllByUserId(creator_id));
 	}
 
@@ -112,13 +111,13 @@ public class PostController {
 //		return ResponseEntity.ok(postRepo.findAll().get(1);
 		return ResponseEntity.ok(postService.findAllPosts());
 	}
-	
+
 	// get list of all categories
 	@GetMapping("/listAll/categories")
 	public ResponseEntity<?> findAllCategories() {
 		return ResponseEntity.ok(postService.findAllCategories());
 	}
-	
+
 	// random recipe in range
 	@GetMapping("/list/categoryRange/{qty}")
 	public ResponseEntity<?> findRandomCategoriesByRange(@PathVariable Long qty) {

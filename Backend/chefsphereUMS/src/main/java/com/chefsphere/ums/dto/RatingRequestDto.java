@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor		
-public class RatingRequestDto {
+public class RatingRequestDTO {
 	
 	@NotNull(message = "Stars are required")
 	@Range(min = 1, max = 5, message = "Stars must be between 1 and 5")

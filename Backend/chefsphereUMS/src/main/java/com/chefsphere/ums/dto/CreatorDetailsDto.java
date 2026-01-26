@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CreatorDetailsDto {
+public class CreatorDetailsDTO {
 
 	private Long cid;
 		

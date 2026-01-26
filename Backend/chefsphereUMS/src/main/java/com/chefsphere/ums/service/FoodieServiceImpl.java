@@ -7,11 +7,10 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CreatorDetailsDto;
-import com.chefsphere.ums.dto.FoodieDetailsDto;
+import com.chefsphere.ums.dto.FoodieResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
-import com.chefsphere.ums.exception_handler.FoodieConflictException;
+import com.chefsphere.ums.entities.User;
 import com.chefsphere.ums.exception_handler.InvalidDetailsException;
 import com.chefsphere.ums.exception_handler.NoContentException;
 import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
@@ -27,14 +26,14 @@ import lombok.AllArgsConstructor;
 public class FoodieServiceImpl implements FoodieService {
 
 	// dependencies
-	private final FoodieRepo foodie_repo;
+	private final FoodieRepo foodieRepo;
 	private final CreatorRepo creatorRepo;
 	private final ModelMapper mapper;
 	private final JwtUtils jwtUtils;
 
 	@Override
 	public void updateFoodie(Foodie changedFoodie) {
-		Foodie f = foodie_repo.save(changedFoodie);
+		Foodie f = foodieRepo.save(changedFoodie);
 
 		if (f == null) {
 			throw new InvalidDetailsException("Invalid Foodie credentials");
@@ -42,17 +41,16 @@ public class FoodieServiceImpl implements FoodieService {
 	}
 
 	@Override
-	public Long addFoodie(Foodie newFoodie) {
-		Foodie f = foodie_repo.save(newFoodie);
-		if (f == null) {
-			throw new InvalidDetailsException("Invalid Foodie credentials");
-		}
-		return f.getUserId().getId();
+	public String createFoodie(User user) {
+		Foodie f = new Foodie();
+		f.setUserId(user);
+		foodieRepo.save(f);
+		return "Welcome " + user.getFirstName() + "SignUp successfull";
 	}
 
 	@Override
 	public Foodie findById(Long id) {
-		Optional<Foodie> f = foodie_repo.findById(id);
+		Optional<Foodie> f = foodieRepo.findById(id);
 		if (f.isPresent()) {
 			return f.get();
 		}
@@ -61,21 +59,22 @@ public class FoodieServiceImpl implements FoodieService {
 
 	@Override
 	public Foodie findByIdWithCreators(Long foodie_id) {
-		Optional<Foodie> f = foodie_repo.findByIdWithCreators(foodie_id);
+		Optional<Foodie> f = foodieRepo.findByIdWithCreators(foodie_id);
 		if (f.isPresent()) {
 			return f.get();
 		}
 		throw new ResourceNotFoundException("Foodie Id doesn't exist");
 	}
 
-	private Foodie helperFindByUserIdWithCreators(Long UserId) {
-		Optional<Foodie> f = foodie_repo.findByUserIdWithCreators(UserId);
+	@Override
+	public Foodie findByUserIdWithCreators(Long UserId) {
+		Optional<Foodie> f = foodieRepo.findByUserIdWithCreators(UserId);
 		if (f.isPresent()) {
 			return f.get();
 		}
 		throw new ResourceNotFoundException("Foodie Id doesn't exist");
 	}
-	
+
 	@Override
 	public Creator findCreatorWithFoodies(Long id) throws RuntimeException {
 		Optional<Creator> c = creatorRepo.findByIdWithFoodies(id);
@@ -86,12 +85,12 @@ public class FoodieServiceImpl implements FoodieService {
 	}
 
 	@Override
-	public List<FoodieDetailsDto> findAll() {
-		List<Foodie> f = foodie_repo.findAll();
+	public List<FoodieResponseDTO> findAll() {
+		List<Foodie> f = foodieRepo.findAll();
 		if (!(f.isEmpty())) {
 			return f.stream().map(m -> {
 				Long fid = m.getFid();
-				FoodieDetailsDto mappedToDto = mapper.map(m.getUserId(), FoodieDetailsDto.class);
+				FoodieResponseDTO mappedToDto = mapper.map(m.getUserId(), FoodieResponseDTO.class);
 				mappedToDto.setFid(fid);
 				return mappedToDto;
 			}).collect(Collectors.toList());
@@ -99,109 +98,17 @@ public class FoodieServiceImpl implements FoodieService {
 		throw new NoContentException("No such foodie exists");
 	}
 
+	// get logged foodie
 	@Override
-	public Long followCreator(HttpServletRequest req, Long creator_id) {
-
-		// get token
-		String token = jwtUtils.extractToken(req);
-
+	public Foodie findById(HttpServletRequest req) {
 		// get user id
-		Long Userid = jwtUtils.extractUserId(token);
+		Long uid = jwtUtils.extractUidFromReq(req);
 
-		// find foodie by user id
-		Foodie f = helperFindByUserIdWithCreators(Userid);
-
-		Long fid = f.getFid();
-
-		if (f.getCreators().stream().anyMatch(s -> s.getCid() == (creator_id))) {
-			throw new FoodieConflictException("Foodie is already following creator: " + creator_id);
+		Optional<Foodie> f = foodieRepo.findByUserId_IdAndUserId_IsActiveTrue(uid);
+		if (f.isPresent()) {
+			return f.get();
 		}
-
-		Creator c = findCreatorWithFoodies(creator_id);
-		// insert creator to set or following list
-		f.getCreators().add(c);
-
-		// commit changes
-		updateFoodie(f);
-
-		return fid;
+		throw new ResourceNotFoundException("Foodie Id doesn't exist");
 	}
 
-	@Override
-	public Long unfollowCreator(HttpServletRequest req, Long creator_id) {
-
-		// get token
-		String token = jwtUtils.extractToken(req);
-
-		// get user id
-		Long Userid = jwtUtils.extractUserId(token);
-
-		// find creator by user id
-		Foodie f = helperFindByUserIdWithCreators(Userid);
-
-		Long fid = f.getFid();
-		
-		Optional<Creator> c = f.getCreators()
-			    .stream()
-			    .filter(s -> s.getCid()==creator_id)
-			    .findAny();
-
-		if (c.isPresent()) {
-
-			f.getCreators().remove(c.get());
-
-			// commit changes
-			updateFoodie(f);
-
-			return fid;
-
-		}
-		throw new FoodieConflictException("Foodie doesn't follow creator: " + creator_id);
-	}
-
-	@Override
-	public Long whetherfollowCreator(HttpServletRequest req, Long creator_id) {
-
-		// get token
-		String token = jwtUtils.extractToken(req);
-
-		// get user id
-		Long Userid = jwtUtils.extractUserId(token);
-
-		// find creator by user id
-		Foodie f = helperFindByUserIdWithCreators(Userid);
-
-		Long fid = f.getFid();
-
-		if (f.getCreators().stream().anyMatch(s -> s.getCid() == (creator_id))) {
-
-			f = null;
-
-			return fid;
-
-		}
-		throw new FoodieConflictException("Foodie doesn't follow creator: " + creator_id);
-	}
-
-	@Override
-	public List<CreatorDetailsDto> allFollowing(HttpServletRequest req) {
-		// get token
-		String token = jwtUtils.extractToken(req);
-
-		// get user id
-		Long Userid = jwtUtils.extractUserId(token);
-
-		// find creator by user id
-		Foodie f = helperFindByUserIdWithCreators(Userid);
-		
-		if(f.getCreators().isEmpty()) {
-			throw new NoContentException("Foodie doesnt follow any one");
-		}
-		return f.getCreators().stream().map(c->{
-			CreatorDetailsDto cdd = mapper.map(c.getUserId(),CreatorDetailsDto.class);
-			cdd.setCid(c.getCid());
-			return cdd;
-		}
-		).toList();
-	}
 }

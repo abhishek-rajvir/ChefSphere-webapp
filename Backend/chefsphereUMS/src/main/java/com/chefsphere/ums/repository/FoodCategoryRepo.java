@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.chefsphere.ums.dto.FoodCategoryDto;
+import com.chefsphere.ums.dto.FoodCategoryDTO;
 import com.chefsphere.ums.entities.FoodCategory;
 
 public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
@@ -21,7 +21,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 
 
 //	@Query("""
-//		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(
+//		    SELECT new com.chefsphere.ums.dto.FoodCategoryDTO(
 //		        fc.name,
 //		        fc.image,
 //		        MIN(r.recipeId),
@@ -32,7 +32,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 //		    GROUP BY fc.name, fc.image
 //		    ORDER BY FUNCTION('RAND')
 //		""")
-//	List<FoodCategoryDto> findAllDistinct();
+//	List<FoodCategoryDTO> findAllDistinct();
 
 	@Query("""
 		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(
@@ -46,7 +46,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 		        WHERE fc2.name = fc.name
 		    )
 		""")
-	List<FoodCategoryDto> findAllDistinct();
+	List<FoodCategoryDTO> findAllDistinct();
 	
 	@Query("""
 		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(
@@ -60,6 +60,6 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 		        WHERE fc2.name = fc.name
 		    )
 		""")
-	List<FoodCategoryDto> findAllDistinct(Pageable pageable);
+	List<FoodCategoryDTO> findAllDistinct(Pageable pageable);
 
 }

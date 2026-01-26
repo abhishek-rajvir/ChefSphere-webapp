@@ -1,6 +1,7 @@
 package com.chefsphere.ums.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,9 @@ import com.chefsphere.ums.entities.Recipe;
 
 public interface RecipeRepo extends JpaRepository<Recipe, Long> {
 
-	Recipe findByRecipeName(String recipe_name);
+	Optional<Recipe> findByPost_pid(Long postId);
+	
+	Optional<Recipe> findByRecipeName(String recipe_name);
 
 	Set<Recipe> findByPrepTimeLessThan(Long prep_time);
 

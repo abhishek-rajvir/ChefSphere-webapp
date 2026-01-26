@@ -2,31 +2,19 @@ package com.chefsphere.ums.service;
 
 import java.util.List;
 
-import com.chefsphere.ums.dto.PostRequestDto;
-import com.chefsphere.ums.dto.PostResponseDto;
+import com.chefsphere.ums.dto.PostRequestDTO;
+import com.chefsphere.ums.dto.PostResponseDTO;
+import com.chefsphere.ums.entities.Creator;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface PostService {
 
-//	public Post addRecipeAndIng(Post p,RecipeRequestDto recipedto, List<IngredientsRequestDto> ingredientdtolist);
+	void createPost(PostRequestDTO vdto, HttpServletRequest req);
 
-	public void createPost(PostRequestDto vdto, HttpServletRequest req);
+	List<PostResponseDTO> findAllByUserId(Long creatorId);
 
-	public PostResponseDto findByPostId(Long post_id, HttpServletRequest req);
+	List<PostResponseDTO> findAllByUserId(HttpServletRequest req);
 
-	public List<PostResponseDto> findAll();
-
-	List<PostResponseDto> findAllById(Long post_id, HttpServletRequest req);
-
-	List<PostResponseDto> findAllByUserId(Long creatorId);
-
-	List<PostResponseDto> findAllByUserId(HttpServletRequest req);
-
-	PostResponseDto findByUserPostNo(Long post_no, HttpServletRequest req);
-
-	public void deleteById(Long post_id, HttpServletRequest req);
-
-	void updatePostId(Long post_id, PostRequestDto dto, HttpServletRequest req);
-
+	String deletePost(Creator c);
 }

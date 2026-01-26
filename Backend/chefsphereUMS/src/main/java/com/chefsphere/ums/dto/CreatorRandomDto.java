@@ -9,7 +9,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class CreatorRandomDto {
+public class CreatorRandomDTO {
     private Long cid;
     private Long userId;
     private String username;

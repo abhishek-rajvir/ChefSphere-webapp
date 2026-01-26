@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
+import com.chefsphere.ums.exception_handler.YoutubeApiException;
 
 import lombok.NoArgsConstructor;
 
@@ -31,13 +31,10 @@ public class YoutubeApiServiceImpl implements YoutubeApiService{
 				    	    vID
 				    	);
 
-//			VideoResponseDto vDto = new VideoResponseDto();
-//			vDto.setVideoId(iframe);
 			return iframe;
-//			return new ApiResponse<VideoResponseDto>(vDto,true,"Success");
 		}
 		catch (RestClientException e) {
-			throw new ResourceNotFoundException("Invalid video id OR no network access ");
+			throw new YoutubeApiException("Invalid video id OR no network access ");
 		}
 	}
 

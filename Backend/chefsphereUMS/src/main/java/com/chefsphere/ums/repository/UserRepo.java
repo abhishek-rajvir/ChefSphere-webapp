@@ -9,15 +9,13 @@ import com.chefsphere.ums.entities.User;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
-	Optional<User> findByEmailAndPassword(String email,String password);
 
-	Optional<User> findByEmail(String email);
+	Optional<User> findByEmailAndIsActiveTrue(String email);
 	
-	Optional<User> findById(Long id);
+	Optional<User> findByIdAndIsActiveTrue(Long id);
 
+	boolean existsByEmailAndIsActiveTrue(String email);
 
-	boolean existsByEmail(String email);
-
-	boolean existsByUsername(String userName);
+	boolean existsByUsernameAndIsActiveTrue(String userName);
 	
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeRequestDto {
+public class RecipeRequestDTO {
 
 	private String recipeName;
 	

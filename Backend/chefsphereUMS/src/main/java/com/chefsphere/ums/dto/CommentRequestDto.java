@@ -13,7 +13,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class CommentRequestDto {
+public class CommentRequestDTO {
 
 	@NotBlank(message = "Foodie name is required")
 	@Size(min = 5, max = 1000, message = "message content must be between 5 and 1000 characters")

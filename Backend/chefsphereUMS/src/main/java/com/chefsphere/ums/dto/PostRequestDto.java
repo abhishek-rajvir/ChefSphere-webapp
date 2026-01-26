@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class PostRequestDto {
+public class PostRequestDTO {
 
 	@NotBlank
 	private String postTitle;
@@ -29,16 +29,16 @@ public class PostRequestDto {
 	
 //	@NotBlank
 	// recipe dto
-	private RecipeRequestDto recipe_Details;
+	private RecipeRequestDTO recipe_Details;
 	
 //	@NotBlank
 	// ing dto
-	private List<IngredientsRequestDto> list_Of_Ingredients;
+	private List<IngredientsRequestDTO> list_Of_Ingredients;
 	
 //	@NotBlank
 	// rec steps dto
-	private List<RecipeStepsDto> list_of_Steps;
+	private List<RecipeStepsDTO> list_of_Steps;
 	
 	// category dto
-	private Set<FoodCategoryDto> set_of_categorys;
+	private Set<FoodCategoryDTO> set_of_categorys;
 }

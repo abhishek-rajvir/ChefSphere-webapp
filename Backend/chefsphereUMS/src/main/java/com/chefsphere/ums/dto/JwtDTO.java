@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-public class JwtDTO {
+public class JwtDto {
 	private Long userId;
 	private String email;
 	private String role;

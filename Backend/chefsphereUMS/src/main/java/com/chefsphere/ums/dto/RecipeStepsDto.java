@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecipeStepsDto {
+public class RecipeStepsDTO {
 
 	private Long step_no;
 	
