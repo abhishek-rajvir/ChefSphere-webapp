@@ -17,4 +17,6 @@ public interface PostService {
 	List<PostResponseDTO> findAllByUserId(HttpServletRequest req);
 
 	String deletePost(Creator c);
+	
+	public List<PostResponseDTO> findAllByCategory(String category) ;
 }

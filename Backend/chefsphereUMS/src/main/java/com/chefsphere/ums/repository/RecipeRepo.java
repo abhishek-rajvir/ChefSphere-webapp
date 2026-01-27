@@ -26,6 +26,6 @@ public interface RecipeRepo extends JpaRepository<Recipe, Long> {
 	// foodCategories → collection
 	// _Name → FoodCategory.name (String)
 	// IgnoreCase → applied to name
-	Set<Recipe> findByFoodCategories_NameIgnoreCase(String categoryName);
+	Set<Recipe> findByFoodCategories_NameContainingIgnoreCase(String categoryName);
 
 }

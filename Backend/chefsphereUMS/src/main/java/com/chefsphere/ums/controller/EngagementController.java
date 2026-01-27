@@ -76,7 +76,7 @@ public class EngagementController {
 	/*
 	 * Follow endpoints
 	 */
-	@GetMapping("/follow/followers")
+	@GetMapping("/follow/allFollowers")
 	public ResponseEntity<?> getFollowers(HttpServletRequest req) {
 		return ResponseEntity.ok(Map.of("foodies", followService.getFollowers(req)));
 	}

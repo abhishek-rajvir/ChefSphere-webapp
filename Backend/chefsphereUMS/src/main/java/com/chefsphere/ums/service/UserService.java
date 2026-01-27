@@ -1,41 +1,33 @@
 package com.chefsphere.ums.service;
 
-
-import java.util.List;
-
-import com.chefsphere.ums.dto.AuthRequestDTO;
-import com.chefsphere.ums.dto.UserDTO;
 import com.chefsphere.ums.dto.UserResponseDTO;
 import com.chefsphere.ums.dto.UserSignUpDto;
 import com.chefsphere.ums.dto.UserUpdateDto;
 import com.chefsphere.ums.entities.User;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
 public interface UserService {
-	UserResponseDTO signIn(AuthRequestDTO userLoginDto);
-	
-	boolean emailExist(String email);
-	
-	void signUp(User newUser) throws Exception;
+
+	void updateUser(User changeUser);
+
+	boolean userNameExist(String userName);
+
+	boolean userEmailExist(String email);
+
+	String deleteUser(User user);
+
+	String updateUserDetails(User u, UserUpdateDto dto);
 
 	User findByEmail(String email);
 
 	User findById(Long id);
 
-	boolean userNameExist(String userName);
-
-	void updateUser(User changeUser);
-
-	String updateUserDetails(User u,UserUpdateDto dto);
-	
-	String encryptPasswords();
-	
-	List<UserDTO> getAllUsers();
-
-	void encryptPassword(User user);
-	void encryptPassword(User user,String newPassword);
-
 	User createUser(Integer i, UserSignUpDto dto);
 
-	String deleteUser(User user);
+	UserResponseDTO userDetails(HttpServletRequest req);
+
+	String updateUserDetails(HttpServletRequest req, UserUpdateDto dto);
 
 }

@@ -2,7 +2,7 @@ package com.chefsphere.ums.service;
 
 import java.util.List;
 
-import com.chefsphere.ums.dto.CreatorDetailsDTO;
+import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.FoodieResponseDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,5 +19,5 @@ public interface FollowService {
 
 	Long whetherfollowCreator(HttpServletRequest req, Long creator_id);
 
-	List<CreatorDetailsDTO> allFollowing(HttpServletRequest req);
+	List<CreatorResponseDTO> allFollowing(HttpServletRequest req);
 }

@@ -1,7 +1,6 @@
 package com.chefsphere.ums.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -9,8 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CreatorDetailsDTO;
 import com.chefsphere.ums.dto.CreatorRandomDTO;
+import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.User;
 import com.chefsphere.ums.exception_handler.InvalidCredentialsException;
@@ -36,7 +35,7 @@ public class CreatorServiceImpl implements CreatorService {
 		Creator c = new Creator();
 		c.setUserId(user);
 		creatorRepo.save(c);
-		return "Welcome " + user.getFirstName()+ "SignUp successfull";
+		return "Welcome " + user.getFirstName() + "SignUp successfull";
 	}
 
 	@Override
@@ -54,39 +53,40 @@ public class CreatorServiceImpl implements CreatorService {
 		// get user id
 		Long uid = jwtUtils.extractUidFromReq(req);
 		
-		Optional<Creator> c = creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid);
-		if (c.isPresent()) {
-			return c.get();
-		}
-		throw new UserNotFoundException("Creator Id doesn't exist");
+		return creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid).orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
+	}
+
+	// get logged creator also fetch posts
+	@Override
+	public Creator findByIdWithPosts(HttpServletRequest req) {
+		// get user id
+		Long uid = jwtUtils.extractUidFromReq(req);
+
+		return creatorRepo.findByUserIdWithPosts(uid).orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
 	}
 
 	@Override
-	public Creator findById(Long id) {
-		
-		Optional<Creator> c = creatorRepo.findById(id);
-		if (c.isPresent()) {
-			return c.get();
-		}
-		throw new UserNotFoundException("Creator Id doesn't exist");
+	public CreatorResponseDTO findById(Long cid) {
+		return creatorRepo.findByCidAndUserId_IsActiveTrue(cid).map(s -> {
+			CreatorResponseDTO cdto = mapper.map(s.getUserId(), CreatorResponseDTO.class);
+			cdto.setCid(s.getCid());
+			return cdto;
+		}).orElseThrow(() -> new UserNotFoundException("Creator not found for id: " + cid));
 	}
 
 	@Override
-	public Creator findByUserId(Long cid) {
-		Optional<Creator> c = creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(cid);
-		if (c.isPresent()) {
-			return c.get();
-		}
-		throw new UserNotFoundException("Creator Id doesn't exist");
+	public Creator findByUserId(Long uid) {
+		return creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid)
+				.orElseThrow(() -> new UserNotFoundException("Creator Id doesn't exist with UserId: " + uid));
 	}
 
 	@Override
-	public List<CreatorDetailsDTO> findAll() {
+	public List<CreatorResponseDTO> findAll() {
 		List<Creator> c = creatorRepo.findAll();
 		if (!(c.isEmpty())) {
 			return c.stream().map(m -> {
 				Long cid = m.getCid();
-				CreatorDetailsDTO mappedToDto = mapper.map(m.getUserId(), CreatorDetailsDTO.class);
+				CreatorResponseDTO mappedToDto = mapper.map(m.getUserId(), CreatorResponseDTO.class);
 				mappedToDto.setCid(cid);
 				return mappedToDto;
 			}).collect(Collectors.toList());

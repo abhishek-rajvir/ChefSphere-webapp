@@ -1,8 +1,5 @@
 package com.chefsphere.ums.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chefsphere.ums.dto.AuthRequestDTO;
 import com.chefsphere.ums.dto.AuthRespDTO;
-import com.chefsphere.ums.dto.UserDTO;
 import com.chefsphere.ums.entities.User;
+import com.chefsphere.ums.exception_handler.UserNameAlreadyExistsException;
 import com.chefsphere.ums.security.JwtUtils;
 import com.chefsphere.ums.security.UserPrincipal;
+import com.chefsphere.ums.service.AuthService;
 import com.chefsphere.ums.service.ImageKitServiceImpl;
-import com.chefsphere.ums.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -31,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/auth")
 @RequiredArgsConstructor // Creates a parameterized ctor having final & non null fields
 @Validated
 @Slf4j
@@ -43,27 +40,9 @@ public class AuthController {
 	
 	// final is need else will throw null pointer exception
 	private final AuthenticationManager authenticationManager;
-	private final UserService userService;
+	private final AuthService authService;
 	private final JwtUtils jwtUtils;
 	private final ImageKitServiceImpl imageKitServiceImpl;
-
-	// * 1. Get All Users (get resource - readonly)
-	// URI (path) - /users
-	// Method - GET
-	// Payload - none
-	// Resp - SC 200 + List<UserDTO> - if list is not empty
-	// user details - user id , name , dob , role , reg amount
-	// In case of empty list - SC 204 , no body
-	// */
-	@GetMapping
-	public /* @ResponseBody */ ResponseEntity<?> renderUserList() {
-		System.out.println("in render user list");
-		List<UserDTO> list = userService.getAllUsers();
-		if (list.isEmpty())
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // only status code : 204
-		// => non empty body
-		return ResponseEntity.ok(list); // SC 200 + List -> Json[]
-	}
 
 	@PostMapping("/signIn")
 	@Operation(description = "User Authentication With Spring Security")
@@ -91,13 +70,22 @@ public class AuthController {
 		return ResponseEntity.ok(new AuthRespDTO(principal.getUserId(), principal.getNameOfUser(),jwtUtils.generateToken(principal), principal.getUserRole()));
 	}
 
-	@GetMapping("/{username}")
-	public ResponseEntity<?> userExists(@PathVariable String username) {
-		if (userService.userNameExist(username)) {
-			return ResponseEntity.ok("Username: "+username +" exists");
+	@GetMapping("/checkUsername/{username}")
+	public ResponseEntity<?> userNameExists(@PathVariable String username) {
+		if (authService.userNameExist(username)) {
+			throw new UserNameAlreadyExistsException("Username: "+username +" exists");
 		} 
 		return ResponseEntity.ok("Username: "+username+" doesn't exist");
 	}
+
+	@GetMapping("/checkEmail/{email}")
+	public ResponseEntity<?> userEmailExists(@PathVariable String email) {
+		if (authService.userEmailExist(email)) {
+			throw new UserNameAlreadyExistsException("Email: "+email +" exists");
+		} 
+		return ResponseEntity.ok("Email: "+email+" doesn't exist");
+	}
+
 
 	/*
 	 * Encrypt Password of all users o/p -ApiResp (encrypted!) DB Action - store
@@ -109,8 +97,7 @@ public class AuthController {
 	public ResponseEntity<?> encryptUserPassword() {
 		log.info("encrypting users password ");
 		// invoke service layer method
-		return ResponseEntity.ok(userService.encryptPasswords());
-
+		return ResponseEntity.ok(authService.encryptPasswords());
 	}
 	
 
@@ -124,8 +111,8 @@ public class AuthController {
 	public ResponseEntity<?> encryptUserPassword(@PathVariable Long id) {
 		log.info("encrypting users password ");
 		// invoke service layer method
-		User u = userService.findById(id);
-		userService.encryptPassword(u);
+		User u = authService.findById(id);
+		authService.encryptPassword(u);
 		return ResponseEntity.ok("Encrypted password of User:"+u.getUsername());
 	}
 	

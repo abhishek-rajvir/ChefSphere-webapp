@@ -21,9 +21,6 @@ public class PostRequestDTO {
 	@NotBlank
 	private String description;
 	
-//	@JsonIgnore
-//	private String textContent = null;
-//	
 	@NotBlank
 	private String videoUrl; 
 	

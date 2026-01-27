@@ -3,6 +3,7 @@ package com.chefsphere.ums.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,13 @@ public class FoodieController {
 	// dependencies
 	private final UserService userService;
 	private final FoodieService foodieService;
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<?> findFoodieById(@PathVariable Long id)
+	{		
+		return ResponseEntity.ok(foodieService.findByIdDto(id));
+	}
+
 
 	@GetMapping("/listAll")
 	public ResponseEntity<?> listAll() {

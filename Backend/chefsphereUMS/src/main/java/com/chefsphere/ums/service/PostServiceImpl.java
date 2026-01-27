@@ -25,8 +25,8 @@ import com.chefsphere.ums.entities.Ingredients;
 import com.chefsphere.ums.entities.Post;
 import com.chefsphere.ums.entities.Recipe;
 import com.chefsphere.ums.entities.RecipeSteps;
-import com.chefsphere.ums.exception_handler.InvalidFilterException;
 import com.chefsphere.ums.exception_handler.InvalidDetailsException;
+import com.chefsphere.ums.exception_handler.InvalidFilterException;
 import com.chefsphere.ums.exception_handler.InvalidIdException;
 import com.chefsphere.ums.exception_handler.NoContentException;
 import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
@@ -189,10 +189,10 @@ public class PostServiceImpl implements PostService {
 	public String deletePost(Creator c) {
 
 		List<Post> pList = c.getPosts();
-		pList.stream().forEach(s->{
+		pList.stream().forEach(s -> {
 			s.setActive(false);
 		});
-		
+
 		// save all modified persistent post
 		postRepo.saveAll(pList);
 		return "User post deleted succesfully";
@@ -252,35 +252,33 @@ public class PostServiceImpl implements PostService {
 		String token = jwtUtils.extractToken(req);
 		Long Userid = jwtUtils.extractUserId(token);
 
-		Post p = null;
-
 		try {
-			p = creatorRepo.findByUserIdWithPosts(Userid).get().getPosts().get(Math.toIntExact(post_no));
+			Post p = creatorRepo.findByUserIdWithPosts(Userid).get().getPosts().get(Math.toIntExact(post_no));
+			if (p != null) {
+
+				Recipe recipe = p.getRecipe();
+				// convert ing to dto
+				List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
+						.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
+
+				// convert steps to dto
+				List<RecipeStepsDTO> rec_steps_list = p.getRecipe().getSteps_required().stream()
+						.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
+
+				PostResponseDTO resp_post = mapper.map(p, PostResponseDTO.class);
+				resp_post.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
+				resp_post.setList_Of_Ingredients(ing_list);
+				resp_post.setList_of_Steps(rec_steps_list);
+
+				return resp_post;
+
+			} else {
+				throw new InvalidIdException("User has no posts no: " + post_no);
+			}
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidIdException("Post id does not exist");
 		}
 
-		if (p != null) {
-
-			Recipe recipe = p.getRecipe();
-			// convert ing to dto
-			List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
-					.map(i -> mapper.map(i, IngredientsRequestDTO.class)).toList();
-
-			// convert steps to dto
-			List<RecipeStepsDTO> rec_steps_list = p.getRecipe().getSteps_required().stream()
-					.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
-
-			PostResponseDTO resp_post = mapper.map(p, PostResponseDTO.class);
-			resp_post.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
-			resp_post.setList_Of_Ingredients(ing_list);
-			resp_post.setList_of_Steps(rec_steps_list);
-
-			return resp_post;
-
-		} else {
-			throw new InvalidIdException("User has no posts no: " + post_no);
-		}
 	}
 
 	// @Override
@@ -331,6 +329,7 @@ public class PostServiceImpl implements PostService {
 							.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
 					PostResponseDTO s2 = mapper.map(s, PostResponseDTO.class);
+					s2.setCid(c.get().getCid());
 					s2.setList_Of_Ingredients(ing_list);
 					s2.setList_of_Steps(rec_steps_list);
 					return s2;
@@ -366,6 +365,7 @@ public class PostServiceImpl implements PostService {
 							.map(rc -> mapper.map(rc, RecipeStepsDTO.class)).toList();
 
 					PostResponseDTO s2 = mapper.map(s, PostResponseDTO.class);
+					s2.setCid(c.get().getCid());
 					s2.setList_Of_Ingredients(ing_list);
 					s2.setList_of_Steps(rec_steps_list);
 					return s2;
@@ -410,7 +410,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	public PostResponseDTO findByPostNo(Long post_no) {
-		Optional<Post> post = postRepo.findById(post_no);
+		Optional<Post> post = postRepo.findByPidAndIsActiveTrue(post_no);
 		if (post.isPresent()) {
 			Recipe recipe = post.get().getRecipe();
 			List<IngredientsRequestDTO> ing_list = recipe.getAllIngredients().stream()
@@ -425,6 +425,7 @@ public class PostServiceImpl implements PostService {
 					.map(c -> mapper.map(c, CommentResponseDTO.class)).toList();
 
 			PostResponseDTO s2 = mapper.map(post, PostResponseDTO.class);
+			s2.setCid(post.get().getCreator().getCid());
 			s2.setRecipe_Details(mapper.map(recipe, RecipeRequestDTO.class));
 			s2.setList_Of_Ingredients(ing_list);
 			s2.setList_of_Steps(rec_steps_list);
@@ -439,7 +440,7 @@ public class PostServiceImpl implements PostService {
 
 	public List<PostResponseDTO> findAllByCategory(String category) {
 
-		Set<Recipe> recList = recipeRepo.findByFoodCategories_NameIgnoreCase(category);
+		Set<Recipe> recList = recipeRepo.findByFoodCategories_NameContainingIgnoreCase(category);
 		if (recList.isEmpty()) {
 			throw new InvalidFilterException("No recipes found for category [" + category + "]");
 		}
@@ -450,14 +451,9 @@ public class PostServiceImpl implements PostService {
 	}
 
 	// le,gt,eq prep time
-	public List<PostResponseDTO> findAllByDuration(Long prep_time, Integer range) {
+	public List<PostResponseDTO> findAllByDuration(Long prep_time) {
 		if (prep_time > 0) {
-			Set<Recipe> recList = null;
-			if (range < 0) {
-				recList = recipeRepo.findByPrepTimeLessThan(prep_time);
-			} else {
-				recList = recipeRepo.findByPrepTimeGreaterThan(prep_time);
-			}
+			Set<Recipe>	recList = recipeRepo.findByPrepTimeLessThan(prep_time);
 			if (!recList.isEmpty()) {
 				return postRepo.findByRecipeInAndIsActiveTrue(recList).stream()
 						.map(s -> mapper.map(s, PostResponseDTO.class)).toList();
@@ -517,7 +513,7 @@ public class PostServiceImpl implements PostService {
 
 	public List<PostSearchDTO> findAllByPostTitle(String postName) {
 		List<Post> pList = postRepo.findByPostTitleContainingIgnoreCaseAndIsActiveTrue(postName);
-		if (pList != null && !pList.isEmpty()) {
+		if (!pList.isEmpty()) {
 			return pList.stream().map(s -> mapper.map(s, PostSearchDTO.class)).toList();
 		}
 		throw new InvalidFilterException("No posts titles containing " + postName);

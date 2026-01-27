@@ -22,10 +22,8 @@ public class User extends BaseEntity {//implements UserDetails{
 	
 	private String lastName;
 	
-	@Column(unique = true)
 	private String username;
-	
-	@Column(unique = true)
+
 	private String email;
 	
 	private String password;
@@ -38,12 +36,7 @@ public class User extends BaseEntity {//implements UserDetails{
 	private String pic;
 	
 	// boolen instead of Boolean ,since active state should be null 
+	@Column(nullable = false)
 	private boolean isActive = true;
-//	
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		// TODO Auto-generated method stub
-//		return List.of(new SimpleGrantedAuthority(this.type.name()));
-//	}
 	
 }

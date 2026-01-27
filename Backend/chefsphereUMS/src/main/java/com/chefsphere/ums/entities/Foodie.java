@@ -60,7 +60,7 @@ public class Foodie {
 	private Set<Creator> creators = new HashSet<>();
 
 	// User is Foodie
-	@OneToOne(cascade = CascadeType.ALL) // if user is deleted so is creator
+	@OneToOne
 	@JoinColumn( name = "user_id", nullable = false,unique = true) // fk is stored here
 	private User userId;
 	

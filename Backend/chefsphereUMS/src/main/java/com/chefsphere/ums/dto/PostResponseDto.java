@@ -11,9 +11,11 @@ import lombok.ToString;
 @ToString
 public class PostResponseDTO {
 
-	private String pid;
+	private Long pid;
 	
 	private String creatorName;
+	
+	private Long cid;
 	
 	private String postTitle;
 	

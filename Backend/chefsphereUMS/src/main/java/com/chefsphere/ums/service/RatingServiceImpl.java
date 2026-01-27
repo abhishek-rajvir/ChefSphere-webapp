@@ -21,11 +21,11 @@ public class RatingServiceImpl implements RatingService {
 	private final PostRepo postRepo;
 
 	@Override
-	public void newRating(RatingRequestDTO c_dto) {
-		Post post = postRepo.findById(c_dto.getPostId())
-				.orElseThrow(() -> new InvalidIdException("Post id " + c_dto.getPostId() + " doesnt exists"));
+	public void newRating(RatingRequestDTO r_dto) {
+		Post post = postRepo.findById(r_dto.getPostId())
+				.orElseThrow(() -> new InvalidIdException("Post id " + r_dto.getPostId() + " doesnt exists"));
 
-		post.addRating(c_dto.getRating());
+		post.addRating(r_dto.getRating());
 		postRepo.save(post);
 	}
 

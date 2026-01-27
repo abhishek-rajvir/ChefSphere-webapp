@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,8 +35,6 @@ public class Post {
 	
 	private String description;
 	
-	private String textContent ;
-	
 	private String videoUrl;
 	private String videoTag;
 	
@@ -63,6 +62,7 @@ public class Post {
 	private Long ratingCount = 0l;
 	
 	// boolen instead of Boolean ,since active state should be null 
+	@Column(nullable = false)
 	private boolean isActive = true;
 	
 	/*

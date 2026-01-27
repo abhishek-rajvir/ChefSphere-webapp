@@ -35,7 +35,7 @@ public class CreatorController {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findCreatorById(@PathVariable Long id)
 	{		
-		return ResponseEntity.ok(creatorService.findByUserId(id));
+		return ResponseEntity.ok(creatorService.findById(id));
 	}
 
 	@GetMapping("/listAll")
@@ -52,17 +52,11 @@ public class CreatorController {
 		return ResponseEntity.ok(creatorService.createCreator(u));
 	}
 
-	@PutMapping("/update")
-	public ResponseEntity<?> updateCreator(HttpServletRequest req,@Valid @RequestBody UserUpdateDto dto)
-	{		
-		Creator c = creatorService.findById(req);
-		return ResponseEntity.ok(userService.updateUserDetails(c.getUserId(),dto));	
-	}
 	
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteCreator(HttpServletRequest req)
 	{		
-		Creator c = creatorService.findById(req);
+		Creator c = creatorService.findByIdWithPosts(req);
 		String msg1 = postService.deletePost(c);
 		String msg2 = userService.deleteUser(c.getUserId());
 		return ResponseEntity.ok(msg1+"\n"+msg2);	

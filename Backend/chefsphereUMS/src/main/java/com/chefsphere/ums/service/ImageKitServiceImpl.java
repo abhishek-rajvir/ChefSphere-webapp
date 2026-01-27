@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.chefsphere.ums.exception_handler.ImageKitException;
-import com.chefsphere.ums.exception_handler.NoContentException;
 
 @Service
 public class ImageKitServiceImpl {

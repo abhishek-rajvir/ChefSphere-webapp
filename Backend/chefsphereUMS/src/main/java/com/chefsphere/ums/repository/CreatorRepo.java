@@ -33,10 +33,11 @@ public interface CreatorRepo extends JpaRepository<Creator, Long> {
 //		    AND c.userId.isActive = true
 //			""")
 //	Optional<Creator> findByUserId(@Param("uid") Long uid);
+	Optional<Creator> findByCidAndUserId_IsActiveTrue(Long uid);
 	Optional<Creator> findByUserId_IdAndUserId_IsActiveTrue(Long uid);
 	
 	@Query("""
-		    SELECT new com.chefsphere.ums.dto.CreatorRandomDto(c.cid, c.userId.id,c.userId.username,c.userId.pic)
+		    SELECT new com.chefsphere.ums.dto.CreatorRandomDTO(c.cid, c.userId.id,c.userId.username,c.userId.pic)
 		    FROM Creator c 
 		    WHERE c.userId.isActive = true
 		""")

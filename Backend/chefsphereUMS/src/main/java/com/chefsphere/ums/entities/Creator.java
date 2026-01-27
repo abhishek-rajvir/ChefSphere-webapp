@@ -58,7 +58,7 @@ public class Creator {
 	private List<Post> posts = new ArrayList<>();
 
 	// User is a Creator
-	@OneToOne(cascade = CascadeType.ALL) // if user is deleted so is creator
+	@OneToOne
 	@JoinColumn(name = "user_id", nullable = false, unique = true) // fk is stored here
 	private User userId;
 

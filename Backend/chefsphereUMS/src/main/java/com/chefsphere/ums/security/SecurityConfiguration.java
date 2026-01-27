@@ -47,69 +47,89 @@ public class SecurityConfiguration {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		// add url based authentication n authorization rules
 		http.authorizeHttpRequests(request ->
-//configure public end points [ unprotected public api no auth]
-		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption").permitAll()
+		/*
+		 * configure public end points [ unprotected public api no auth] For eg: no
+		 * endpoint will be accessible as not enpoint is public available without auth
+		 * /user/** must be allowed for auth /swagger for testing .. etc
+		 */
+
+		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption", "/auth/signIn",
+				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}").permitAll()
 				// in flight request from React front end extra request sent by react
 				.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
-				.requestMatchers(HttpMethod.GET, "/users/signIn").permitAll()
-				.requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/users/imgkToken").permitAll()
-				.requestMatchers(HttpMethod.GET, "/foodies/listAll").permitAll()
+				/*
+				 * Auth
+				 */
+				.requestMatchers(HttpMethod.GET,"/auth/imgkToken").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
+				
+				/*
+				 * User
+				 */
+				.requestMatchers(HttpMethod.GET,"/user/details").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
+				.requestMatchers(HttpMethod.PUT,"/user/update").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
+				
+				/*
+				 * Foodie
+				 */
+				.requestMatchers(HttpMethod.GET, "/foodies/listAll").hasAnyAuthority("ADMIN")
 				.requestMatchers(HttpMethod.POST, "/foodies/signUp").permitAll()
-				.requestMatchers(HttpMethod.GET, "/foodies/doesFollow/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/foodies/allFollowing").permitAll()
-				.requestMatchers(HttpMethod.GET, "/foodies/allFollowers").permitAll()
-				.requestMatchers(HttpMethod.POST, "/foodies/followCreator/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.DELETE, "/foodies/unFollowCreator/{creator_id}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
+
+				/*
+				 * Creator
+				 */
 				.requestMatchers(HttpMethod.GET, "/creators/{id}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/creators/followers").permitAll()
-				.requestMatchers(HttpMethod.GET, "/creators/totalfollowers/{creator_id}").permitAll()
+				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.POST, "/creators/signUp").permitAll()
-				.requestMatchers(HttpMethod.PUT, "/creators/{id}/update").permitAll()
-				.requestMatchers(HttpMethod.DELETE, "/creators/{id}/delete").permitAll()
+				// only creator and admin can access these
+				.requestMatchers(HttpMethod.PUT, "/creators/{id}/update").hasAnyAuthority("CREATOR", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/creators/{id}/delete").hasAnyAuthority("CREATOR", "ADMIN")
 
-				// to handle posts - public
+				/*
+				 * Posts
+				 */
 				.requestMatchers(HttpMethod.GET, "/posts/{post_no}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/search/title").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/search/category").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/search/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/posts/{creator_id}/list").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/list").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/list/recipeRange/{qty}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/listAll").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/listAll/categories").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/list/categoryRange/{qty}").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/*/list/").permitAll()
-				.requestMatchers(HttpMethod.POST, "/posts/new/").permitAll()
-				.requestMatchers(HttpMethod.PUT, "/posts/*/update/").permitAll()
-				.requestMatchers(HttpMethod.DELETE, "/posts/*/delete/").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/list").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/posts/list/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/posts/listAll/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/posts/new").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/posts/{post_id}/update").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/posts/{post_id}/delete").hasAnyAuthority("FOODIE", "ADMIN")
 
-				.requestMatchers(HttpMethod.GET, "/engagement/comment/new").permitAll()
+				/*
+				 * ENGAGEMENT
+				 * 
+				 * Comments
+				 */
 				.requestMatchers(HttpMethod.GET, "/engagement/comment/{post_id}/listAll").permitAll()
-				.requestMatchers(HttpMethod.DELETE, "/engagement/comment/{comment_id}/delete").permitAll()
-				.requestMatchers(HttpMethod.GET, "/engagement/rating/new").permitAll()
-				.requestMatchers(HttpMethod.GET, "/engagement/rating/{post_id}").permitAll()
-				.requestMatchers(HttpMethod.DELETE, "/engagement/rating/{rating_id}/delete").permitAll()
-//				.requestMatchers(HttpMethod.POST,"/engagement/comment/new").permitAll()
-				// only admin should be able to see all patients
-				// with hasRole use ADMIN else use ROLE_ADMIN
-				// for more than 1 rule order matter
+				.requestMatchers(HttpMethod.POST, "/engagement/comment/new")
+				.hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
+				// only auth user can delete comments
+				.requestMatchers(HttpMethod.DELETE, "/engagement/comment/{comment_id}/delete")
+				.hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
 
-				.requestMatchers(HttpMethod.GET, "/patients").hasRole("ADMIN")
-				// only patient can book the appointment
-				.requestMatchers(HttpMethod.POST, "/appointments").hasRole("PATIENT")
-//				.requestMatchers(HttpMethod.POST, "/creators/signup").hasRole("CREATOR")
-//				.requestMatchers(HttpMethod.POST, "/foodies/signup").hasRole("FOODIE")
-				// admin can check specific patient details
-				.requestMatchers(HttpMethod.GET, "/patients/{userId}").hasAnyRole("ADMIN")
-				// only doctor can change appointment status to complete & add some diag tests
-				.requestMatchers(HttpMethod.POST, "/appointments/mark-complete-with-tests").hasAnyRole("DOCTOR")
+				/*
+				 * Ratings
+				 */
+				.requestMatchers(HttpMethod.GET, "/engagement/rating/{post_id}").permitAll()
+				.requestMatchers(HttpMethod.POST, "/engagement/rating/new").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/engagement/rating/{rating_id}/delete").hasAnyAuthority("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/engagement/follow/allFollowers").hasAnyAuthority("CREATOR", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/engagement/follow/{creator_id}/totalfollowers").permitAll()
+				.requestMatchers(HttpMethod.GET, "/engagement/follow/doesFollow/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/engagement/follow/allFollowing").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.POST, "/engagement/follow/followCreator/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/engagement/follow/unFollowCreator/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
+
 				// authenticate any other remaining request
 				.anyRequest().authenticated())
+
 				// add custom jwt filter before 1st authentication filter
 				// -UsernamePasswordAuthenticationFilter
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
 

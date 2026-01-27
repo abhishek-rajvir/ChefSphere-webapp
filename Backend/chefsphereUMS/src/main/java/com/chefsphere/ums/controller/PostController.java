@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chefsphere.ums.dto.PostRequestDTO;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 
 	private final PostServiceImpl postService;
-//	private final PostRepo postRepo;
 
 	@PostMapping("/new")
 	public ResponseEntity<?> createPost(@Valid @RequestBody PostRequestDTO vdto, HttpServletRequest req) {
@@ -56,33 +54,30 @@ public class PostController {
 	public ResponseEntity<?> findUserPostByNo(@PathVariable Long post_no) {
 		return ResponseEntity.ok(postService.findByPostNo(post_no));
 	}
-//	public ResponseEntity<?> findUserPostByNo(@PathVariable Long post_no, HttpServletRequest req){
-	// if id is 1 converted to 0 for indexing
-//		return ResponseEntity.ok(postService.findByUserIdAndPostNo(post_no-1,req));
 
 	// findAll post by name
-	@GetMapping("/search/title")
-	public ResponseEntity<?> findAllByPostTitle(@RequestParam String title) {
-		return ResponseEntity.ok(postService.findAllByPostTitle(title));
+	@GetMapping("/search/title/{post_title}")
+	public ResponseEntity<?> findAllByPostTitle(@PathVariable String post_title) {
+		return ResponseEntity.ok(postService.findAllByPostTitle(post_title));
 	}
 
 	// findAll post by category
-	@GetMapping("/search/category")
-	public ResponseEntity<?> findUserPostByCategory(@RequestParam String categoryName) {
+	@GetMapping("/search/category/{categoryName}")
+	public ResponseEntity<?> findUserPostByCategory(@PathVariable String categoryName) {
 		System.out.println(categoryName);
 		return ResponseEntity.ok(postService.findAllByCategory(categoryName));
 	}
 
 	// findAll post by ingredient
-	@GetMapping("/{post_no}/ingredient")
-	public ResponseEntity<?> findUserPostByIngredient(@RequestParam String ingredient) {
-		return ResponseEntity.ok(postService.findAllByIngredient(ingredient));
+	@GetMapping("/search/ingredient/{ingredientName}")
+	public ResponseEntity<?> findUserPostByIngredient(@PathVariable String ingredientName) {
+		return ResponseEntity.ok(postService.findAllByIngredient(ingredientName));
 	}
 
 	// findAll post by duration
-	@GetMapping("/{post_no}/duration")
-	public ResponseEntity<?> findUserPostByDuration(@RequestParam Long prep_time, @RequestParam Integer range) {
-		return ResponseEntity.ok(postService.findAllByDuration(prep_time, range));
+	@GetMapping("/search/duration/{prep_time}")
+	public ResponseEntity<?> findUserPostByDuration(@PathVariable Long prep_time) {
+		return ResponseEntity.ok(postService.findAllByDuration(prep_time));
 	}
 
 	// random recipe in range

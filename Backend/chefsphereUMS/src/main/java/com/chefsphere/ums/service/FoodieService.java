@@ -12,8 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface FoodieService {
 
-	String createFoodie(User u);
-	
 	Foodie findById(Long id);
 
 	void updateFoodie(Foodie f);
@@ -27,5 +25,11 @@ public interface FoodieService {
 	Foodie findByUserIdWithCreators(Long userid);
 
 	Foodie findById(HttpServletRequest req);
+
+	FoodieResponseDTO findByIdDto(HttpServletRequest req);
+
+	String createFoodie(User u);
+
+	FoodieResponseDTO findByIdDto(Long id);
 
 }

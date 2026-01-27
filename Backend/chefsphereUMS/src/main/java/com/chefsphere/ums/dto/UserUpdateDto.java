@@ -17,10 +17,9 @@ public class UserUpdateDto {
 	@Email(message = "Invalid email format")
 	private String email;
 	
-	private String password;
-	
 	private String gender;
 	
+	private String pic;
 	// will allow empty email without validation as null are skipped 
 	public void setEmail(String email) {
 	    if (email != null && !email.isBlank()) {

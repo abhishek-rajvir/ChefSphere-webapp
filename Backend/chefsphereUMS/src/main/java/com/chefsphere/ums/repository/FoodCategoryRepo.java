@@ -35,7 +35,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 //	List<FoodCategoryDTO> findAllDistinct();
 
 	@Query("""
-		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(
+		    SELECT new com.chefsphere.ums.dto.FoodCategoryDTO(
 		        fc.name,
 		        fc.image
 		    )
@@ -49,7 +49,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 	List<FoodCategoryDTO> findAllDistinct();
 	
 	@Query("""
-		    SELECT new com.chefsphere.ums.dto.FoodCategoryDto(
+		    SELECT new com.chefsphere.ums.dto.FoodCategoryDTO(
 		        fc.name,
 		        fc.image
 		    )

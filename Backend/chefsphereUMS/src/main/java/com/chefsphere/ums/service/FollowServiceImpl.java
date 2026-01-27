@@ -1,12 +1,11 @@
 package com.chefsphere.ums.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.CreatorDetailsDTO;
+import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.FoodieResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
@@ -51,15 +50,12 @@ public class FollowServiceImpl implements FollowService {
 		Long uid = jwtUtils.extractUidFromReq(req);
 
 		// find creator by user id
-		Optional<Creator> c = creatorRepo.findByUserIdWithFoodies(uid);
-		if (c.isPresent()) {
-			return c.get().getFoodies().stream().map(f -> {
-				FoodieResponseDTO fd = mapper.map(f.getUserId(), FoodieResponseDTO.class);
-				fd.setFid(f.getFid());
-				return fd;
-			}).toList();
-		}
-		throw new ResourceNotFoundException("Creator ID:" + c.get().getCid() + " doesnt exists");
+		return creatorRepo.findByUserIdWithFoodies(uid).map(c -> c.getFoodies().stream().map(f -> {
+			FoodieResponseDTO fd = mapper.map(f.getUserId(), FoodieResponseDTO.class);
+			fd.setFid(f.getFid());
+			return fd;
+		}).toList()).orElseThrow(() -> new ResourceNotFoundException("Creator ID not found for user id: " + uid));
+
 	}
 
 	@Override
@@ -103,23 +99,17 @@ public class FollowServiceImpl implements FollowService {
 		Foodie f = foodieService.findByUserIdWithCreators(Userid);
 
 		Long fid = f.getFid();
-		
-		Optional<Creator> c = f.getCreators()
-			    .stream()
-			    .filter(s -> s.getCid()==creator_id)
-			    .findAny();
 
-		if (c.isPresent()) {
+		return f.getCreators().stream().filter(s -> s.getCid() == creator_id).findAny().map(c -> {
 
-			f.getCreators().remove(c.get());
+			f.getCreators().remove(c);
 
 			// commit changes
 			foodieService.updateFoodie(f);
 
 			return fid;
 
-		}
-		throw new FollowConflictException("Foodie doesn't follow creator: " + creator_id);
+		}).orElseThrow(() -> new FollowConflictException("Foodie doesn't follow creator: " + creator_id));
 	}
 
 	@Override
@@ -147,7 +137,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
-	public List<CreatorDetailsDTO> allFollowing(HttpServletRequest req) {
+	public List<CreatorResponseDTO> allFollowing(HttpServletRequest req) {
 		// get token
 		String token = jwtUtils.extractToken(req);
 
@@ -156,16 +146,15 @@ public class FollowServiceImpl implements FollowService {
 
 		// find creator by user id
 		Foodie f = foodieService.findByUserIdWithCreators(Userid);
-		
-		if(f.getCreators().isEmpty()) {
+
+		if (f.getCreators().isEmpty()) {
 			throw new NoContentException("Foodie doesnt follow any one");
 		}
-		return f.getCreators().stream().map(c->{
-			CreatorDetailsDTO cdd = mapper.map(c.getUserId(),CreatorDetailsDTO.class);
+		return f.getCreators().stream().map(c -> {
+			CreatorResponseDTO cdd = mapper.map(c.getUserId(), CreatorResponseDTO.class);
 			cdd.setCid(c.getCid());
 			return cdd;
-		}
-		).toList();
+		}).toList();
 	}
-	
+
 }
