@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { toast } from "react-hot-toast";
 
 export default function Users() {
   const [forms, setForms] = useState({
@@ -13,7 +13,7 @@ export default function Users() {
     event.preventDefault(); // prevent page reload
     if (validate()) {
       console.log("Form submitted!", forms);
-      alert("Registered Successfully!");
+      toast.success("Registered Successfully!");
     } else {
       console.log("Validation failed");
     }
@@ -36,7 +36,7 @@ export default function Users() {
       errors.password = "Password cannot be blank";
     } else if (
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-        password
+        password,
       )
     ) {
       errors.password =
@@ -54,16 +54,14 @@ export default function Users() {
         minHeight: "100vh",
         padding: "20px",
         background: "white",
-      }}
-    >
+      }}>
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           minHeight: "100%",
-        }}
-      >
+        }}>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -74,8 +72,7 @@ export default function Users() {
             borderRadius: "8px",
             boxShadow: "0 0 10px rgba(0,0,0,0.1)",
             backgroundColor: "white",
-          }}
-        >
+          }}>
           <h4 style={{ textAlign: "center", marginBottom: "20px" }}>
             Creator Registration Form
           </h4>

@@ -40,9 +40,12 @@ const getAllPosts = async () => {
   }
 };
 
-const getAllPostsByCategory = async (categoryName) => {
+const getPostsContainingCategory = async (categoryName) => {
   try {
-    const res = await requestJwt("GET", "/posts/category/" + categoryName);
+    const res = await requestJwt(
+      "GET",
+      "/posts/search/category/" + categoryName,
+    );
     return res.data;
   } catch (err) {
     throw new Error("Post fetch failed");
@@ -111,7 +114,7 @@ const updateCreatorPost = async (id, details) => {
 
 const getFollowers = async () => {
   try {
-    const res = await requestJwt("GET", "/creators/followers");
+    const res = await requestJwt("GET", "/engagement/follow/allFollowers");
     return res.data.foodies;
   } catch (err) {
     throw new Error("failed to fetch all followers");
@@ -120,8 +123,11 @@ const getFollowers = async () => {
 
 const getTotalFollowers = async (cid) => {
   try {
-    const res = await requestJwt("GET", "/creators/totalfollowers/" + cid);
-    return res.data;
+    const res = await requestJwt(
+      "GET",
+      "/engagement/follow/" + cid + "/totalfollowers",
+    );
+    return res.data.followers;
   } catch (err) {
     throw new Error("failed to fetch total followers");
   }
@@ -129,7 +135,7 @@ const getTotalFollowers = async (cid) => {
 
 const doesFollowCreator = async (cid) => {
   try {
-    const res = await requestJwt("GET", "/foodies/doesFollow/" + cid);
+    const res = await requestJwt("GET", "/engagement/follow/doesFollow/" + cid);
     return res.data;
   } catch (err) {
     throw new Error("failed to check if foodie follows creator");
@@ -138,7 +144,10 @@ const doesFollowCreator = async (cid) => {
 
 const followCreator = async (cid) => {
   try {
-    const res = await requestJwt("POST", "/foodies/followCreator/" + cid);
+    const res = await requestJwt(
+      "POST",
+      "/engagement/follow/followCreator/" + cid,
+    );
     return res.data;
   } catch (err) {
     throw new Error("failed to follow creator");
@@ -147,7 +156,10 @@ const followCreator = async (cid) => {
 
 const unFollowCreator = async (cid) => {
   try {
-    const res = await requestJwt("DELETE", "/foodies/unFollowCreator/" + cid);
+    const res = await requestJwt(
+      "DELETE",
+      "/engagement/follow/unFollowCreator/" + cid,
+    );
     return res.data;
   } catch (err) {
     throw new Error("failed to unfollow creator");
@@ -156,7 +168,7 @@ const unFollowCreator = async (cid) => {
 
 const getAllFollowing = async () => {
   try {
-    const res = await requestJwt("GET", "/foodies/allFollowing");
+    const res = await requestJwt("GET", "/engagement/follow/allFollowing");
     return res.data;
   } catch (err) {
     throw new Error("failed to get all following");
@@ -165,30 +177,35 @@ const getAllFollowing = async () => {
 
 const getPostsContainingTitle = async (title) => {
   try {
-    const res = await requestParamJwt(
-      "GET",
-      "/posts/search/title",
-      {},
-      {
-        title: title,
-      },
-    );
+    const res = await requestJwt("GET", "/posts/search/title/" + title);
     return res.data;
   } catch (err) {
     throw new Error("failed to get posts containing title");
   }
 };
-const getPostsContainingCategory = async (category) => {
+
+const getPostsContainingIngredient = async (ingredientName) => {
   try {
-    const res = await requestParamJwt(
+    const res = await requestJwt(
       "GET",
-      "/posts/search/category",
-      {},
-      { categoryName: category },
+      "/posts/search/ingredient/" + ingredientName,
     );
     return res.data;
   } catch (err) {
-    throw new Error("failed to get posts containing category");
+    throw new Error("failed to get posts containing ingredient");
+  }
+};
+
+const getPostsByDuration = async (prepTime) => {
+  if (prepTime <= 0) {
+    throw new Error("Preparation time must be greater than 0");
+  } else {
+    try {
+      const res = await requestJwt("GET", "/posts/search/duration/" + prepTime);
+      return res.data;
+    } catch (err) {
+      throw new Error("failed to get posts by duration");
+    }
   }
 };
 
@@ -198,6 +215,15 @@ const getCreatorById = async (id) => {
     return res.data;
   } catch (err) {
     throw new Error("Creator fetch failed for id: " + id);
+  }
+};
+
+const getFoodieById = async (id) => {
+  try {
+    const res = await requestJwt("GET", "/foodies/" + id);
+    return res.data;
+  } catch (err) {
+    throw new Error("Foodie fetch failed for id: " + id);
   }
 };
 
@@ -268,19 +294,29 @@ export const deleteComment = async (commentId) => {
   }
 };
 
+const deleteFoodie = async () => {
+  try {
+    const res = await requestJwt("DELETE", "/foodies/delete");
+    return res.data;
+  } catch (err) {
+    throw new Error("Foodie deletion failed");
+  }
+};
+
 export default {
   RegisterFoodie,
   getPostsByNo,
   getCreatorsPosts,
   getAllPosts,
-  getAllPostsByCategory,
   getRecipeByRange,
   getCreatorsByRange,
   getCreatorById,
+  getFoodieById,
   newCreatorPost,
   deletePost,
   updateCreatorPost,
   getFollowers,
+  getTotalFollowers,
   getCategoryByRange,
   getAllCategory,
   followCreator,
@@ -289,11 +325,13 @@ export default {
   getAllFollowing,
   getPostsContainingTitle,
   getPostsContainingCategory,
-
+  getPostsContainingIngredient,
+  getPostsByDuration,
   addRating,
   deleteRatingByPostId,
   getRatingByPostId,
   createComment,
   getCommentsByPostId,
   deleteComment,
+  deleteFoodie,
 };

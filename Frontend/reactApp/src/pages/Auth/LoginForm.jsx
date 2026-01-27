@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import UserService from "../../service/UserService";
 
@@ -92,7 +93,7 @@ export default function LoginForm() {
       }
     } catch (e) {
       console.error(e);
-      alert(e?.message || "Login failed");
+      toast.error(e?.message || "Login failed");
     }
   };
 

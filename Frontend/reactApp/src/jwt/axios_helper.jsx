@@ -1,8 +1,13 @@
 import axios from "axios";
+import { toast } from "react-hot-toast";
+// Imports removed
+
+// const url = "localhost";
+const url = "192.168.1.8";
 
 const LogAPI = axios.create({
   // .NET logger
-  baseURL: "http://localhost:6001/Log",
+  baseURL: "http://" + url + ":6001/Log",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -10,7 +15,7 @@ const LogAPI = axios.create({
 });
 
 const BackendAPI = axios.create({
-  baseURL: "http://localhost:9001",
+  baseURL: "http://" + url + ":9001",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -18,6 +23,7 @@ const BackendAPI = axios.create({
 });
 
 export const request = (method, url, data = {}, messageToLog = "") => {
+  // const navigate = useNavigate(); removed
   return BackendAPI({
     method,
     url,
@@ -40,6 +46,20 @@ export const request = (method, url, data = {}, messageToLog = "") => {
       return res;
     })
     .catch((err) => {
+      if (err.response?.status === 403) {
+        console.log("Unauthorized request");
+        // window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Unauthorized request");
+        // prevent error message due to failed promise
+        return new Promise(() => {});
+      }
+      if (err.response?.status === 401) {
+        console.log("Expired token");
+        window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Expired token");
+        // prevent error message due to failed promise
+        return new Promise(() => {});
+      }
       // Log full Axios error
       console.error(err.response?.data || err.message || err);
       throw err; // rethrow original error without wrapping
@@ -67,6 +87,20 @@ export const requestJwt = (method, url, data = {}, messageToLog = "") => {
       return res;
     })
     .catch((err) => {
+      if (err.response?.status === 403) {
+        console.log("Unauthorized request");
+        // window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Unauthorized request");
+        // prevent error message due to failed promise
+        return new Promise(() => {});
+      }
+      if (err.response?.status === 401) {
+        console.log("Expired token");
+        window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Expired token");
+        // prevent error message due to failed promise
+        return new Promise(() => {});
+      }
       // Log full Axios error
       console.error(err.response?.data || err.message || err);
       throw err; // rethrow original error without wrapping
@@ -101,6 +135,20 @@ export const requestParamJwt = (
       return res;
     })
     .catch((err) => {
+      console.log(err.response);
+      if (err.response?.status === 403) {
+        console.log("Unauthorized request");
+        // window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Unauthorized request");
+        // prevent error message due to failed promise
+        return new Promise(() => {});
+      }
+      if (err.response?.status === 401) {
+        console.log("Expired token");
+        window.dispatchEvent(new CustomEvent("auth:logout"));
+        toast.error("Expired token");
+        return new Promise(() => {});
+      }
       // Log full Axios error
       console.error(err.response?.data || err.message || err);
       throw err; // rethrow original error without wrapping

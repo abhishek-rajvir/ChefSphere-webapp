@@ -7,6 +7,7 @@ export default function CreatorNavigationLayout({
   newPost,
   updatePost,
   viewPost,
+  creatorPage,
 }) {
   // param is the name of key
   const params = useParams();
@@ -23,6 +24,9 @@ export default function CreatorNavigationLayout({
   const data = sessionStorage.getItem("userCred");
   const user = data ? JSON.parse(data) : null;
 
+  if (creatorPage) {
+    return <UserPage creator={true} user={user} />;
+  }
   if (postPage) {
     if (newPost) {
       return <UserPage posts={true} newPost={true} user={user} />;
@@ -48,6 +52,8 @@ export default function CreatorNavigationLayout({
       return <UserPage profile={true} user={user} />;
     case "followers":
       return <UserPage followers={true} user={user} />;
+    case "settings":
+      return <UserPage settings={true} user={user} />;
     default:
       return <NotFoundPage />;
   }

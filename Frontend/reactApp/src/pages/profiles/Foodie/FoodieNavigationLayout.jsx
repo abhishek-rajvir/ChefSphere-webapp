@@ -63,6 +63,8 @@ export default function FoodieNavigationLayout({
       return <UserPage creators={true} user={user} />;
     case "following":
       return <UserPage following={true} user={user} />;
+    case "settings":
+      return <UserPage settings={true} user={user} />;
     default:
       return <NotFoundPage />;
   }

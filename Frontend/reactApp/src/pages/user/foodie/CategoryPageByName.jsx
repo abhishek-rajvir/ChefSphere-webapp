@@ -15,7 +15,8 @@ export default function CategoryPageByName({ categoryName }) {
     if (!currentCategory) return;
     (async () => {
       try {
-        const data = await FoodieService.getAllPostsByCategory(currentCategory);
+        const data =
+          await FoodieService.getPostsContainingCategory(currentCategory);
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts by category:", error);

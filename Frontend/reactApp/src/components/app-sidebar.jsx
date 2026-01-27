@@ -15,9 +15,16 @@ import {
 } from "@/components/ui/sidebar";
 import UserService from "@/service/UserService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/context/AuthContext";
 
 export function AppSidebar({ name, items }) {
+  const { isAuthenticated } = useAuth();
+
   const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/login", { replace: true });
+  };
   const handleLogout = () => {
     UserService.logoutUser();
     navigate("/login", { replace: true });
@@ -53,7 +60,11 @@ export function AppSidebar({ name, items }) {
         <p className="flex left">
           <ModeToggle />
           &nbsp; &nbsp;
-          <Button onClick={handleLogout}>Logout</Button>
+          {isAuthenticated ? (
+            <Button onClick={handleLogout}>Logout</Button>
+          ) : (
+            <Button onClick={handleLogin}>Login</Button>
+          )}
         </p>
       </SidebarFooter>
     </Sidebar>

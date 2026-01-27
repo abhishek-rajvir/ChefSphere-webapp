@@ -1,9 +1,8 @@
 import React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
-import SideBar from "./SideBar";
+
 import CreatorSideBar from "../profiles/Creator/CreatorSideBar";
 import FoodieSideBar from "../profiles/Foodie/FoodieSideBar";
-// import FoodieSideBar from "../profiles/Foodie/FoodieSideBar";
 
 export default function UserPage({
   user,
@@ -20,6 +19,7 @@ export default function UserPage({
   search,
   category,
   creator,
+  settings,
 }) {
   return (
     <>
@@ -34,6 +34,8 @@ export default function UserPage({
             followersPage={followers}
             profilePage={profile}
             details={user}
+            creatorPage={creator}
+            settingsPage={settings}
           />
         ) : (
           <FoodieSideBar
@@ -49,6 +51,7 @@ export default function UserPage({
             searchPage={search}
             categoryPage={category}
             creatorPage={creator}
+            settingsPage={settings}
           />
         )}
       </ThemeProvider>

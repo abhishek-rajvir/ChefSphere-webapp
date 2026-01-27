@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import FoodieService from "@/service/FoodieService";
+import { FetchAvatar } from "@/service/ImagekitApiService";
 import {
   Table,
   TableBody,
@@ -51,7 +53,7 @@ export default function FollowingTable() {
       );
     } catch (error) {
       console.error("Unfollow failed:", error);
-      alert("Failed to unfollow. Please try again.");
+      toast.error("Failed to unfollow. Please try again.");
     }
   };
 
@@ -77,7 +79,7 @@ export default function FollowingTable() {
           </TableHeader>
           <TableBody>
             {currentFollowings.map((following) => {
-              const id = following.cid || following.id;
+              const id = following.id || following.cid;
               const name =
                 following.username ||
                 (following.firstName
@@ -92,9 +94,10 @@ export default function FollowingTable() {
                   </TableCell>
                   <TableCell className="h-full text-center">
                     <div className="flex justify-center items-center">
-                      {icon ? (
-                        <img
-                          src={icon}
+                      {id ? (
+                        <FetchAvatar
+                          userId={id}
+                          size={40}
                           alt={name}
                           className="h-10 w-10 rounded-full object-cover"
                         />

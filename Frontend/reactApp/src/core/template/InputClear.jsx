@@ -34,6 +34,11 @@ const InputClearDemo = () => {
           placeholder="Search..."
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
           className="pr-16" // space for 2 icons
         />
 

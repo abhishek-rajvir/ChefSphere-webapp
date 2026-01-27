@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FoodieService from "@/service/FoodieService";
 import { FetchAvatar } from "@/service/ImagekitApiService";
 import CreatorPostTable from "./CreatorPostTable";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, Mail, MapPin, User, Loader2 } from "lucide-react";
+import { Star, Mail, User, Loader2 } from "lucide-react";
 
 import { useParams } from "react-router-dom";
 

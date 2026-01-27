@@ -1,37 +1,36 @@
 // Menu items.
 import {
   UsersRoundIcon,
+  ImageIcon,
   UserPenIcon,
-  HomeIcon,
-  ChefHat,
   InfoIcon,
   Settings,
 } from "lucide-react";
 
 const items = [
   {
-    title: "Home",
-    url: "/foodies/home",
-    icon: HomeIcon,
-  },
-  {
     title: "Profile",
-    url: "/foodies/profile",
+    url: "/admin/profile",
     icon: UserPenIcon,
   },
   {
-    title: "Following",
-    url: "/foodies/following",
-    icon: UsersRoundIcon,
+    title: "Posts",
+    url: "/admin/posts",
+    icon: ImageIcon,
   },
   {
     title: "Creators",
-    url: "/foodies/creators",
-    icon: ChefHat,
+    url: "/admin/creators",
+    icon: ImageIcon,
+  },
+  {
+    title: "Foodies",
+    url: "/admin/foodies",
+    icon: UsersRoundIcon,
   },
   {
     title: "Settings",
-    url: "/foodies/settings",
+    url: "/admin/settings",
     icon: Settings,
   },
   {

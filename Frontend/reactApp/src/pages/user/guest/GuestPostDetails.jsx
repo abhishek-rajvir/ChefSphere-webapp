@@ -1,20 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import {
-  Star,
-  Clock,
-  Folder,
-  Utensils,
-  StarHalf,
-  Trash2,
-  Send,
-} from "lucide-react";
+import { Star, Clock, Folder, Utensils, StarHalf } from "lucide-react";
 import { getYoutubeId } from "@/lib/utils";
 import FoodieService from "@/service/FoodieService";
-import Fraction from "fraction.js";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -23,6 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Fraction from "fraction.js";
+import { useAuth } from "../../../utils/context/AuthContext";
 
 // Utility to convert decimal to mixed fraction
 const toFraction = (value) => {
@@ -54,8 +44,15 @@ const StarRating = ({ rating }) => {
   );
 };
 
-export default function PostPage({ post: postId }) {
+export default function GuestPostDetails({}) {
   const navigate = useNavigate();
+
+  const params = useParams();
+  const postId = Number(params.id);
+
+  if (!postId || isNaN(postId) || postId < 1) {
+    navigate(-1);
+  }
   const [postData, setPostData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,13 +60,10 @@ export default function PostPage({ post: postId }) {
   // Comments and Ratings State
   const [comments, setComments] = useState([]);
   const [postRating, setPostRating] = useState(null); // The average rating
-  const [commentInput, setCommentInput] = useState("");
-  const [userRating, setUserRating] = useState(0); // For user submission (not fully implemented yet per req)
+  // State removed
 
   // Get current user from session
-  const user = JSON.parse(sessionStorage.getItem("userCred") || "{}");
-  const username = user.username || user.name;
-  const userEmail = user.email; // Extract email for comparison
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!postId) return;
@@ -156,70 +150,7 @@ export default function PostPage({ post: postId }) {
   const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
   // Handlers
-  const handleAddComment = async () => {
-    if (!commentInput.trim()) return;
-
-    // Check if user already commented
-    if (comments.some((c) => c.username === username)) {
-      toast.error("You can only post one comment per recipe.");
-      return;
-    }
-
-    try {
-      const commentData = {
-        message: commentInput,
-        postId: postId,
-      };
-
-      await FoodieService.createComment(commentData);
-
-      // Refresh comments
-      const newComments = await FoodieService.getCommentsByPostId(postId);
-      setComments(newComments || []);
-      setCommentInput("");
-    } catch (e) {
-      console.error("Failed to add comment", e);
-      toast.error("Failed to post comment");
-    }
-  };
-
-  const handleDeleteComment = async (commentId) => {
-    if (window.confirm("Are you sure you want to delete this comment?")) {
-      try {
-        await FoodieService.deleteComment(commentId);
-        // Refresh comments
-        setComments((prev) =>
-          prev.filter((c) => c.id !== commentId && c.commentId !== commentId),
-        );
-      } catch (e) {
-        console.error("Failed to delete comment", e);
-        toast.error("Failed to delete comment");
-      }
-    }
-  };
-
-  const handleRatePost = async (newRating) => {
-    if (user?.type?.toUpperCase() === "CREATOR") {
-      toast.error("Creators cannot rate recipes.");
-      return;
-    }
-
-    try {
-      const ratingData = {
-        postId: postId,
-        rating: newRating,
-      };
-      await FoodieService.addRating(ratingData);
-      setUserRating(newRating);
-
-      // Refresh overall rating
-      const updatedRating = await FoodieService.getRatingByPostId(postId);
-      setPostRating(updatedRating);
-    } catch (e) {
-      console.error("Failed to submit rating", e);
-      toast.error("Failed to  submit rating");
-    }
-  };
+  // Handlers removed
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-12 bg-background text-foreground animate-in fade-in duration-500">
@@ -406,33 +337,10 @@ export default function PostPage({ post: postId }) {
             ) : null;
           })()}
 
-          {user?.type?.toUpperCase() !== "CREATOR" ? (
-            <>
-              {/* Rating Interaction */}
-              <div
-                className="flex items-center gap-2 cursor-pointer p-4 rounded-full bg-muted/30 hover:bg-muted/50 transition-colors"
-                title="Click to rate">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`w-8 h-8 transition-transform hover:scale-110 ${
-                      userRating >= star
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-muted-foreground hover:text-yellow-400"
-                    }`}
-                    onClick={() => handleRatePost(star)}
-                  />
-                ))}
-              </div>
-              <p className="text-muted-foreground text-sm">
-                Click a star to submit your rating
-              </p>
-            </>
-          ) : (
-            <p className="text-muted-foreground italic">
-              Creators cannot rate recipes.
-            </p>
-          )}
+          {/* Login requirement message */}
+          <p className="text-muted-foreground italic mt-4">
+            Login required to give ratings.
+          </p>
         </div>
       </section>
 
@@ -443,38 +351,10 @@ export default function PostPage({ post: postId }) {
         <h2 className="text-2xl font-bold px-2">Discuss</h2>
         <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-8">
           {/* Add Comment */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Leave a comment</h3>
-            <div className="flex gap-4">
-              <Input
-                placeholder="Share your thoughts..."
-                value={commentInput}
-                onChange={(e) => setCommentInput(e.target.value)}
-                className="flex-1"
-                disabled={comments.some(
-                  (c) =>
-                    c.authorName === username || c.authorName === userEmail,
-                )}
-              />
-              <Button
-                onClick={handleAddComment}
-                disabled={
-                  !commentInput.trim() ||
-                  comments.some(
-                    (c) =>
-                      c.authorName === username || c.authorName === userEmail,
-                  )
-                }>
-                <Send className="w-4 h-4 mr-2" /> Post
-              </Button>
-            </div>
-            {comments.some(
-              (c) => c.authorName === username || c.authorName === userEmail,
-            ) && (
-              <p className="text-xs text-muted-foreground">
-                You have already posted a comment.
-              </p>
-            )}
+          <div className="p-4 bg-muted/20 rounded-xl text-center">
+            <p className="text-muted-foreground italic">
+              Login required to post comments.
+            </p>
           </div>
 
           <div className="h-px bg-border my-6" />
@@ -506,28 +386,7 @@ export default function PostPage({ post: postId }) {
                             comment.username}
                         </span>
                         {/* Check permissions: match username OR email */}
-                        {((comment.authorName &&
-                          (comment.authorName === username ||
-                            comment.authorName === userEmail)) ||
-                          (comment.foodieName &&
-                            (comment.foodieName === username ||
-                              comment.foodieName === userEmail)) ||
-                          (comment.username &&
-                            (comment.username === username ||
-                              comment.username === userEmail)) ||
-                          postData.creatorName === username ||
-                          postData.creatorName === userEmail) && (
-                          <button
-                            onClick={() =>
-                              handleDeleteComment(
-                                comment.id || comment.commentId,
-                              )
-                            }
-                            className="text-red-500 hover:bg-red-100 p-1.5 rounded-full transition-colors"
-                            title="Delete comment">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
+                        {/* Delete button removed */}
                       </div>
                       <p className="text-sm text-foreground/90 text-left">
                         {comment.message}

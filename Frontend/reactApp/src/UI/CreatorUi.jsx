@@ -1,28 +1,21 @@
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 import { Link } from "react-router-dom";
-import FoodieConfig from "@/pages/user/foodie/FoodieConfig";
 import CreatorConfig from "@/pages/user/creator/CreatorConfig";
 import FoodieService from "@/service/FoodieService";
 import { requestLog } from "@/jwt/axios_helper";
-import { Button } from "@/components/ui/button";
 import { FollowerTable } from "@/pages/user/creator/FollowerTable";
 import { ProfileForm } from "@/pages/user/creator/ProfileForm";
 import Settings from "@/pages/profiles/Settings";
 import { NewPostForm } from "@/pages/user/creator/post/NewPostForm";
 import { UpdatePostForm } from "@/pages/user/creator/post/UpdatePostForm";
-import CreatorPage from "./CreatorPage";
 import CreatorPosts from "@/pages/user/creator/post/CreatorPosts";
 import PostPage from "@/pages/user/creator/post/PostPage";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-export default function CreatorSideBar({
+export default function CreatorUi({
   name,
   newPost,
   updatePost,

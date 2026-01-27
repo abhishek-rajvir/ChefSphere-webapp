@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FetchAvatar } from "@/service/ImagekitApiService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
@@ -39,12 +40,9 @@ export default function CreatorTableCard({ creators }) {
               {/* Avatar Section */}
               <div className="flex-shrink-0">
                 <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-border shadow-sm mx-auto sm:mx-0">
-                  <img
-                    src={
-                      creator.icon ||
-                      creator.avatar ||
-                      "https://dummyjson.com/image/100x100/e0e0e0/000000?text=Avatar"
-                    }
+                  <FetchAvatar
+                    userId={creator.id || creator.cid}
+                    size={96}
                     alt={creator.name}
                     className="w-full h-full object-cover"
                   />

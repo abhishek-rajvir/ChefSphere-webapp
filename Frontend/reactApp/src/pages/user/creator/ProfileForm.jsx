@@ -1,4 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,17 +14,21 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Pencil, User } from "lucide-react";
-import { UploadImage, FetchImage } from "@/service/ImagekitApiService";
+import { UploadAvatar, FetchAvatar } from "@/service/ImagekitApiService";
+import FoodieService from "@/service/FoodieService";
+import UserService from "@/service/UserService";
 
 export function ProfileForm({ initialData = {}, onSave }) {
   const [formData, setFormData] = useState({
-    first_name: initialData.first_name || "",
-    last_name: initialData.last_name || "",
+    firstName: initialData.firstName || "",
+    lastName: initialData.lastName || "",
     username: initialData.username || "",
     email: initialData.email || "",
-    password: "",
+    id: initialData.id || "",
+
     gender: initialData.gender || "",
     avatarUrl: initialData.avatarUrl || "",
+    description: initialData.description || "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,6 +36,32 @@ export function ProfileForm({ initialData = {}, onSave }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const data = await UserService.getUserDetails();
+
+        if (data) {
+          setFormData((prev) => ({
+            ...prev,
+            firstName: data.firstName || prev.firstName,
+            lastName: data.lastName || prev.lastName,
+            username: data.username || prev.username,
+            email: data.email || prev.email,
+            id: data.id || prev.id,
+            gender: data.gender || prev.gender,
+            avatarUrl: data.pic || prev.avatarUrl,
+            description: data.description || prev.description,
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch user details", error);
+      }
+    };
+    fetchUserDetails();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,10 +101,10 @@ export function ProfileForm({ initialData = {}, onSave }) {
     // If a new image file was selected, upload it first
     if (selectedFile) {
       try {
-        finalAvatarUrl = await UploadImage(selectedFile, {
-          folder: "/avatars",
-          fileName: `avatar_${formData.username || Date.now()}`,
-        });
+        finalAvatarUrl = await UploadAvatar(
+          selectedFile,
+          formData.id || "temp",
+        );
       } catch (error) {
         setErrors({ avatar: error.message || "Failed to upload avatar image" });
         setIsSubmitting(false);
@@ -82,14 +114,26 @@ export function ProfileForm({ initialData = {}, onSave }) {
 
     const finalFormData = {
       ...formData,
-      avatarUrl: finalAvatarUrl,
+      pic: finalAvatarUrl,
     };
 
-    if (onSave) {
-      onSave(finalFormData);
+    try {
+      if (onSave) {
+        // If parent provided onSave (unlikely based on current usage, but for compatibility)
+        onSave(finalFormData);
+      }
+
+      // Call service to update user details
+      await UserService.updateUserDetails(finalFormData);
+      console.log("Saved Profile:", finalFormData);
+      toast.success("Profile updated successfully");
+      navigate("/home");
+    } catch (error) {
+      console.error("Failed to update profile", error);
+      setErrors((prev) => ({ ...prev, api: "Failed to update profile" }));
+    } finally {
+      setIsSubmitting(false);
     }
-    console.log("Saved Profile:", finalFormData);
-    setIsSubmitting(false);
   };
 
   // Display image: preview of selected file, or existing avatarUrl
@@ -115,10 +159,10 @@ export function ProfileForm({ initialData = {}, onSave }) {
                     alt="Avatar Preview"
                     className="h-full w-full object-cover"
                   />
-                ) : formData.avatarUrl ? (
+                ) : formData.id ? (
                   (
-                    <FetchImage
-                      name={formData.avatarUrl}
+                    <FetchAvatar
+                      userId={formData.id || formData.cid}
                       width={96}
                       height={96}
                       alt="Avatar"
@@ -157,22 +201,22 @@ export function ProfileForm({ initialData = {}, onSave }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="first_name">First Name</Label>
+              <Label htmlFor="firstName">First Name</Label>
               <Input
-                id="first_name"
-                name="first_name"
+                id="firstName"
+                name="firstName"
                 placeholder="John"
-                value={formData.first_name}
+                value={formData.firstName}
                 onChange={handleChange}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name</Label>
+              <Label htmlFor="lastName">Last Name</Label>
               <Input
-                id="last_name"
-                name="last_name"
+                id="lastName"
+                name="lastName"
                 placeholder="Doe"
-                value={formData.last_name}
+                value={formData.lastName}
                 onChange={handleChange}
               />
             </div>
@@ -202,18 +246,6 @@ export function ProfileForm({ initialData = {}, onSave }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="text"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="gender">Gender</Label>
             <select
               id="gender"
@@ -230,6 +262,22 @@ export function ProfileForm({ initialData = {}, onSave }) {
               <option value="female">Female</option>
             </select>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Bio</Label>
+            <textarea
+              id="description"
+              name="description"
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Tell us about yourself"
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          {errors.api && (
+            <p className="text-sm text-red-500 text-center">{errors.api}</p>
+          )}
         </CardContent>
         <CardFooter className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>

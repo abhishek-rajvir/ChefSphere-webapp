@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import UserService from "../../../service/UserService";
 import CreatorService from "../../../service/CreatorService";
 
@@ -20,12 +21,12 @@ export default function CreatorSignUp() {
     if (!validate()) return;
 
     try {
-      if(UserService.checkUserName(forms.username)){
-          setErr({...err,username:"Username already exists"})
-          return;
+      if (UserService.checkUserName(forms.username)) {
+        setErr({ ...err, username: "Username already exists" });
+        return;
       }
       const res = await CreatorService.RegisterCreator(forms);
-      alert("Registeration successful");
+      toast.success("Registeration successful");
       console.log(res);
     } catch (e) {
       console.log(e.message);
@@ -45,7 +46,7 @@ export default function CreatorSignUp() {
       errors.firstName = "FirstName cannot be blank";
     } else if (!/^[a-zA-Z\s]+$/.test(firstName)) {
       errors.firstName = "FirstName cannot have numbers or special characters";
-    } else if (firstName.length <2) {
+    } else if (firstName.length < 2) {
       errors.firstName = "FirstName should have at least 2 characters";
     }
 
@@ -76,7 +77,7 @@ export default function CreatorSignUp() {
       errors.password = "Password cannot be blank";
     } else if (
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-        password
+        password,
       )
     ) {
       errors.password =
@@ -105,16 +106,14 @@ export default function CreatorSignUp() {
         minHeight: "100vh",
         padding: "20px",
         background: "white",
-      }}
-    >
+      }}>
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           minHeight: "100%",
-        }}
-      >
+        }}>
         <form
           onSubmit={handleSubmit}
           style={{
@@ -125,8 +124,7 @@ export default function CreatorSignUp() {
             borderRadius: "8px",
             boxShadow: "0 0 10px rgba(0,0,0,0.1)",
             backgroundColor: "white",
-          }}
-        >
+          }}>
           <h4 style={{ textAlign: "center", marginBottom: "20px" }}>
             Creator Registration Form
           </h4>
@@ -137,7 +135,9 @@ export default function CreatorSignUp() {
             <input
               type="text"
               placeholder="Ajay"
-              onChange={(e) => setForms({ ...forms, firstName: e.target.value })}
+              onChange={(e) =>
+                setForms({ ...forms, firstName: e.target.value })
+              }
               className="form-control"
               value={forms.firstName}
             />

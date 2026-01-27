@@ -5,6 +5,7 @@ import {
   UserPenIcon,
   Info,
   InfoIcon,
+  Settings,
 } from "lucide-react";
 
 const items = [
@@ -22,6 +23,11 @@ const items = [
     title: "Followers",
     url: "/creators/followers",
     icon: UsersRoundIcon,
+  },
+  {
+    title: "Settings",
+    url: "/creators/settings",
+    icon: Settings,
   },
   {
     title: "About us",

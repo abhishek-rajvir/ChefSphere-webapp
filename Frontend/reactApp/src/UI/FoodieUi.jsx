@@ -1,8 +1,4 @@
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import InputClearDemo from "@/core/template/InputClear";
 import FoodieConfig from "@/pages/user/foodie/FoodieConfig";
@@ -12,17 +8,15 @@ import Settings from "@/pages/profiles/Settings";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AllCategoryPage from "@/pages/user/foodie/AllCategoryPage";
-import CreatorPostTable from "@/pages/user/foodie/CreatorPostTable";
 import CreatorPage from "@/pages/user/foodie/CreatorPage";
 import CreatorsPage from "@/pages/user/foodie/CreatorsPage";
 import AllPostPage from "@/pages/user/foodie/AllPostPage";
-import FollowingTable from "../../user/foodie/FollowingTable";
-import PostPage from "../../user/creator/post/PostPage";
+import FollowingTable from "@/pages/user/foodie/FollowingTable";
+import PostPage from "@/pages/user/creator/post/PostPage";
 import SearchPage from "@/pages/user/foodie/SearchPage";
 import CategoryPageByName from "@/pages/user/foodie/CategoryPageByName";
-import NotFoundPage from "../../error/NotFoundPage";
 
-export default function FoodieSideBar({
+export default function FoodieUi({
   name,
   homePage,
   searchPage,
@@ -33,9 +27,9 @@ export default function FoodieSideBar({
   details,
   categoriesPage,
   creatorsPage,
+  creatorDetailsPage,
   viewPost,
   categoryPage,
-  creatorPage,
 }) {
   const [following, setFollowing] = useState([]);
   const navigate = useNavigate();
@@ -61,6 +55,9 @@ export default function FoodieSideBar({
     settingsPage,
     categoriesPage,
     creatorsPage,
+    creatorDetailsPage,
+    viewPost,
+    categoryPage,
   ]);
 
   return (
@@ -94,8 +91,8 @@ export default function FoodieSideBar({
           {categoriesPage && <AllCategoryPage />}
           {categoryPage && <CategoryPageByName categoryName={categoryPage} />}
           {creatorsPage && <CreatorsPage />}
-          {creatorPage !== undefined && creatorPage !== null && (
-            <CreatorPage cid={creatorPage} />
+          {creatorDetailsPage !== undefined && creatorDetailsPage !== null && (
+            <CreatorPage cid={creatorDetailsPage} />
           )}
           {searchPage && (
             <SearchPage sortBy={searchPage.sortBy} query={searchPage.query} />

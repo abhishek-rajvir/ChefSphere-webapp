@@ -71,7 +71,7 @@ const getFollowers = async (cid) => {
   try {
     const res = await requestParamJwt(
       "GET",
-      "/creators/followers",
+      "/engagement/follow/followers",
       {},
       cid,
       "",
@@ -84,10 +84,19 @@ const getFollowers = async (cid) => {
 
 const getAllFollowers = async () => {
   try {
-    const res = await requestJwt("GET", "/creators/allFollowers");
+    const res = await requestJwt("GET", "/engagement/follow/allFollowers");
     return res.data;
   } catch (err) {
     throw new Error("failed to get all followers");
+  }
+};
+
+const deleteCreator = async () => {
+  try {
+    const res = await requestJwt("DELETE", "/creators/delete");
+    return res.data;
+  } catch (err) {
+    throw new Error("Creator deletion failed");
   }
 };
 
@@ -101,4 +110,5 @@ export default {
   deletePost,
   getAllPosts,
   getAllFollowers,
+  deleteCreator,
 };

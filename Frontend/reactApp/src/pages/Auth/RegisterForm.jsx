@@ -26,6 +26,7 @@ import UserService from "@/service/UserService";
 import { ModeToggle } from "@/components/mode-toggle";
 
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm({ ...props }) {
@@ -38,6 +39,7 @@ export default function RegisterForm({ ...props }) {
     confirmPassword: "",
     gender: "MALE",
     type: "FOODIE",
+    description: "",
   });
 
   const navigate = useNavigate();
@@ -92,10 +94,15 @@ export default function RegisterForm({ ...props }) {
       errors.username = "User name must be at least 3 characters long";
     }
     try {
-      const res = await UserService.checkUserName(forms.username);
-      errors.username = "User name already exists";
+      await UserService.checkUserName(forms.username);
     } catch (e) {
-      // User not found, so username is available
+      errors.username = "User name already exists";
+    }
+
+    try {
+      await UserService.checkEmail(forms.email);
+    } catch (e) {
+      errors.email = "Email already exists";
     }
 
     setErr(errors);
@@ -112,7 +119,7 @@ export default function RegisterForm({ ...props }) {
       navigate(`/login`, { replace: true });
     } catch (e) {
       console.error(e);
-      alert(e?.message || "Register failed");
+      toast.error(e?.message || "Register failed");
       return;
     }
   };
@@ -304,6 +311,20 @@ export default function RegisterForm({ ...props }) {
                 {err.confirmPassword && (
                   <p className="text-sm text-red-500">{err.confirmPassword}</p>
                 )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="description">Bio (Optional)</FieldLabel>
+                <textarea
+                  id="description"
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Tell us a little about yourself..."
+                  onChange={(e) =>
+                    setForms((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                />
               </Field>
               <FieldGroup>
                 <Field>

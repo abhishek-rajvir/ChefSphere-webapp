@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,15 @@ import { Plus, Trash2 } from "lucide-react";
 import { request, requestLog } from "../../../../jwt/axios_helper";
 import CreatorService from "../../../../service/CreatorService";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function UpdatePostForm({ id }) {
   const { id: paramId } = useParams();
@@ -129,7 +139,7 @@ export function UpdatePostForm({ id }) {
       ...prev,
       list_Of_Ingredients: [
         ...prev.list_Of_Ingredients,
-        { name: "", description: "", qty: 0 },
+        { name: "", description: "", qty: 0, unit: "g" },
       ],
     }));
   };
@@ -193,7 +203,7 @@ export function UpdatePostForm({ id }) {
     // Basic Info validation
     if (!formData.post_title.trim()) return "Post title is required";
     if (!formData.description.trim()) return "Post description is required";
-    if (!formData.videoUrl.trim()) return "Video URL is required";
+    // if (!formData.videoUrl.trim()) return "Video URL is required";
 
     // Recipe Details validation
     const { recipe_name, description, prepTime, number_of_servings } =
@@ -221,6 +231,14 @@ export function UpdatePostForm({ id }) {
       if (Number(ing.qty) <= 0) return "Ingredient quantity must be positive";
     }
 
+    const ingredientNames = formData.list_Of_Ingredients.map((ing) =>
+      ing.name.trim().toLowerCase(),
+    );
+    const uniqueIngredients = new Set(ingredientNames);
+    if (uniqueIngredients.size !== ingredientNames.length) {
+      return "Duplicate ingredients found. Please ensure all ingredients have unique names.";
+    }
+
     // Steps validation
     if (formData.list_of_Steps.length === 0)
       return "At least one step is required";
@@ -232,20 +250,55 @@ export function UpdatePostForm({ id }) {
     return null;
   };
 
+  // Helper to remove empty fields
+  const cleanPayload = (obj) => {
+    if (Array.isArray(obj)) {
+      const cleaned = obj
+        .map(cleanPayload)
+        .filter((item) => item !== undefined);
+      return cleaned.length > 0 ? cleaned : undefined;
+    }
+    if (typeof obj === "object" && obj !== null) {
+      const newObj = {};
+      Object.keys(obj).forEach((key) => {
+        const value = cleanPayload(obj[key]);
+        if (value !== undefined) {
+          newObj[key] = value;
+        }
+      });
+      return Object.keys(newObj).length > 0 ? newObj : undefined;
+    }
+    if (typeof obj === "string") {
+      return obj.trim().length > 0 ? obj : undefined;
+    }
+    if (obj !== null && obj !== undefined) {
+      return obj;
+    }
+    return undefined;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const error = validateForm();
     if (error) {
-      alert(error);
+      toast.error(error);
       return;
     }
+
+    const payload = cleanPayload(formData);
+
+    if (!payload) {
+      toast.error("No data to update");
+      return;
+    }
+
     try {
-      const res = await CreatorService.updateCreatorPost(postId, formData);
+      const res = await CreatorService.updateCreatorPost(postId, payload);
       requestLog("Updated Post " + res.post_title);
-      alert("Post updated successfully");
+      toast.success("Post updated successfully");
       navigate("/creators/posts");
     } catch (err) {
-      alert("Failed to update post");
+      toast.error("Failed to update post");
       console.log("Failed to update postid: " + postId);
       return;
     }
@@ -418,7 +471,7 @@ export function UpdatePostForm({ id }) {
                       <Trash2 className="w-4 h-4" />
                     </Button>
 
-                    <div className="md:col-span-4 grid gap-2">
+                    <div className="md:col-span-3 grid gap-2">
                       <Label>Name</Label>
                       <Input
                         value={ing.name}
@@ -428,7 +481,7 @@ export function UpdatePostForm({ id }) {
                         placeholder="e.g. Flour"
                       />
                     </div>
-                    <div className="md:col-span-6 grid gap-2">
+                    <div className="md:col-span-4 grid gap-2">
                       <Label>Description</Label>
                       <Input
                         value={ing.description}
@@ -453,6 +506,49 @@ export function UpdatePostForm({ id }) {
                         }
                         placeholder="e.g. 500"
                       />
+                    </div>
+                    <div className="md:col-span-3 grid gap-2">
+                      <Label>Unit</Label>
+                      <Select
+                        value={ing.unit || "g"}
+                        onValueChange={(val) =>
+                          handleIngredientChange(index, "unit", val)
+                        }>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Weight</SelectLabel>
+                            <SelectItem value="g">gram (g)</SelectItem>
+                            <SelectItem value="kg">kilogram (kg)</SelectItem>
+                          </SelectGroup>
+                          <SelectGroup>
+                            <SelectLabel>Volume</SelectLabel>
+                            <SelectItem value="ml">milliliter (ml)</SelectItem>
+                            <SelectItem value="l">liter (l)</SelectItem>
+                            <SelectItem value="tsp">teaspoon (tsp)</SelectItem>
+                            <SelectItem value="tbsp">
+                              tablespoon (tbsp)
+                            </SelectItem>
+                            <SelectItem value="cup">cup</SelectItem>
+                          </SelectGroup>
+                          <SelectGroup>
+                            <SelectLabel>Count / Pieces</SelectLabel>
+                            <SelectItem value="pcs">pieces (pcs)</SelectItem>
+                            <SelectItem value="nos">numbers (nos)</SelectItem>
+                            <SelectItem value="cloves">cloves</SelectItem>
+                            <SelectItem value="fillets">fillets</SelectItem>
+                            <SelectItem value="sheets">sheets</SelectItem>
+                          </SelectGroup>
+                          <SelectGroup>
+                            <SelectLabel>Herbs / Small Amounts</SelectLabel>
+                            <SelectItem value="leaves">leaves</SelectItem>
+                            <SelectItem value="pinch">pinch</SelectItem>
+                            <SelectItem value="dash">dash</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 ))}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
+import { FetchCategory } from "@/service/ImagekitApiService";
 import { useNavigate } from "react-router-dom";
 
 export default function AllCategoryPage() {
@@ -57,10 +58,10 @@ export default function AllCategoryPage() {
               }
               className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
               <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
-                <img
-                  src={imageUrl}
-                  alt={cat.name}
-                  className={`w-full h-full ${cat.image ? "object-cover" : "object-contain p-2"}`}
+                <FetchCategory
+                  categoryName={cat.name}
+                  size={120}
+                  className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
                 />
               </div>
               <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
 import { useNavigate } from "react-router-dom";
 import { getYoutubeId } from "@/lib/utils";
+import { toast } from "react-hot-toast";
 
-export default function AllPostPage() {
+export default function GuestAllPosts() {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +19,7 @@ export default function AllPostPage() {
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        toast.error("Failed to fetch posts");
       }
     })();
   }, []);
@@ -50,7 +52,7 @@ export default function AllPostPage() {
           <Card
             key={idx}
             onClick={() => {
-              navigate(`/foodies/post/${post.pid}`);
+              navigate(`/post/${post.pid}`);
             }}
             className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
             <div className="h-[200px] w-full overflow-hidden">

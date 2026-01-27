@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FetchAvatar, FetchCategory } from "@/service/ImagekitApiService";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,16 +8,11 @@ import { getYoutubeId } from "@/lib/utils";
 
 import FoodieService from "@/service/FoodieService";
 
-export default function DashBoard() {
+export default function GuestDashBoard() {
   const [posts, setPosts] = useState([]);
   const [creators, setCreators] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [followingState, setFollowingState] = useState({});
 
-  const loadUser = () => {
-    const data = sessionStorage.getItem("userCred");
-    return data ? JSON.parse(data) : null;
-  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +23,7 @@ export default function DashBoard() {
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        toast.error("Failed to load posts");
       }
     })();
 
@@ -38,6 +34,7 @@ export default function DashBoard() {
         setCreators(data);
       } catch (error) {
         console.error("Error fetching creators:", error);
+        toast.error("Failed to load creators");
       }
     })();
 
@@ -48,25 +45,7 @@ export default function DashBoard() {
         setCategories(data);
       } catch (error) {
         console.error("Error fetching categories:", error);
-      }
-    })();
-
-    // Fetch followings
-    (async () => {
-      try {
-        const user = loadUser();
-        const uid = user?.id || user?.cid;
-        if (uid) {
-          const data = await FoodieService.getAllFollowing(uid);
-          const followState = {};
-          data.forEach((creator) => {
-            const cid = creator.cid || creator.id;
-            followState[cid] = true;
-          });
-          setFollowingState(followState);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories");
       }
     })();
   }, []);
@@ -75,7 +54,7 @@ export default function DashBoard() {
     <div className="p-4">
       <div className="flex justify-center items-center mb-4">
         <h2 className="text-2xl font-bold ">Recipes made with ❤️</h2>
-        <Button variant="link" onClick={() => navigate("/foodies/posts")}>
+        <Button variant="link" onClick={() => navigate("/posts")}>
           View all
         </Button>
       </div>
@@ -85,7 +64,7 @@ export default function DashBoard() {
             <Card
               key={idx}
               onClick={() => {
-                navigate(`/foodies/post/${post.pid}`);
+                navigate(`/post/${post.pid}`);
               }}
               className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
               <div className="h-[200px] w-full overflow-hidden">
@@ -115,23 +94,19 @@ export default function DashBoard() {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Categories</h2>
-          <Button
-            variant="link"
-            onClick={() => navigate("/foodies/categories")}>
+          <Button variant="link" onClick={() => navigate("/categories")}>
             View all
           </Button>
         </div>
         <div className="flex flex-wrap gap-4 justify-center">
           {categories.map((cat, idx) => {
-            const imageUrl =
-              cat.image ||
-              `https://placehold.jp/22/fdf2f8/000000/150x150.png?text=${encodeURIComponent(cat.name.trim())}`;
+            // imageUrl declaration removed
             return (
               <div
                 key={idx}
                 onClick={() =>
                   navigate(
-                    `/foodies/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                    `/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
                   )
                 }
                 className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
@@ -155,7 +130,7 @@ export default function DashBoard() {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Top Creators</h2>
-          <Button variant="link" onClick={() => navigate("/foodies/creators")}>
+          <Button variant="link" onClick={() => navigate("/creators")}>
             View all
           </Button>
         </div>
@@ -163,34 +138,18 @@ export default function DashBoard() {
           {creators.map((creator, idx) => {
             const name = creator.username || "Creator";
             const creatorId = creator.id || creator.cid;
-            const isFollowing = followingState[creatorId] || false;
-            const imageUrl =
-              creator.pic ||
-              `https://dummyjson.com/image/150x150/dcfce7/000000?text=${encodeURIComponent(name.charAt(0).toUpperCase())}&fontSize=40`;
+            // imageUrl declaration removed
 
             const handleFollowClick = async (e) => {
               e.stopPropagation(); // Prevent card navigation
-              try {
-                if (isFollowing) {
-                  await FoodieService.unFollowCreator(creatorId);
-                  setFollowingState((prev) => ({
-                    ...prev,
-                    [creatorId]: false,
-                  }));
-                } else {
-                  await FoodieService.followCreator(creatorId);
-                  setFollowingState((prev) => ({ ...prev, [creatorId]: true }));
-                }
-              } catch (error) {
-                console.error("Follow action failed:", error);
-                toast.error("Failed to follow/unfollow. Please try again.");
-              }
+              console.log("Forbidden request");
+              toast.error("Unauthorized request, please login");
             };
 
             return (
               <div
                 key={idx}
-                onClick={() => navigate(`/foodies/creators/${creatorId}`)}
+                onClick={() => navigate(`/creators/${creatorId}`)}
                 className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
                 <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
                   <FetchAvatar
@@ -204,12 +163,8 @@ export default function DashBoard() {
                 <span className="font-semibold text-sm">{name}</span>
                 <button
                   onClick={handleFollowClick}
-                  className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                    isFollowing
-                      ? "bg-black text-white dark:bg-white dark:text-black border border-primary"
-                      : "text-primary border border-primary hover:bg-primary hover:text-white"
-                  }`}>
-                  {isFollowing ? "Following" : "Follow"}
+                  className={`text-xs px-3 py-1 rounded-full transition-colors ${"text-primary border border-primary hover:bg-primary hover:text-white"}`}>
+                  {"Follow"}
                 </button>
               </div>
             );

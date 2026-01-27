@@ -1,31 +1,45 @@
+import { useEffect, useState } from "react";
 import PostTable from "./PostTable";
+import CreatorService from "@/service/CreatorService";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 export default function CreatorPosts() {
-  const mockPosts = [
-    {
-      id: "1",
-      name: "First Post",
-      description: "This is a description for the first post.",
-      imageTag: "nature",
-    },
-    {
-      id: "2",
-      name: "Second Post",
-      description: "Another interesting post description.",
-      imageTag: "tech",
-    },
-    {
-      id: "3",
-      name: "Third Post",
-      description: "Short description.",
-      imageTag: "art",
-    },
-  ];
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await CreatorService.getCreatorsPosts();
+        setPosts(data || []);
+      } catch (error) {
+        console.error("Failed to fetch posts", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Creator Posts</h1>
-      <PostTable posts={mockPosts} />
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Creator Posts</h1>
+        <Button onClick={() => navigate("/creators/post/new")}>
+          <Plus className="mr-2 h-4 w-4" /> New Post
+        </Button>
+      </div>
+      {loading ? (
+        <div className="text-center py-4">Loading posts...</div>
+      ) : (
+        <PostTable
+          posts={posts}
+          onPostDelete={(id) => setPosts(posts.filter((p) => p.pid !== id))}
+        />
+      )}
     </div>
   );
 }

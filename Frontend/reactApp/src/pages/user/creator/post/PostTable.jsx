@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,23 +14,26 @@ import CreatorService from "../../../../service/CreatorService";
 import { requestLog } from "../../../../jwt/axios_helper";
 import { useNavigate } from "react-router-dom";
 
-export default function PostTable({ cid }) {
+export default function PostTable({ cid, posts: propPosts, onPostDelete }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [posts, setPosts] = useState([]);
+  const [fetchedPosts, setFetchedPosts] = useState([]);
   const itemsPerPage = 5;
 
+  const posts = propPosts || fetchedPosts;
+
   useEffect(() => {
+    if (propPosts) return;
     (async () => {
       try {
         requestLog("Fetched creator posts for creatorId: " + cid);
         const data = await CreatorService.getCreatorsPosts();
         console.log(data);
-        setPosts(data || []);
+        setFetchedPosts(data || []);
       } catch (err) {
-        setPosts([]);
+        setFetchedPosts([]);
       }
     })();
-  }, []);
+  }, [cid, propPosts]);
 
   const navigate = useNavigate();
 
@@ -39,12 +42,17 @@ export default function PostTable({ cid }) {
     try {
       await CreatorService.deletePost(id);
       requestLog("Deleted post with ID: " + id);
-      const updatedPosts = posts.filter((post) => post.pid !== id);
-      setPosts(updatedPosts);
-      alert("Post deleted successfully");
+
+      if (propPosts && onPostDelete) {
+        onPostDelete(id);
+      } else {
+        const updatedPosts = fetchedPosts.filter((post) => post.pid !== id);
+        setFetchedPosts(updatedPosts);
+      }
+      toast.success("Post deleted successfully");
     } catch (err) {
       console.error("Failed to delete post:", err);
-      alert("Failed to delete post");
+      toast.error("Failed to delete post");
     }
   };
   // Handle case where posts is null or undefined
@@ -82,7 +90,7 @@ export default function PostTable({ cid }) {
               <TableRow
                 key={post.pid}
                 className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => navigate(`/foodies/posts/${post.pid}`)}>
+                onClick={() => navigate(`/creators/post/${post.pid}`)}>
                 <TableCell className="h-full text-center">{post.pid}</TableCell>
                 <TableCell className="h-full text-center max-w-[200px] break-words whitespace-normal">
                   {post.post_title}
@@ -105,7 +113,7 @@ export default function PostTable({ cid }) {
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        navigate(`/creators/posts/${post.pid}/edit`);
+                        navigate(`/creators/post/${post.pid}/edit`);
                       }}>
                       <Pencil className="h-4 w-4" />
                     </Button>
