@@ -6,7 +6,6 @@ import com.chefsphere.ums.dto.UserUpdateDto;
 import com.chefsphere.ums.entities.User;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 
 public interface UserService {
 

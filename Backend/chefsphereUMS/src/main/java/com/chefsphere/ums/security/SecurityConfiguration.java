@@ -82,8 +82,7 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.GET, "/creators/list/creatorRange/{qty}").permitAll()
 				.requestMatchers(HttpMethod.POST, "/creators/signUp").permitAll()
 				// only creator and admin can access these
-				.requestMatchers(HttpMethod.PUT, "/creators/{id}/update").hasAnyAuthority("CREATOR", "ADMIN")
-				.requestMatchers(HttpMethod.DELETE, "/creators/{id}/delete").hasAnyAuthority("CREATOR", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/creators/delete").hasAnyAuthority("CREATOR", "ADMIN")
 
 				/*
 				 * Posts
