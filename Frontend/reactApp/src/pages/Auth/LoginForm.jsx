@@ -14,35 +14,40 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useAuth } from "../../utils/context/AuthContext";
 
 export default function LoginForm() {
+  // navigate
   const navigate = useNavigate();
 
+  // context
+  const { user, isAuthenticated, login } = useAuth();
+
+  // state for show password
   const [showPassword, setShowPassword] = useState(false);
 
+  // state for form data
   const [forms, setForms] = useState({
     email: "",
     password: "",
   });
 
+  // state for form errors
   const [err, setErr] = useState({
     email: "",
     password: "",
   });
 
   useEffect(() => {
-    const data = sessionStorage.getItem("userCred");
-    if (data) {
-      console("User is already logged in");
-      const user = JSON.parse(data); // parse string to object
+    if (isAuthenticated && user) {
+      console.log("User is already logged in");
       if (user.type === "CREATOR") {
-        navigate(`/creators/`, { replace: true });
-      } else {
-        // navigate(`/foodies/${user.id}`, { replace: true });
-        navigate(`/foodies/`, { replace: true });
-      }
+        navigate("/creator", { replace: true });
+      } else if (user.type === "FOODIE") {
+        navigate("/foodie", { replace: true });
+      } else navigate("/admin", { replace: true });
     }
-  }, []); // run once
+  }, [isAuthenticated, user]); // run once
 
   const validate = () => {
     const errors = {};
@@ -62,6 +67,9 @@ export default function LoginForm() {
     ) {
       errors.password =
         "Password must be at least 8 characters, include uppercase, lowercase, number, and special character";
+      toast.warn(
+        "Password must be at least 8 characters, include uppercase, lowercase, number, and special character",
+      );
     }
 
     setErr(errors);
@@ -73,31 +81,36 @@ export default function LoginForm() {
     if (!validate()) return;
 
     try {
-      const res = await UserService.loginUser(forms);
+      const loginPromise = UserService.loginUser(forms);
 
-      sessionStorage.setItem(
-        "userCred",
-        JSON.stringify({
-          id: res.id,
-          name: res.username,
-          token: res.token,
-          type: res.type,
-        }),
-      );
+      toast.promise(loginPromise, {
+        loading: "Logging in...",
+        success: "Login successful",
+        error: "Login failed",
+      });
 
+      // WAIT for the promise to resolve
+      const res = await loginPromise;
+
+      // Save actual user object
+      login(res);
+
+      // Role-based navigation
       if (res.type === "CREATOR") {
-        // navigate(`/creators/${res.id}`, { replace: true });
-        navigate(`/creators/`, { replace: true });
+        navigate("/creator", { replace: true });
+      } else if (res.type === "FOODIE") {
+        navigate("/foodie", { replace: true });
       } else {
-        navigate(`/foodies/`, { replace: true });
+        navigate("/admin", { replace: true });
       }
     } catch (e) {
       console.error(e);
-      toast.error(e?.message || "Login failed");
+      toast.error(e?.response?.data?.message || "Login failed");
     }
   };
 
   return (
+    // login form
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-[350px]">
         <CardHeader>
@@ -170,6 +183,7 @@ export default function LoginForm() {
                 type="button"
                 variant="outline"
                 className="w-full"
+                // navigate to register page
                 onClick={() => navigate("/register")}>
                 Register
               </Button>

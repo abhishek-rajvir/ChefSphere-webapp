@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import CreatorService from "@/service/CreatorService";
+import { FetchAvatar } from "@/service/ImagekitApiService";
 import {
   Table,
   TableBody,
@@ -10,13 +13,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 
-export function FollowerTable({ followers }) {
+export default function FollowerTable() {
+  const [followers, setFollowers] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await CreatorService.getAllFollowers();
+        setFollowers(data);
+      } catch (error) {
+        console.error("Error fetching followers:", error);
+        toast.error("Failed to fetch followers. Please try again.");
+      }
+    })();
+  }, []);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Handle case where followers is null or undefined
-  // Handle case where followers is null or undefined or not an array
-  const saferFollowers = Array.isArray(followers) ? followers : [];
+  const saferFollowers = followers || [];
   const totalPages = Math.ceil(saferFollowers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentFollowers = saferFollowers.slice(
@@ -30,29 +45,58 @@ export function FollowerTable({ followers }) {
         <Table>
           <TableHeader className="mb-4">
             <TableRow>
-              <TableHead className="h-full text-center py-4 text-primary font-bold w-[100px]">
+              <TableHead className="h-full text-center py-4 text-primary font-bold w-[60px]">
                 ID
               </TableHead>
-              <TableHead className="h-full text-center py-4 text-primary font-bold w-[100px]">
+              <TableHead className="h-full text-center py-4 text-primary font-bold w-[80px]">
                 Icon
               </TableHead>
-              <TableHead className="h-full text-left py-4 text-primary font-bold">
+              <TableHead className="h-full text-left py-4 text-primary font-bold w-[120px]">
                 Name
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentFollowers.map((follower) => (
-              <FollowerRow
-                key={follower.fid || follower.id}
-                follower={follower}
-              />
-            ))}
+            {currentFollowers.map((follower) => {
+              const id = follower.fid;
+              const name =
+                follower.username ||
+                (follower.firstName
+                  ? `${follower.firstName} ${follower.lastName}`
+                  : "Unknown");
+              const icon = follower.pic;
+
+              return (
+                <TableRow key={id}>
+                  <TableCell className="h-full text-center font-medium">
+                    {id}
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <div className="flex justify-center items-center">
+                      {follower.userId ? (
+                        <FetchAvatar
+                          userId={follower.userId}
+                          size={40}
+                          alt={name}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                          <User className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="h-full text-left font-medium">
+                    {name}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex items-center justify-center space-x-2">
         <Button
           variant="outline"
@@ -74,38 +118,6 @@ export function FollowerTable({ followers }) {
       </div>
     </div>
   ) : (
-    <h4 className="text-center">No followers found.</h4>
-  );
-}
-
-function FollowerRow({ follower }) {
-  const displayName =
-    `${follower.firstName} ${follower.lastName}`.trim() ||
-    follower.username ||
-    follower.name;
-  const displayId = follower.fid || follower.id;
-
-  return (
-    <TableRow>
-      <TableCell className="h-full text-center font-medium">
-        {displayId}
-      </TableCell>
-      <TableCell className="h-full text-center">
-        <div className="flex justify-center items-center">
-          {follower.icon ? (
-            <img
-              src={follower.icon}
-              alt={displayName}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <User className="h-6 w-6" />
-            </div>
-          )}
-        </div>
-      </TableCell>
-      <TableCell className="h-full text-left">{displayName}</TableCell>
-    </TableRow>
+    "No followers found."
   );
 }

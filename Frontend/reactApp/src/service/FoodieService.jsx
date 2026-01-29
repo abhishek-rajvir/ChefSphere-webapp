@@ -112,9 +112,9 @@ const updateCreatorPost = async (id, details) => {
   }
 };
 
-const getFollowers = async () => {
+const getAllFollowers = async () => {
   try {
-    const res = await requestJwt("GET", "/engagement/follow/allFollowers");
+    const res = await requestJwt("GET", "/engagement/foodies/allFollowers");
     return res.data.foodies;
   } catch (err) {
     throw new Error("failed to fetch all followers");
@@ -315,7 +315,7 @@ export default {
   newCreatorPost,
   deletePost,
   updateCreatorPost,
-  getFollowers,
+  getAllFollowers,
   getTotalFollowers,
   getCategoryByRange,
   getAllCategory,

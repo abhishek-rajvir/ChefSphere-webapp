@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
-import { requestLog } from "../../../../jwt/axios_helper";
-import CreatorService from "../../../../service/CreatorService";
+import { requestLog } from "../../../jwt/axios_helper";
+import AdminService from "@/service/AdminService";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Select,
@@ -19,15 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function UpdatePostForm() {
-  const params = useParams();
-  const postId = Number(params.id);
-
-  if (!postId || isNaN(postId) || postId < 1) {
-    toast.error("Invalid Post ID");
-    navigate("/creator");
-  }
-
+export default function AdminPostEdit() {
+  const { id } = useParams();
+  const postId = id;
   const [formData, setFormData] = useState({
     post_title: "",
     description: "",
@@ -49,7 +43,7 @@ export default function UpdatePostForm() {
     const fetchPost = async () => {
       if (postId) {
         try {
-          const data = await CreatorService.getCreatorsPostsByNo(postId);
+          const data = await AdminService.getPostById(postId);
           const safeRecipeDetails =
             data.recipe_Details ||
             data.recipeDetails ||
@@ -96,6 +90,7 @@ export default function UpdatePostForm() {
           });
         } catch (error) {
           console.error("Failed to fetch post:", error);
+          toast.error("Failed to fetch post");
         }
       }
     };
@@ -299,10 +294,10 @@ export default function UpdatePostForm() {
     }
 
     try {
-      const res = await CreatorService.updateCreatorPost(postId, payload);
-      requestLog("Updated Post " + res.post_title);
+      const res = await AdminService.updatePost(postId, payload);
+      requestLog("Updated Post " + (res.post_title || ""));
       toast.success("Post updated successfully");
-      navigate("/creator/posts");
+      navigate("/admin/posts");
       return;
     } catch (err) {
       toast.error("Failed to update post");

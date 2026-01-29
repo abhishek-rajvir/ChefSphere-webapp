@@ -114,7 +114,14 @@ export default function RegisterForm({ ...props }) {
     if (!validate()) return;
 
     try {
-      const res = await UserService.registerUser(forms);
+      const registerPromise = await UserService.registerUser(forms);
+
+      toast.promise(registerPromise, {
+        loading: "Registering...",
+        success: "Register successful",
+        error: "Register failed",
+      });
+
       console.error("Registered successfully");
       navigate(`/login`, { replace: true });
     } catch (e) {

@@ -1,32 +1,18 @@
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
+import { Outlet } from "react-router-dom";
+import { useAuth } from "@/utils/context/AuthContext";
+import AdminConfig from "@/pages/user/admin/AdminConfig.jsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../utils/context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import AdminConfig from "@/pages/user/admin/AdminConfig";
 
-export default function CreatorSideBar({
-  postPage,
-  creatorPage,
-  foodiePage,
-  settingsPage,
-  details,
-}) {
-
-  const user = useAuth();
-
-  const navigate = useNavigate();
+export default function AdminUi() {
+  const { user } = useAuth();
 
   return (
     <SidebarProvider>
-
       {/*Sidebar Contents*/}
-      <AppSidebar name={"🧑‍💻" + user.name} items={AdminConfig} />
+      <AppSidebar name={"🧑‍💻" + user.username} items={AdminConfig} />
       <main className="w-full">
         <div className="flex h-14 items-start pt-0 border-b px-4">
           {/* LEFT */}
@@ -39,9 +25,8 @@ export default function CreatorSideBar({
 
         {/* Page content */}
         <div className="p-4">
-         
+          <Outlet />
         </div>
-
 
         {/*Footer*/}
         <hr />
@@ -50,7 +35,7 @@ export default function CreatorSideBar({
           <h6 className="text-center">
             Copyright © 2026 ChefSphere. All rights reserved.{" "}
             <Link
-              to="/about"
+              to="/admin/about"
               style={{ textDecoration: "underline", color: "blue" }}>
               about us
             </Link>

@@ -22,28 +22,13 @@ import { useNavigate } from "react-router-dom";
 const AuthContext = createContext(null);
 
 export default function AuthProvider({ children }) {
-  // user state
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // use effect to get user from session storage
-  useEffect(() => {
-    // get user from session storage
+  // user state Lazy init — runs BEFORE first render
+  const [user, setUser] = useState(() => {
     const storedUser = sessionStorage.getItem("userCred");
-    // if user is present, store it in state else return null
-    setUser(storedUser ? JSON.parse(storedUser) : null);
-
-    // Event listener for unauthorized requests
-    const handleLogout = () => {
-      logout();
-    };
-
-    window.addEventListener("auth:logout", handleLogout);
-
-    return () => {
-      window.removeEventListener("auth:logout", handleLogout);
-    };
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   // login function
   const login = (userData) => {

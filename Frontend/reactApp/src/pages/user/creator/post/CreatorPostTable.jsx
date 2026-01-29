@@ -1,53 +1,64 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import CreatorService from "../../../../service/CreatorService";
+import { requestLog } from "../../../../jwt/axios_helper";
+import { useNavigate } from "react-router-dom";
 
-import FoodieService from "@/service/FoodieService";
-import { requestLog } from "@/jwt/axios_helper";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { useAuth } from "../../../utils/context/AuthContext";
-
-export default function CreatorPostTable() {
-  const params = useParams();
-  const cid = Number(params.id);
-
-  if (!cid || isNaN(cid) || cid < 1) {
-    toast.error("Invalid creator ID");
-    navigate(-1);
-  }
+export default function CreatorPostTable({
+  cid,
+  posts: propPosts,
+  onPostDelete,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [posts, setPosts] = useState([]);
+  const [fetchedPosts, setFetchedPosts] = useState([]);
   const itemsPerPage = 5;
-  const { isAuthenticated } = useAuth();
+
+  const posts = propPosts || fetchedPosts;
 
   useEffect(() => {
+    if (propPosts) return;
     (async () => {
       try {
         requestLog("Fetched creator posts for creatorId: " + cid);
-        const data = await FoodieService.getCreatorsPosts(cid);
+        const data = await CreatorService.getCreatorsPosts();
         console.log(data);
-        setPosts(data || []);
+        setFetchedPosts(data || []);
       } catch (err) {
-        setPosts([]);
+        setFetchedPosts([]);
       }
     })();
-  }, [cid]);
+  }, [cid, propPosts]);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const isFoodie = location.pathname.includes("/foodie");
 
-  const basePath = !isAuthenticated ? "/" : isFoodie ? "/foodie" : "/creator";
-  const postPath = !isAuthenticated ? "post" : "posts";
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await CreatorService.deletePost(id);
+      requestLog("Deleted post with ID: " + id);
 
+      if (propPosts && onPostDelete) {
+        onPostDelete(id);
+      } else {
+        const updatedPosts = fetchedPosts.filter((post) => post.pid !== id);
+        setFetchedPosts(updatedPosts);
+      }
+      toast.success("Post deleted successfully");
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+      toast.error("Failed to delete post");
+    }
+  };
   // Handle case where posts is null or undefined
   const safePosts = posts;
   const totalPages = Math.ceil(safePosts.length / itemsPerPage);
@@ -58,10 +69,11 @@ export default function CreatorPostTable() {
     <div className="space-y-4">
       <div className="rounded-md border overflow-hidden">
         <Table>
+          {/* <TableCaption>A list of your posts.</TableCaption> */}
           <TableHeader className="mb-4">
             <TableRow>
               <TableHead className="h-full text-center py-4 text-primary font-bold">
-                pid
+                ID
               </TableHead>
               <TableHead className="h-full text-center py-4 text-primary font-bold">
                 Title
@@ -72,6 +84,9 @@ export default function CreatorPostTable() {
               <TableHead className="h-full text-center py-4 text-primary font-bold">
                 Video
               </TableHead>
+              <TableHead className="h-full text-center py-4 text-primary font-bold">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -79,15 +94,10 @@ export default function CreatorPostTable() {
               <TableRow
                 key={post.pid}
                 className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() =>
-                  navigate(
-                    `${basePath === "/" ? "" : basePath}/${postPath}/${post.pid}`,
-                    { state: { post } },
-                  )
-                }>
+                onClick={() => navigate(`/creator/posts/${post.pid}`)}>
                 <TableCell className="h-full text-center">{post.pid}</TableCell>
                 <TableCell className="h-full text-center max-w-[200px] break-words whitespace-normal">
-                  {post.postTitle}
+                  {post.post_title}
                 </TableCell>
                 <TableCell className="h-full text-center max-w-[300px] break-words whitespace-normal">
                   {post.description}
@@ -99,12 +109,34 @@ export default function CreatorPostTable() {
                     onClick={(e) => e.stopPropagation()}
                   />
                 </TableCell>
+                <TableCell className="h-full text-center">
+                  <div
+                    className="flex justify-center items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        navigate(`/creator/posts/${post.pid}/edit`);
+                      }}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => handleDelete(post.pid)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
+      {/* Pagination Controls */}
       <div className="flex items-center justify-center space-x-2">
         <Button
           variant="outline"

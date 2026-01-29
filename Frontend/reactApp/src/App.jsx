@@ -5,13 +5,41 @@ import AuthProvider from "./utils/context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./utils/auth/ProtectedRoute.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
-import LoginPage from "./pages/auth/LoginPage.jsx";
-import RegisterPage from "./pages/auth/RegisterPage.jsx";
 import AdminUi from "./UI/AdminUi";
-import AboutUs from "./pages/AboutPage.jsx";
+import AboutUs from "./pages/common/AboutPage.jsx";
 import CreatorUi from "./UI/CreatorUi";
 import FoodieUi from "./UI/FoodieUi";
 import GuestUi from "./UI/GuestUi";
+import LoginForm from "./pages/auth/LoginForm.jsx";
+import RegisterForm from "./pages/auth/RegisterForm.jsx";
+import FoodieDashBoard from "./pages/user/foodie/FoodieDashBoard";
+import FoodieAllPosts from "./pages/user/foodie/FoodieAllPosts";
+import FoodieViewPost from "./pages/user/foodie/FoodieViewPost";
+import FoodieAllCreators from "./pages/user/foodie/FoodieAllCreators";
+import FoodieViewCreator from "./pages/user/foodie/FoodieViewCreator";
+import FollowingTable from "./pages/user/foodie/FollowingTable";
+import CreatorPosts from "./pages/user/creator/post/CreatorPosts";
+import CreatorViewPost from "./pages/user/creator/post/CreatorViewPost";
+import FollowerTable from "./pages/user/creator/FollowerTable";
+import SearchPage from "./pages/common/SearchPage.jsx";
+import Settings from "./pages/common/Settings";
+import ProfileForm from "./pages/common/ProfileForm.jsx";
+
+import GuestDashBoard from "./pages/user/guest/GuestDashBoard";
+import GuestAllCategories from "./pages/user/guest/GuestAllCategories";
+import GuestAllCreators from "./pages/user/guest/GuestAllCreators";
+import GuestViewCreator from "./pages/user/guest/GuestViewCreator";
+import GuestAllPosts from "./pages/user/guest/GuestAllPosts";
+import GuestViewPost from "./pages/user/guest/GuestViewPost.jsx";
+import UpdatePostForm from "./pages/user/creator/post/UpdatePostForm";
+
+import AdminDashboard from "./pages/user/admin/AdminDashboard";
+import AdminPosts from "./pages/user/admin/AdminPosts";
+import AdminCreators from "./pages/user/admin/AdminCreators";
+import AdminFoodies from "./pages/user/admin/AdminFoodies";
+import AdminUsers from "./pages/user/admin/AdminUsers";
+import AdminProfileForm from "./pages/user/admin/AdminProfileForm";
+import AdminUpdatePostForm from "./pages/user/admin/AdminUpdatePostForm.jsx";
 
 function App() {
   return (
@@ -22,27 +50,32 @@ function App() {
             {/* Public routes */}
 
             {/* Auth Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
 
             {/* Guest Routes */}
-            <Route path="/" element={<GuestUi homePage={true} />} />
-            <Route path="/home" element={<GuestUi homePage={true} />} />
-            <Route path="/dashboard" element={<GuestUi homePage={true} />} />
-            
-            <Route path="/posts" element={<GuestUi postPage={true} />} />
-            <Route path="/post/:id" element={<GuestUi viewPost={true} />} />
-            
-            <Route path="/creators" element={<GuestUi creatorsPage={true} />} />
-            <Route
-              path="/creators/:id"
-              element={<GuestUi creatorDetailsPage={true} />}
-            />
-            <Route path="/search" element={<GuestUi searchPage={true} />} />
+            <Route path="/" element={<GuestUi />}>
+              {/* Guest Default Routes */}
+              <Route index element={<GuestDashBoard />} />
+              <Route path="home" element={<GuestDashBoard />} />
+              <Route path="dashboard" element={<GuestDashBoard />} />
 
-            {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="*" element={<NotFoundPage />} />
+              {/* Guest Posts Routes */}
+              <Route path="posts" element={<GuestAllPosts />} />
+              <Route path="post/:id" element={<GuestViewPost />} />
+
+              {/* Guest Categories Routes */}
+              <Route path="categories" element={<GuestAllCategories />} />
+
+              {/* Guest Creators Routes */}
+              <Route path="creators" element={<GuestAllCreators />} />
+              <Route path="creators/:id" element={<GuestViewCreator />} />
+              <Route path="search" element={<SearchPage />} />
+
+              {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
+              <Route path="about" element={<AboutUs />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
 
             {/* Protected routes */}
 
@@ -51,37 +84,25 @@ function App() {
               path="/creator"
               element={
                 <ProtectedRoute role="CREATOR">
-                  <CreatorUi postPage={true} />
+                  <CreatorUi />
                 </ProtectedRoute>
               }>
               {/* DEFAULT DASHBOARD */}
-              <Route index element={<CreatorUi postPage={true} />} />
+              <Route index element={<CreatorPosts />} />
 
               {/* Creator Profile */}
-              <Route
-                path="profile"
-                element={<CreatorUi profilePage={true} />}
-              />
+              <Route path="profile" element={<ProfileForm />} />
               {/* Creator POSTS */}
-              <Route path="posts" element={<CreatorUi postPage={true} />} />
-              <Route path="posts/new" element={<CreatorUi newPost={true} />} />
-              <Route path="posts/:id" element={<CreatorUi viewPost={true} />} />
-              <Route
-                path="posts/:id/edit"
-                element={<CreatorUi updatePost={true} />}
-              />
+              <Route path="posts" element={<CreatorPosts />} />
+              <Route path="posts/new" element={<CreatorPosts />} />
+              <Route path="posts/:id" element={<CreatorViewPost />} />
+              <Route path="posts/:id/edit" element={<UpdatePostForm />} />
 
               {/* Creator Followers */}
-              <Route
-                path="followers"
-                element={<CreatorUi followersPage={true} />}
-              />
+              <Route path="followers" element={<FollowerTable />} />
 
               {/* Creator SETTINGS */}
-              <Route
-                path="settings"
-                element={<CreatorUi settingsPage={true} />}
-              />
+              <Route path="settings" element={<Settings />} />
 
               {/* Creator About */}
               <Route path="about" element={<AboutUs />} />
@@ -95,45 +116,32 @@ function App() {
               path="/foodie"
               element={
                 <ProtectedRoute role="FOODIE">
-                  <FoodieUi homePage={true} />
+                  <FoodieUi />
                 </ProtectedRoute>
               }>
-              {/* Creator Profile */}
-              <Route
-                path="profile"
-                element={<CreatorUi profilePage={true} />}
-              />
               {/* DEFAULT DASHBOARD */}
-              <Route index element={<FoodieUi homePage={true} />} />
+              <Route index element={<FoodieDashBoard />} />
+              <Route path="home" element={<FoodieDashBoard />} />
+
+              {/* Creator Profile */}
+              <Route path="profile" element={<ProfileForm />} />
 
               {/* Foodie POSTS */}
-              <Route path="posts" element={<FoodieUi postsPage={true} />} />
-              <Route path="posts/:id" element={<FoodieUi viewPost={true} />} />
+              <Route path="posts" element={<FoodieAllPosts />} />
+              <Route path="posts/:id" element={<FoodieViewPost />} />
 
               {/* Foodie CREATORS */}
-              <Route
-                path="creators"
-                element={<FoodieUi creatorsPage={true} />}
-              />
-              <Route
-                path="creators/:id"
-                element={<FoodieUi creatorDetailsPage={true} />}
-              />
+              <Route path="creators" element={<FoodieAllCreators />} />
+              <Route path="creators/:id" element={<FoodieViewCreator />} />
 
               {/* Foodie Following */}
-              <Route
-                path="following"
-                element={<FoodieUi followingPage={true} />}
-              />
+              <Route path="following" element={<FollowingTable />} />
 
               {/* Foodie Search */}
-              <Route path="search" element={<FoodieUi searchPage={true} />} />
+              <Route path="search" element={<SearchPage />} />
 
               {/* Foodie SETTINGS */}
-              <Route
-                path="settings"
-                element={<FoodieUi settingsPage={true} />}
-              />
+              <Route path="settings" element={<Settings />} />
 
               {/* Foodie About */}
               <Route path="about" element={<AboutUs />} />
@@ -147,50 +155,33 @@ function App() {
               path="/admin"
               element={
                 <ProtectedRoute role="ADMIN">
-                  <AdminUi postsPage={true} />
+                  <AdminUi />
                 </ProtectedRoute>
               }>
               {/* DEFAULT DASHBOARD */}
-              <Route index element={<AdminUi postsPage={true} />} />
+              <Route index element={<AdminDashboard />} />
+
+              {/* Admin PROFILE */}
+              <Route path="profile" element={<ProfileForm />} />
 
               {/* Admin POSTS */}
-              <Route path="posts" element={<AdminUi postsPage={true} />} />
-              <Route path="posts/:id" element={<AdminUi viewPost={true} />} />
-              <Route
-                path="posts/:id/edit"
-                element={<AdminUi updatePost={true} />}
-              />
+              <Route path="posts" element={<AdminPosts />} />
+              <Route path="posts/:id/edit" element={<AdminUpdatePostForm />} />
 
+              {/* Admin USERS */}
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/:id/edit" element={<AdminProfileForm />} />
               {/* Admin CREATORS */}
-              <Route
-                path="creators"
-                element={<AdminUi creatorsPage={true} />}
-              />
-              <Route
-                path="creators/:id"
-                element={<AdminUi viewCreator={true} />}
-              />
-              <Route
-                path="creators/:id/edit"
-                element={<AdminUi updateCreator={true} />}
-              />
+              <Route path="creators" element={<AdminCreators />} />
 
               {/* Admin FOODIES */}
-              <Route path="foodies" element={<AdminUi foodiesPage={true} />} />
-              <Route
-                path="foodies/:id"
-                element={<AdminUi viewFoodie={true} />}
-              />
-              <Route
-                path="foodies/:id/edit"
-                element={<AdminUi updateFoodie={true} />}
-              />
+              <Route path="foodies" element={<AdminFoodies />} />
 
               {/* Admin SETTINGS */}
-              <Route
+              {/* <Route
                 path="settings"
                 element={<AdminUi settingsPage={true} />}
-              />
+              /> */}
 
               {/* Admin About */}
               <Route path="about" element={<AboutUs />} />

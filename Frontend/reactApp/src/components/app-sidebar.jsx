@@ -13,21 +13,26 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import UserService from "@/service/UserService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/context/AuthContext";
+import { toast } from "react-hot-toast";
 
 export function AppSidebar({ name, items }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const navigate = useNavigate();
 
   const handleLogin = () => {
     navigate("/login", { replace: true });
   };
-  const handleLogout = () => {
-    UserService.logoutUser();
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    try {
+      logout();
+      toast.success("Logout successfully");
+    } catch (e) {
+      console.error("Logout API failed", e);
+      toast.error("Logout failed");
+    }
   };
 
   return (

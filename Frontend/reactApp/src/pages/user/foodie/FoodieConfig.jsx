@@ -11,32 +11,32 @@ import {
 const items = [
   {
     title: "Home",
-    url: "/foodies/home",
+    url: "/foodie/home",
     icon: HomeIcon,
   },
   {
     title: "Profile",
-    url: "/foodies/profile",
+    url: "/foodie/profile",
     icon: UserPenIcon,
   },
   {
     title: "Following",
-    url: "/foodies/following",
+    url: "/foodie/following",
     icon: UsersRoundIcon,
   },
   {
     title: "Creators",
-    url: "/foodies/creators",
+    url: "/foodie/creators",
     icon: ChefHat,
   },
   {
     title: "Settings",
-    url: "/foodies/settings",
+    url: "/foodie/settings",
     icon: Settings,
   },
   {
     title: "About us",
-    url: "/about",
+    url: "/foodie/about",
     icon: InfoIcon,
   },
 ];

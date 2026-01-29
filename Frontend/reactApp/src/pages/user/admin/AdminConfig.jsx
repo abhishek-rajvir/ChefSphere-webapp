@@ -5,6 +5,9 @@ import {
   UserPenIcon,
   InfoIcon,
   Settings,
+  HomeIcon,
+  ChefHat,
+  ForkKnife,
 } from "lucide-react";
 
 const items = [
@@ -14,28 +17,38 @@ const items = [
     icon: UserPenIcon,
   },
   {
+    title: "Home",
+    url: "/admin/",
+    icon: HomeIcon,
+  },
+  {
     title: "Posts",
     url: "/admin/posts",
     icon: ImageIcon,
   },
   {
+    title: "Users",
+    url: "/admin/users",
+    icon: UsersRoundIcon,
+  },
+  {
     title: "Creators",
     url: "/admin/creators",
-    icon: ImageIcon,
+    icon: ChefHat,
   },
   {
     title: "Foodies",
     url: "/admin/foodies",
-    icon: UsersRoundIcon,
+    icon: ForkKnife,
   },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   url: "/admin/settings",
+  //   icon: Settings,
+  // },
   {
     title: "About us",
-    url: "/about",
+    url: "/admin/about",
     icon: InfoIcon,
   },
 ];

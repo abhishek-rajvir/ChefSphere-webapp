@@ -1,21 +1,41 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { FetchAvatar } from "@/service/ImagekitApiService";
 import FoodieService from "@/service/FoodieService";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { useAuth } from "../../../utils/context/AuthContext";
 
-export default function GuestAllCreators() {
+export default function FoodieAllCreators() {
   const [creators, setCreators] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [followingState, setFollowingState] = useState({});
   const itemsPerPage = 20;
   const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   useEffect(() => {
     (async () => {
       try {
         const data = await FoodieService.getCreatorsByRange(100);
         setCreators(data);
+
+        // Optimize follow status fetching
+        const uid = user?.id || user?.cid;
+        if (uid) {
+          try {
+            const allFollowing = await FoodieService.getAllFollowing();
+            const followState = {};
+            allFollowing.forEach((f) => {
+              const fid = f.cid || f.id;
+              if (fid) followState[String(fid)] = true;
+            });
+            setFollowingState(followState);
+          } catch (e) {
+            console.error("Error fetching following status:", e);
+          }
+        }
       } catch (error) {
         console.error("Error fetching creators:", error);
       }
@@ -36,10 +56,21 @@ export default function GuestAllCreators() {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  const handleFollowClick = async (e) => {
-    e.stopPropagation(); // Prevent card navigation
-    console.log("Forbidden request");
-    toast.error("Unauthorized request, please login");
+  const handleFollowClick = async (creatorId, isFollowing) => {
+    try {
+      if (isFollowing) {
+        await FoodieService.unFollowCreator(creatorId);
+        setFollowingState((prev) => ({ ...prev, [String(creatorId)]: false }));
+        toast.success("Unfollowed");
+      } else {
+        await FoodieService.followCreator(creatorId);
+        setFollowingState((prev) => ({ ...prev, [String(creatorId)]: true }));
+        toast.success("Followed");
+      }
+    } catch (error) {
+      console.error("Follow action failed:", error);
+      toast.error("Failed to follow/unfollow. Please try again.");
+    }
   };
 
   return (
@@ -53,17 +84,18 @@ export default function GuestAllCreators() {
       <div className="flex flex-wrap gap-6 justify-center">
         {currentCreators.map((creator, idx) => {
           const name = creator.username || "Creator";
-          const creatorUid = creator.userId;
+          const creatorUid = creator.uid;
           const creatorId = creator.cid;
+          const isFollowing = followingState[String(creatorId)] || false;
           return (
             <div
               key={idx}
-              onClick={() => navigate(`/creators/${creatorId}`)}
+              onClick={() => navigate(`/foodie/creators/${creatorId}`)}
               className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
               <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
                 <FetchAvatar
                   userId={creatorUid}
-                  size={100}
+                  size={102}
                   alt={name}
                   className="w-full h-full object-cover"
                   style={{ width: "100%", height: "100%" }}
@@ -71,9 +103,16 @@ export default function GuestAllCreators() {
               </div>
               <span className="font-semibold text-sm">{name}</span>
               <button
-                onClick={handleFollowClick}
-                className={`text-xs px-3 py-1 rounded-full transition-colors ${"bg-black text-white dark:bg-white dark:text-black border border-primary"}`}>
-                Follow
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFollowClick(creatorId, isFollowing);
+                }}
+                className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                  isFollowing
+                    ? "bg-black text-white dark:bg-white dark:text-black border border-primary"
+                    : "text-primary border border-primary hover:bg-primary hover:text-white"
+                }`}>
+                {isFollowing ? "Following" : "Follow"}
               </button>
             </div>
           );

@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
-import { requestLog } from "../../../../jwt/axios_helper";
-import CreatorService from "../../../../service/CreatorService";
+import CreatorService from "../../../service/CreatorService";
 import { useNavigate, useParams } from "react-router-dom";
+import AdminService from "../../../service/AdminService";
+
 import {
   Select,
   SelectContent,
@@ -19,13 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function UpdatePostForm() {
+export default function AdminUpdatePostForm() {
   const params = useParams();
   const postId = Number(params.id);
 
   if (!postId || isNaN(postId) || postId < 1) {
     toast.error("Invalid Post ID");
-    navigate("/creator");
+    navigate("/admin");
   }
 
   const [formData, setFormData] = useState({
@@ -96,6 +97,8 @@ export default function UpdatePostForm() {
           });
         } catch (error) {
           console.error("Failed to fetch post:", error);
+          toast.error(error.message || "Failed to load post details");
+          navigate("/admin");
         }
       }
     };
@@ -299,14 +302,13 @@ export default function UpdatePostForm() {
     }
 
     try {
-      const res = await CreatorService.updateCreatorPost(postId, payload);
-      requestLog("Updated Post " + res.post_title);
+      const res = await AdminService.updatePost(postId, payload);
       toast.success("Post updated successfully");
-      navigate("/creator/posts");
+      navigate("/admin/posts");
       return;
     } catch (err) {
-      toast.error("Failed to update post");
-      console.log("Failed to update postid: " + postId);
+      toast.error(err.message || "Failed to update post");
+      console.log("Failed to update postid: " + postId + " error: " + err);
       return;
     }
   };

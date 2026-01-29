@@ -73,7 +73,7 @@ const getFollowers = async (cid) => {
       "GET",
       "/engagement/follow/followers",
       {},
-      cid,
+      { id: cid },
       "",
     );
     return res.data;
@@ -85,7 +85,7 @@ const getFollowers = async (cid) => {
 const getAllFollowers = async () => {
   try {
     const res = await requestJwt("GET", "/engagement/follow/allFollowers");
-    return res.data;
+    return res.data.foodies;
   } catch (err) {
     throw new Error("failed to get all followers");
   }

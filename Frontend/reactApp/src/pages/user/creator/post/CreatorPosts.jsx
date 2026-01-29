@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PostTable from "./PostTable";
+import CreatorPostTable from "./CreatorPostTable";
 import CreatorService from "@/service/CreatorService";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -28,14 +28,14 @@ export default function CreatorPosts() {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Creator Posts</h1>
-        <Button onClick={() => navigate("/creators/post/new")}>
+        <Button onClick={() => navigate("/creators/posts/new")}>
           <Plus className="mr-2 h-4 w-4" /> New Post
         </Button>
       </div>
       {loading ? (
         <div className="text-center py-4">Loading posts...</div>
       ) : (
-        <PostTable
+        <CreatorPostTable
           posts={posts}
           onPostDelete={(id) => setPosts(posts.filter((p) => p.pid !== id))}
         />

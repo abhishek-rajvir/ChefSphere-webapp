@@ -11,27 +11,27 @@ import {
 const items = [
   {
     title: "Profile",
-    url: "/creators/profile",
+    url: "/creator/profile",
     icon: UserPenIcon,
   },
   {
     title: "Post",
-    url: "/creators/posts",
+    url: "/creator/posts",
     icon: ImageIcon,
   },
   {
     title: "Followers",
-    url: "/creators/followers",
+    url: "/creator/followers",
     icon: UsersRoundIcon,
   },
   {
     title: "Settings",
-    url: "/creators/settings",
+    url: "/creator/settings",
     icon: Settings,
   },
   {
     title: "About us",
-    url: "/about",
+    url: "/creator/about",
     icon: InfoIcon,
   },
 ];

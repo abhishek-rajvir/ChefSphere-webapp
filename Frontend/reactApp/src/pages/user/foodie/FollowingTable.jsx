@@ -12,26 +12,25 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
+import { useAuth } from "../../../utils/context/AuthContext";
 
 export default function FollowingTable() {
   const [followings, setFollowings] = useState([]);
+  const user = useAuth();
 
   // Fetch followings for current user
   useEffect(() => {
     (async () => {
       try {
-        const item = sessionStorage.getItem("userCred");
-        const user = item ? JSON.parse(item) : null;
-        const uid = user?.id || user?.cid;
-        if (uid) {
-          const data = await FoodieService.getAllFollowing(uid);
-          setFollowings(data);
-        }
+        const data = await FoodieService.getAllFollowing();
+        setFollowings(data);
       } catch (error) {
         console.error("Error fetching followings:", error);
+        toast.error("Failed to fetch followings. Please try again.");
       }
     })();
   }, []);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -96,7 +95,7 @@ export default function FollowingTable() {
                     <div className="flex justify-center items-center">
                       {id ? (
                         <FetchAvatar
-                          userId={id}
+                          userId={following.userId}
                           size={40}
                           alt={name}
                           className="h-10 w-10 rounded-full object-cover"

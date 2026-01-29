@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FetchAvatar } from "@/service/ImagekitApiService";
 import FoodieService from "@/service/FoodieService";
+import { FetchCategory } from "@/service/ImagekitApiService";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
 
-export default function GuestAllCreators() {
-  const [creators, setCreators] = useState([]);
+export default function GuestAllCategories() {
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const navigate = useNavigate();
@@ -14,19 +13,20 @@ export default function GuestAllCreators() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await FoodieService.getCreatorsByRange(100);
-        setCreators(data);
+        const data = await FoodieService.getAllCategory();
+        setCategories(data);
       } catch (error) {
-        console.error("Error fetching creators:", error);
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to fetch categories. Please try again.");
       }
     })();
   }, []);
 
   // Calculate pagination
-  const totalPages = Math.ceil(creators.length / itemsPerPage);
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentCreators = creators.slice(startIndex, endIndex);
+  const currentCategories = categories.slice(startIndex, endIndex);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -36,45 +36,35 @@ export default function GuestAllCreators() {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  const handleFollowClick = async (e) => {
-    e.stopPropagation(); // Prevent card navigation
-    console.log("Forbidden request");
-    toast.error("Unauthorized request, please login");
-  };
-
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">All Creators</h2>
+        <h2 className="text-2xl font-bold">All Categories</h2>
         <span className="text-sm text-muted-foreground">
           Page {currentPage} of {totalPages || 1}
         </span>
       </div>
-      <div className="flex flex-wrap gap-6 justify-center">
-        {currentCreators.map((creator, idx) => {
-          const name = creator.username || "Creator";
-          const creatorUid = creator.userId;
-          const creatorId = creator.cid;
+      <div className="flex flex-wrap gap-4 justify-center">
+        {currentCategories.map((cat, idx) => {
           return (
             <div
               key={idx}
-              onClick={() => navigate(`/creators/${creatorId}`)}
+              onClick={() =>
+                navigate(
+                  `/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                )
+              }
               className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-              <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
-                <FetchAvatar
-                  userId={creatorUid}
-                  size={100}
-                  alt={name}
-                  className="w-full h-full object-cover"
-                  style={{ width: "100%", height: "100%" }}
+              <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
+                <FetchCategory
+                  categoryName={cat.name}
+                  size={120}
+                  className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
                 />
               </div>
-              <span className="font-semibold text-sm">{name}</span>
-              <button
-                onClick={handleFollowClick}
-                className={`text-xs px-3 py-1 rounded-full transition-colors ${"bg-black text-white dark:bg-white dark:text-black border border-primary"}`}>
-                Follow
-              </button>
+              <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
+                {cat.name}
+              </span>
             </div>
           );
         })}

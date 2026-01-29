@@ -27,18 +27,11 @@ const loginUser = async (details) => {
   }
 };
 
-const logoutUser = (name, id) => {
-  const data = sessionStorage.removeItem("userCred");
-  console.log("User Logged out");
-  requestLog("USER " + name + " ID: " + id + " Logged Out");
-  return;
-};
-
 const registerUser = async (details) => {
   try {
     let res;
     if (details.type === "CREATOR") {
-      res = await request("POST", "/creators/signUp", details, "USER");
+      res = await request("POST", "/creators/signUp", details);
     } else {
       res = await request("POST", "/foodies/signUp", details);
     }
@@ -120,7 +113,6 @@ export default {
   checkUserName,
   checkEmail,
   registerUser,
-  logoutUser,
   getImgToken,
   updatePassword,
   deleteAccount,

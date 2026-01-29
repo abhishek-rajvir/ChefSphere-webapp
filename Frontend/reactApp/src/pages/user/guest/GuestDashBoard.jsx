@@ -137,7 +137,8 @@ export default function GuestDashBoard() {
         <div className="flex flex-wrap gap-6 justify-center">
           {creators.map((creator, idx) => {
             const name = creator.username || "Creator";
-            const creatorId = creator.id || creator.cid;
+            const creatorUid = creator.userId;
+            const creatorId = creator.cid;
             // imageUrl declaration removed
 
             const handleFollowClick = async (e) => {
@@ -153,7 +154,7 @@ export default function GuestDashBoard() {
                 className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
                 <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
                   <FetchAvatar
-                    userId={creatorId}
+                    userId={creatorUid}
                     size={100}
                     alt={name}
                     className="w-full h-full object-cover"
