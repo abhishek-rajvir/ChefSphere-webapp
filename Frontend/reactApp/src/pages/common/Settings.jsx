@@ -19,63 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/context/AuthContext";
 
 export default function Settings() {
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
-
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Validate
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New passwords do not match!");
-      setLoading(false);
-      return;
-    }
-
-    const user = getUser();
-    if (!user) {
-      toast.error("User not found. Please login again.");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      await UserService.updatePassword({
-        id: user.id,
-        oldPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
-      toast.success("Password updated successfully");
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        "Failed to update password. Please check your current password.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteAccount = async () => {
     if (
@@ -104,62 +49,6 @@ export default function Settings() {
   return (
     <div className="container mx-auto p-4 space-y-8 max-w-2xl">
       <h1 className="text-3xl font-bold mb-6">Settings</h1>
-
-      {/* Reset Password Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>
-            Change your password to keep your account secure.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleResetPassword}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
-              <Input
-                id="currentPassword"
-                name="currentPassword"
-                type="password"
-                placeholder="Enter current password"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                name="newPassword"
-                type="password"
-                placeholder="Enter new password"
-                minLength={8}
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm new password"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordChange}
-                required
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Password"}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
 
       {/* Delete Account Section */}
       <Card className="border-destructive/50">

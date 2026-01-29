@@ -4,7 +4,6 @@ import {
   ImageIcon,
   UserPenIcon,
   InfoIcon,
-  Settings,
   HomeIcon,
   ChefHat,
   ForkKnife,

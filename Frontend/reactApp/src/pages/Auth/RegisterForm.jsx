@@ -132,7 +132,7 @@ export default function RegisterForm({ ...props }) {
   };
 
   return (
-    <div className="flex justify-center items-center min-vh-100 bg-gray-100 p-4">
+    <div className="flex justify-center items-center min-vh-100 bg-background p-4">
       <Card className="w-[400px]" {...props}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">

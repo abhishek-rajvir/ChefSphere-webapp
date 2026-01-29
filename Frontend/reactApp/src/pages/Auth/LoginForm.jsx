@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import UserService from "../../service/UserService";
 
 import {
@@ -111,7 +111,7 @@ export default function LoginForm() {
 
   return (
     // login form
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex justify-center items-center min-h-screen bg-background p-4">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -143,8 +143,14 @@ export default function LoginForm() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                {/* <PasswordInput/> */}
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    to="/forgot"
+                    className="text-sm font-medium text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
                 <div className="relative">
                   <Input
                     id="password"

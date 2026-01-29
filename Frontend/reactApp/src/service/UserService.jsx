@@ -108,6 +108,17 @@ const updateUserDetails = async (data) => {
   }
 };
 
+const forgotPassword = async (email) => {
+  try {
+    const res = await request("POST", "/auth/forgot-password", { email });
+    requestLog("Forgot password link sent to " + email);
+    return res.data;
+  } catch (err) {
+    requestLog("Forgot password failed " + err);
+    throw new Error("Forgot password failed");
+  }
+};
+
 export default {
   loginUser,
   checkUserName,
@@ -118,4 +129,5 @@ export default {
   deleteAccount,
   getUserDetails,
   updateUserDetails,
+  forgotPassword,
 };

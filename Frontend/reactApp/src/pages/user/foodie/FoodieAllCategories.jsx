@@ -4,7 +4,7 @@ import FoodieService from "@/service/FoodieService";
 import { FetchCategory } from "@/service/ImagekitApiService";
 import { useNavigate } from "react-router-dom";
 
-export default function AllCategoryPage() {
+export default function FoodieAllCategories() {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;

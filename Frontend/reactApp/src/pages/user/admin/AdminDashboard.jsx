@@ -56,6 +56,20 @@ export default function AdminDashboard() {
             </Button>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Manage all users.
+            </p>
+            <Button className="w-full" onClick={() => navigate("/admin/users")}>
+              Manage Users
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

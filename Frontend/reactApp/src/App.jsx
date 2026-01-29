@@ -4,14 +4,18 @@ import { ThemeProvider } from "@/components/theme-provider";
 import AuthProvider from "./utils/context/AuthContext.jsx";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./utils/auth/ProtectedRoute.jsx";
+
+import LoginForm from "./pages/Auth/LoginForm.jsx";
+import RegisterForm from "./pages/Auth/RegisterForm.jsx";
+import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm.jsx";
+
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 import AdminUi from "./UI/AdminUi";
 import AboutUs from "./pages/common/AboutPage.jsx";
 import CreatorUi from "./UI/CreatorUi";
 import FoodieUi from "./UI/FoodieUi";
 import GuestUi from "./UI/GuestUi";
-import LoginForm from "./pages/auth/LoginForm.jsx";
-import RegisterForm from "./pages/auth/RegisterForm.jsx";
+
 import FoodieDashBoard from "./pages/user/foodie/FoodieDashBoard";
 import FoodieAllPosts from "./pages/user/foodie/FoodieAllPosts";
 import FoodieViewPost from "./pages/user/foodie/FoodieViewPost";
@@ -21,6 +25,8 @@ import FollowingTable from "./pages/user/foodie/FollowingTable";
 import CreatorPosts from "./pages/user/creator/post/CreatorPosts";
 import CreatorViewPost from "./pages/user/creator/post/CreatorViewPost";
 import FollowerTable from "./pages/user/creator/FollowerTable";
+import FoodieAllCategories from "./pages/user/foodie/FoodieAllCategories";
+
 import SearchPage from "./pages/common/SearchPage.jsx";
 import Settings from "./pages/common/Settings";
 import ProfileForm from "./pages/common/ProfileForm.jsx";
@@ -52,6 +58,7 @@ function App() {
             {/* Auth Routes */}
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
+            <Route path="/forgot" element={<ForgotPasswordForm />} />
 
             {/* Guest Routes */}
             <Route path="/" element={<GuestUi />}>
@@ -140,6 +147,9 @@ function App() {
               {/* Foodie Search */}
               <Route path="search" element={<SearchPage />} />
 
+              {/* Foodie Categories */}
+              <Route path="categories" element={<FoodieAllCategories />} />
+
               {/* Foodie SETTINGS */}
               <Route path="settings" element={<Settings />} />
 
@@ -176,12 +186,6 @@ function App() {
 
               {/* Admin FOODIES */}
               <Route path="foodies" element={<AdminFoodies />} />
-
-              {/* Admin SETTINGS */}
-              {/* <Route
-                path="settings"
-                element={<AdminUi settingsPage={true} />}
-              /> */}
 
               {/* Admin About */}
               <Route path="about" element={<AboutUs />} />
