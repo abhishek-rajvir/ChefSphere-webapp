@@ -38,7 +38,7 @@ public class UserController {
 	}
 	
 	@PutMapping("/update")
-	public ResponseEntity<?> updateCreator(HttpServletRequest req,@Valid @RequestBody UserUpdateDto dto)
+	public ResponseEntity<?> updateUser(HttpServletRequest req,@Valid @RequestBody UserUpdateDto dto)
 	{		
 		return ResponseEntity.ok(userService.updateUserDetails(req,dto));	
 	}

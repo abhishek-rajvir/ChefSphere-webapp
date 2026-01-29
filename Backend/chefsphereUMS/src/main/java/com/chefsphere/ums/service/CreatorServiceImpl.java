@@ -31,11 +31,11 @@ public class CreatorServiceImpl implements CreatorService {
 	private final ModelMapper mapper;
 
 	@Override
-	public String createCreator(User user) {
+	public String createCreator(User u) {
 		Creator c = new Creator();
-		c.setUserId(user);
+		c.setUserId(u);
 		creatorRepo.save(c);
-		return "Welcome " + user.getFirstName() + "SignUp successfull";
+		return "Welcome " + u.getFirstName() + "SignUp successfull";
 	}
 
 	@Override
@@ -52,8 +52,9 @@ public class CreatorServiceImpl implements CreatorService {
 	public Creator findById(HttpServletRequest req) {
 		// get user id
 		Long uid = jwtUtils.extractUidFromReq(req);
-		
-		return creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid).orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
+
+		return creatorRepo.findByUserId_IdAndUserId_IsActiveTrue(uid)
+				.orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
 	}
 
 	// get logged creator also fetch posts
@@ -62,13 +63,22 @@ public class CreatorServiceImpl implements CreatorService {
 		// get user id
 		Long uid = jwtUtils.extractUidFromReq(req);
 
-		return creatorRepo.findByUserIdWithPosts(uid).orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
+		return creatorRepo.findByUserIdWithPosts(uid)
+				.orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + uid));
+	}
+
+	@Override
+	public Creator findByIdWithPosts(Long cid) {
+
+		return creatorRepo.findByIdWithPosts(cid)
+				.orElseThrow(() -> new UserNotFoundException("Creator not found for user id: " + cid));
 	}
 
 	@Override
 	public CreatorResponseDTO findById(Long cid) {
 		return creatorRepo.findByCidAndUserId_IsActiveTrue(cid).map(s -> {
 			CreatorResponseDTO cdto = mapper.map(s.getUserId(), CreatorResponseDTO.class);
+			cdto.setUid(s.getUserId().getId());
 			cdto.setCid(s.getCid());
 			return cdto;
 		}).orElseThrow(() -> new UserNotFoundException("Creator not found for id: " + cid));
@@ -103,4 +113,5 @@ public class CreatorServiceImpl implements CreatorService {
 		}
 		throw new NoContentException("No creators in db");
 	}
+
 }

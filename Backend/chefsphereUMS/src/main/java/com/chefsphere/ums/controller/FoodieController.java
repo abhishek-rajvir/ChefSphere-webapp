@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chefsphere.ums.dto.UserSignUpDto;
-import com.chefsphere.ums.entities.Foodie;
 import com.chefsphere.ums.entities.User;
 import com.chefsphere.ums.service.FoodieService;
 import com.chefsphere.ums.service.UserService;
@@ -27,13 +26,11 @@ public class FoodieController {
 	// dependencies
 	private final UserService userService;
 	private final FoodieService foodieService;
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<?> findFoodieById(@PathVariable Long id)
-	{		
+	public ResponseEntity<?> findFoodieById(@PathVariable Long id) {
 		return ResponseEntity.ok(foodieService.findByIdDto(id));
 	}
-
 
 	@GetMapping("/listAll")
 	public ResponseEntity<?> listAll() {
@@ -49,8 +46,7 @@ public class FoodieController {
 
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteFoodie(HttpServletRequest req) {
-		Foodie f = foodieService.findById(req);
-		String msg = userService.deleteUser(f.getUserId());
+		String msg = userService.deleteFoodie(req);
 		return ResponseEntity.ok(msg);
 	}
 

@@ -2,8 +2,8 @@ package com.chefsphere.ums.service;
 
 import java.util.List;
 
-import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.CreatorRandomDTO;
+import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.User;
 
@@ -21,10 +21,12 @@ public interface CreatorService {
 
 	List<CreatorRandomDTO> findRandomCreatorByQty(Long qty);
 
-	String createCreator(User u);
-
-	Creator findByIdWithPosts(HttpServletRequest req);
+		Creator findByIdWithPosts(HttpServletRequest req);
 
 	Creator findById(HttpServletRequest req);
+
+	String createCreator(User u);
+
+	Creator findByIdWithPosts(Long cid);
 
 }

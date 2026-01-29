@@ -54,21 +54,28 @@ public class SecurityConfiguration {
 		 */
 
 		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption", "/auth/signIn",
-				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}").permitAll()
+				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}","/admin/**").permitAll()
 				// in flight request from React front end extra request sent by react
 				.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
 				/*
 				 * Auth
 				 */
-				.requestMatchers(HttpMethod.GET,"/auth/imgkToken").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
-				
+				.requestMatchers(HttpMethod.GET, "/auth/imgkToken").hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
+
+				/*
+				 * Admin
+				 */
+//				.requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority("ADMIN")
+//				.requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority("ADMIN")
+//				.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAnyAuthority("ADMIN")
+
 				/*
 				 * User
 				 */
-				.requestMatchers(HttpMethod.GET,"/user/details").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
-				.requestMatchers(HttpMethod.PUT,"/user/update").hasAnyAuthority("CREATOR","FOODIE","ADMIN")
-				
+				.requestMatchers(HttpMethod.GET, "/user/details").hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/user/update").hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
+
 				/*
 				 * Foodie
 				 */
@@ -90,12 +97,12 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.GET, "/posts/{post_no}").permitAll()
 				.requestMatchers(HttpMethod.GET, "/posts/search/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/posts/{creator_id}/list").permitAll()
-				.requestMatchers(HttpMethod.GET, "/posts/list").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/posts/list").hasAnyAuthority("CREATOR", "ADMIN")
 				.requestMatchers(HttpMethod.GET, "/posts/list/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/posts/listAll/**").permitAll()
-				.requestMatchers(HttpMethod.POST, "/posts/new").hasAnyAuthority("FOODIE", "ADMIN")
-				.requestMatchers(HttpMethod.PUT, "/posts/{post_id}/update").hasAnyAuthority("FOODIE", "ADMIN")
-				.requestMatchers(HttpMethod.DELETE, "/posts/{post_id}/delete").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.POST, "/posts/new").hasAnyAuthority("CREATOR", "ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/posts/{post_id}/update").hasAnyAuthority("CREATOR", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/posts/{post_id}/delete").hasAnyAuthority("CREATOR", "ADMIN")
 
 				/*
 				 * ENGAGEMENT
@@ -117,10 +124,13 @@ public class SecurityConfiguration {
 				.requestMatchers(HttpMethod.DELETE, "/engagement/rating/{rating_id}/delete").hasAnyAuthority("ADMIN")
 				.requestMatchers(HttpMethod.GET, "/engagement/follow/allFollowers").hasAnyAuthority("CREATOR", "ADMIN")
 				.requestMatchers(HttpMethod.GET, "/engagement/follow/{creator_id}/totalfollowers").permitAll()
-				.requestMatchers(HttpMethod.GET, "/engagement/follow/doesFollow/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
-				.requestMatchers(HttpMethod.GET, "/engagement/follow/allFollowing").hasAnyAuthority("FOODIE", "ADMIN")
-				.requestMatchers(HttpMethod.POST, "/engagement/follow/followCreator/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
-				.requestMatchers(HttpMethod.DELETE, "/engagement/follow/unFollowCreator/{creator_id}").hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.GET, "/engagement/follow/doesFollow/{creator_id}")
+				.hasAnyAuthority("FOODIE", "ADMIN").requestMatchers(HttpMethod.GET, "/engagement/follow/allFollowing")
+				.hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.POST, "/engagement/follow/followCreator/{creator_id}")
+				.hasAnyAuthority("FOODIE", "ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/engagement/follow/unFollowCreator/{creator_id}")
+				.hasAnyAuthority("FOODIE", "ADMIN")
 
 				// authenticate any other remaining request
 				.anyRequest().authenticated())

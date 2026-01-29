@@ -15,8 +15,6 @@ public interface UserService {
 
 	boolean userEmailExist(String email);
 
-	String deleteUser(User user);
-
 	String updateUserDetails(User u, UserUpdateDto dto);
 
 	User findByEmail(String email);
@@ -28,5 +26,21 @@ public interface UserService {
 	UserResponseDTO userDetails(HttpServletRequest req);
 
 	String updateUserDetails(HttpServletRequest req, UserUpdateDto dto);
+
+	String deleteFoodie(Long id);
+
+	String deleteFoodie(HttpServletRequest req);
+
+	String deleteCreator(User user);
+
+	String updateUserDetails(Long uid, UserUpdateDto dto);
+
+	String deleteCreator(HttpServletRequest req);
+
+	String deleteCreator(Long id);
+
+	void deleteUserHard(Long id);
+
+	UserResponseDTO userDetails(Long uid);
 
 }

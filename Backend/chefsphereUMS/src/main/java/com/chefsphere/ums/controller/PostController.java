@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chefsphere.ums.dto.PostRequestDTO;
 import com.chefsphere.ums.dto.PostUpdateDTO;
-import com.chefsphere.ums.service.PostServiceImpl;
+import com.chefsphere.ums.service.PostService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
 
-	private final PostServiceImpl postService;
+	private final PostService postService;
 
 	@PostMapping("/new")
 	public ResponseEntity<?> createPost(@Valid @RequestBody PostRequestDTO vdto, HttpServletRequest req) {

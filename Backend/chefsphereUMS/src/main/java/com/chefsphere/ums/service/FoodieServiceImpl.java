@@ -42,6 +42,7 @@ public class FoodieServiceImpl implements FoodieService {
 	@Transactional
 	@Override
 	public String createFoodie(User u) {
+
 		Foodie f = new Foodie();
 		f.setUserId(u);
 		foodieRepo.save(f);
@@ -50,12 +51,12 @@ public class FoodieServiceImpl implements FoodieService {
 
 	@Override
 	public Foodie findById(Long id) {
-		return foodieRepo.findById(id).orElseThrow(() -> new InvalidIdException("Foodie Id doesn't exist"));
+		return foodieRepo.findByFidAndUserId_IsActiveTrue(id).orElseThrow(() -> new InvalidIdException("Foodie Id doesn't exist"));
 	}
 
 	@Override
 	public FoodieResponseDTO findByIdDto(Long id) {
-		return foodieRepo.findById(id).map(s -> mapper.map(s, FoodieResponseDTO.class))
+		return foodieRepo.findByFidAndUserId_IsActiveTrue(id).map(s -> mapper.map(s, FoodieResponseDTO.class))
 				.orElseThrow(() -> new InvalidIdException("Foodie Id doesn't exist"));
 	}
 
@@ -93,7 +94,7 @@ public class FoodieServiceImpl implements FoodieService {
 
 	@Override
 	public List<FoodieResponseDTO> findAll() {
-		List<Foodie> f = foodieRepo.findAll();
+		List<Foodie> f = foodieRepo.findAllByUserId_IsActiveTrue();
 		if (!(f.isEmpty())) {
 			return f.stream().map(m -> {
 				Long fid = m.getFid();

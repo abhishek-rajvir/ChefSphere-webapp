@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.chefsphere.ums.dto.FoodCategoryDTO;
 import com.chefsphere.ums.entities.FoodCategory;
+import com.chefsphere.ums.entities.Recipe;
 
 public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 
@@ -61,5 +62,7 @@ public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 		    )
 		""")
 	List<FoodCategoryDTO> findAllDistinct(Pageable pageable);
+
+	void deleteByRecipe(Recipe recipe);
 
 }

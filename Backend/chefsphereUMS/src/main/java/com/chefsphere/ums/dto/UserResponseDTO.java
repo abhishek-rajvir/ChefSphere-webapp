@@ -27,6 +27,8 @@ public class UserResponseDTO {
 	
 	private String gender;
 	
+	private String description;
+	
 	private String token;
 
 }

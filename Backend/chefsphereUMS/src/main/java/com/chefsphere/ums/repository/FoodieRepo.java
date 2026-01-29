@@ -1,5 +1,6 @@
 package com.chefsphere.ums.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,8 @@ public interface FoodieRepo extends JpaRepository<Foodie, Long> {
 	Optional<Foodie> findByUserIdWithCreators(@Param("id") Long id);
 
 	Optional<Foodie> findByUserId_IdAndUserId_IsActiveTrue(Long uid);
+	
+	Optional<Foodie> findByFidAndUserId_IsActiveTrue(Long fid);
+	
+	List<Foodie> findAllByUserId_IsActiveTrue();
 }

@@ -14,6 +14,8 @@ public class CreatorResponseDTO {
 
 	private Long cid;
 		
+	private Long uid;
+	
 	private String firstName;
 	
 	private String lastName;

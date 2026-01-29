@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.chefsphere.ums.entities.Post;
 import com.chefsphere.ums.entities.Recipe;
@@ -14,22 +17,32 @@ public interface PostRepo extends JpaRepository<Post, Long> {
 	List<Post> findByCreator_CidAndIsActiveTrue(Long id);
 
 	Optional<Post> findByPidAndIsActiveTrue(Long pid);
+
+	boolean existsByPidAndIsActiveTrue(Long post_id);
 	
-	boolean existsByPidAndCreator_CidAndIsActiveTrue(
-	        Long postId,
-	        Long creatorId
-	);
+	boolean existsByPidAndCreator_CidAndIsActiveTrue(Long postId, Long creatorId);
 
 	@Query("""
-		    SELECT p
-		    FROM Post p
-		    LEFT JOIN FETCH p.recipe
-		    WHERE p.isActive = true
-		""")
+			    SELECT p
+			    FROM Post p
+			    LEFT JOIN FETCH p.recipe
+			    WHERE p.isActive = true
+			""")
 	List<Post> findAll();
 
 	List<Post> findByRecipeInAndIsActiveTrue(Set<Recipe> recList);
 
 	List<Post> findByPostTitleContainingIgnoreCaseAndIsActiveTrue(String postTitle);
+
+	@Query("""
+			  SELECT DISTINCT p
+			  FROM Post p
+			  JOIN p.recipe r
+			  JOIN r.ingredients_required i
+			  WHERE LOWER(i.name) = LOWER(:ingredient)
+			    AND p.isActive = true
+			""")
+	Page<Post> findActivePostsByIngredient(@Param("ingredient") String ingredient, Pageable pageable);
+
 
 }

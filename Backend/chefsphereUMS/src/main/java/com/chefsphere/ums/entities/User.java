@@ -1,9 +1,11 @@
 package com.chefsphere.ums.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,8 +37,16 @@ public class User extends BaseEntity {//implements UserDetails{
 	
 	private String pic;
 	
+	private String description;
+	
 	// boolen instead of Boolean ,since active state should be null 
 	@Column(nullable = false)
 	private boolean isActive = true;
+	
+	@OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Foodie foodie;
+
+	@OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Creator creator;
 	
 }
