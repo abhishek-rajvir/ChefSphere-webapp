@@ -362,9 +362,9 @@ export default function PostPage({ post: postId }) {
         <div
           onClick={() => {
             if (user?.type?.toUpperCase() === "CREATOR") {
-              navigate("/creators/posts");
+              navigate("/creator/posts");
             } else {
-              navigate(`/foodies/creators/${postData.cid || 0}`);
+              navigate(`/foodie/creators/${postData.cid || 0}`);
             }
           }}
           className="flex items-center gap-4 p-6 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer">

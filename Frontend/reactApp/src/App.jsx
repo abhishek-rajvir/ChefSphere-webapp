@@ -26,6 +26,7 @@ import CreatorPosts from "./pages/user/creator/post/CreatorPosts";
 import CreatorViewPost from "./pages/user/creator/post/CreatorViewPost";
 import FollowerTable from "./pages/user/creator/FollowerTable";
 import FoodieAllCategories from "./pages/user/foodie/FoodieAllCategories";
+import NewPostForm from "./pages/user/creator/post/NewPostForm";
 
 import SearchPage from "./pages/common/SearchPage.jsx";
 import Settings from "./pages/common/Settings";
@@ -101,7 +102,7 @@ function App() {
               <Route path="profile" element={<ProfileForm />} />
               {/* Creator POSTS */}
               <Route path="posts" element={<CreatorPosts />} />
-              <Route path="posts/new" element={<CreatorPosts />} />
+              <Route path="posts/new" element={<NewPostForm />} />
               <Route path="posts/:id" element={<CreatorViewPost />} />
               <Route path="posts/:id/edit" element={<UpdatePostForm />} />
 

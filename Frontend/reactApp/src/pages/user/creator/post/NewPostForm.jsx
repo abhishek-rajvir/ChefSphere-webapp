@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function NewPostForm() {
+export default function NewPostForm() {
   const [formData, setFormData] = useState({
     post_title: "",
     description: "",
@@ -239,7 +239,7 @@ export function NewPostForm() {
       const res = await CreatorService.newCreatorPost(formData);
 
       toast.success("Post created successfully");
-      navigate("/creators/posts");
+      navigate("/creator/posts");
     } catch (err) {
       toast.error("Failed to create post");
       return;

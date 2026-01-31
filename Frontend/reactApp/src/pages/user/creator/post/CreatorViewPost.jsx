@@ -375,7 +375,7 @@ export default function CreatorViewPost() {
         <div
           onClick={() => {
             if (user?.type?.toUpperCase() === "CREATOR") {
-              navigate("/creators/posts");
+              navigate("/creator/posts");
             } else {
               navigate(`/foodie/creators/${postData.cid || 0}`);
             }

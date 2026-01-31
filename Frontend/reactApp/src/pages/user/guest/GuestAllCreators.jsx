@@ -53,7 +53,7 @@ export default function GuestAllCreators() {
       <div className="flex flex-wrap gap-6 justify-center">
         {currentCreators.map((creator, idx) => {
           const name = creator.username || "Creator";
-          const creatorUid = creator.userId;
+          const creatorUid = creator.uid;
           const creatorId = creator.cid;
           return (
             <div

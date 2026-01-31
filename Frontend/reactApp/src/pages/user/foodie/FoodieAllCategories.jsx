@@ -53,7 +53,7 @@ export default function FoodieAllCategories() {
               key={idx}
               onClick={() =>
                 navigate(
-                  `/foodies/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                  `/foodie/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
                 )
               }
               className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">

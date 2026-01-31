@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
+// use the url from the environment variable
 const url = import.meta.env.VITE_API_BACKEND_URL;
 
 const BackendAPI = axios.create({
