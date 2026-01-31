@@ -5,6 +5,7 @@ import java.util.List;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +15,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 //one of the annotations - @SpringBootConfiguration => it's Spring boot config class , where you can add @Bean methods to declare spring beans
-public class HealtcareBackendApplication {
+public class ChefSphereBackendApplication {
+
+	@Value("${frontend.url}")
+	private String frontEndUrl;
 
 	public static void main(String[] args) {
-		SpringApplication.run(HealtcareBackendApplication.class, args);
+		SpringApplication.run(ChefSphereBackendApplication.class, args);
 	}
 
 	// configure ModelMapper class as a spring bean
@@ -36,8 +40,11 @@ public class HealtcareBackendApplication {
 	public CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration config = new CorsConfiguration();
 
-	    config.setAllowedOrigins(List.of("http://localhost:5173")); // ✅ your port
+		//front end port
+	    config.setAllowedOrigins(List.of(frontEndUrl));
+		// methods allowed [get,post,..]
 	    config.setAllowedMethods(List.of("*"));
+		// allowed headers
 	    config.setAllowedHeaders(List.of("*"));
 
 	    UrlBasedCorsConfigurationSource source =

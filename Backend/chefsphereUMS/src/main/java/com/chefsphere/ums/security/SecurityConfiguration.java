@@ -54,7 +54,7 @@ public class SecurityConfiguration {
 		 */
 
 		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption", "/auth/signIn",
-				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}","/admin/**").permitAll()
+				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}").permitAll()
 				// in flight request from React front end extra request sent by react
 				.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
@@ -66,9 +66,9 @@ public class SecurityConfiguration {
 				/*
 				 * Admin
 				 */
-//				.requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority("ADMIN")
-//				.requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority("ADMIN")
-//				.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAnyAuthority("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority("ADMIN")
+				.requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority("ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAnyAuthority("ADMIN")
 
 				/*
 				 * User
