@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
-import { requestLog } from "../../../jwt/axios_helper";
+
 import AdminService from "@/service/AdminService";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -295,7 +295,7 @@ export default function AdminPostEdit() {
 
     try {
       const res = await AdminService.updatePost(postId, payload);
-      requestLog("Updated Post " + (res.post_title || ""));
+
       toast.success("Post updated successfully");
       navigate("/admin/posts");
       return;

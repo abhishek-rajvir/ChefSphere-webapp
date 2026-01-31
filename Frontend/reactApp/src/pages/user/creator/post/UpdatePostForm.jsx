@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
-import { requestLog } from "../../../../jwt/axios_helper";
+
 import CreatorService from "../../../../service/CreatorService";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -300,7 +300,7 @@ export default function UpdatePostForm() {
 
     try {
       const res = await CreatorService.updateCreatorPost(postId, payload);
-      requestLog("Updated Post " + res.post_title);
+
       toast.success("Post updated successfully");
       navigate("/creator/posts");
       return;

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
-import { request, requestLog } from "../../../../jwt/axios_helper";
+
 import CreatorService from "../../../../service/CreatorService";
 import { useNavigate } from "react-router-dom";
 import {
@@ -237,7 +237,7 @@ export function NewPostForm() {
     }
     try {
       const res = await CreatorService.newCreatorPost(formData);
-      requestLog("Created new Post " + res.post_title);
+
       toast.success("Post created successfully");
       navigate("/creators/posts");
     } catch (err) {

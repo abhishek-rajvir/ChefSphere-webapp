@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import CreatorService from "../../../../service/CreatorService";
-import { requestLog } from "../../../../jwt/axios_helper";
+
 import { useNavigate } from "react-router-dom";
 
 export default function CreatorPostTable({
@@ -29,7 +29,6 @@ export default function CreatorPostTable({
     if (propPosts) return;
     (async () => {
       try {
-        requestLog("Fetched creator posts for creatorId: " + cid);
         const data = await CreatorService.getCreatorsPosts();
         console.log(data);
         setFetchedPosts(data || []);
@@ -45,7 +44,6 @@ export default function CreatorPostTable({
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     try {
       await CreatorService.deletePost(id);
-      requestLog("Deleted post with ID: " + id);
 
       if (propPosts && onPostDelete) {
         onPostDelete(id);

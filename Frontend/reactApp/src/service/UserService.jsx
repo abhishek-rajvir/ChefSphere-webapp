@@ -1,16 +1,15 @@
-import { request, requestLog, requestJwt } from "../jwt/axios_helper";
+import { request, requestJwt } from "../jwt/axios_helper";
 
 //imgkit
 const getImgToken = async () => {
   try {
     const res = await requestJwt("GET", "/auth/imgkToken");
-    requestLog("Imagekit token generated successfully");
+
     return {
       ...res.data,
       publicKey: res.data.publicKey || "YOUR_PUBLIC_KEY_HERE",
     };
   } catch (err) {
-    requestLog("Imagekit token generation failed " + err);
     throw new Error("Imagekit token generation failed");
   }
 };
@@ -18,11 +17,9 @@ const getImgToken = async () => {
 // login user
 const loginUser = async (details) => {
   try {
-    const res = await request("POST", "/auth/signIn", details, "USER");
-    requestLog("Login successful");
+    const res = await request("POST", "/auth/signIn", details);
     return res.data;
   } catch (err) {
-    requestLog("Login failed " + err);
     throw new Error("Login Failed: invalid username or password");
   }
 };
@@ -35,32 +32,24 @@ const registerUser = async (details) => {
     } else {
       res = await request("POST", "/foodies/signUp", details);
     }
-    requestLog(details.username + " " + details.type + "Register successful");
     return res.data;
   } catch (err) {
-    requestLog(
-      details.username + " " + details.type + "Register failed " + err,
-    );
     throw new Error("Register Failed");
   }
 };
 
 const checkUserName = async (username) => {
   try {
-    requestLog("Username checked " + username);
     return await request("GET", "/auth/checkUsername/" + username);
   } catch (err) {
-    requestLog("Username exists " + err);
     throw new Error("Username exists");
   }
 };
 
 const checkEmail = async (email) => {
   try {
-    requestLog("Email checked " + email);
     return await request("GET", "/auth/checkEmail/" + email);
   } catch (err) {
-    requestLog("Email exists " + err);
     throw new Error("Email exists");
   }
 };
@@ -68,10 +57,8 @@ const checkEmail = async (email) => {
 const updatePassword = async (data) => {
   try {
     const res = await request("PUT", "/users/password", data);
-    requestLog("Password updated successfully");
     return res.data;
   } catch (err) {
-    requestLog("Password update failed " + err);
     throw new Error("Password update failed");
   }
 };
@@ -79,10 +66,8 @@ const updatePassword = async (data) => {
 const deleteAccount = async (id) => {
   try {
     const res = await request("DELETE", `/users/${id}`);
-    requestLog(`User ${id} deleted successfully`);
     return res.data;
   } catch (err) {
-    requestLog("Account deletion failed " + err);
     throw new Error("Account deletion failed");
   }
 };
@@ -92,7 +77,6 @@ const getUserDetails = async () => {
     const res = await requestJwt("GET", "/users/details");
     return res.data;
   } catch (err) {
-    requestLog("User details fetch failed " + err);
     throw new Error("User details fetch failed");
   }
 };
@@ -100,10 +84,8 @@ const getUserDetails = async () => {
 const updateUserDetails = async (data) => {
   try {
     const res = await requestJwt("PUT", "/users/update", data);
-    requestLog("User details updated successfully");
     return res.data;
   } catch (err) {
-    requestLog("User details update failed " + err);
     throw new Error("User details update failed");
   }
 };
@@ -111,10 +93,8 @@ const updateUserDetails = async (data) => {
 const forgotPassword = async (email) => {
   try {
     const res = await request("POST", "/auth/forgot-password", { email });
-    requestLog("Forgot password link sent to " + email);
     return res.data;
   } catch (err) {
-    requestLog("Forgot password failed " + err);
     throw new Error("Forgot password failed");
   }
 };

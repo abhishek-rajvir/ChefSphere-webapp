@@ -3,12 +3,7 @@ import { request, requestJwt, requestParamJwt } from "../jwt/axios_helper";
 // login user
 const RegisterFoodie = async (details) => {
   try {
-    const res = await request(
-      "POST",
-      "/foodies/signUp",
-      details,
-      "Foodie " + res.data.name + " was Registered",
-    );
+    const res = await request("POST", "/foodies/signUp", details);
     return res.data;
   } catch (err) {
     throw new Error("Register Failed: invalid foodie details");

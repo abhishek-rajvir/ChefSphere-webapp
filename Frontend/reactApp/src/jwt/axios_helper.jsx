@@ -1,18 +1,7 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
-// Imports removed
 
-// const url = "localhost";
-const url = "192.168.1.8";
-
-const LogAPI = axios.create({
-  // .NET logger
-  baseURL: "http://" + url + ":6001/Log",
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+const url = "localhost";
 
 const BackendAPI = axios.create({
   baseURL: "http://" + url + ":9001",
@@ -22,27 +11,13 @@ const BackendAPI = axios.create({
   },
 });
 
-export const request = (method, url, data = {}, messageToLog = "") => {
-  // const navigate = useNavigate(); removed
+export const request = (method, url, data = {}) => {
   return BackendAPI({
     method,
     url,
     data,
   })
     .then((res) => {
-      if (messageToLog && messageToLog.trim().length > 0) {
-        if (messageToLog === "USER") {
-          LogAPI.post("", { logMessage: res.data.type + " logged in" }).catch(
-            () => {
-              console.warn("Log operation failed");
-            },
-          );
-        } else {
-          LogAPI.post("", { logMessage: messageToLog }).catch(() => {
-            console.warn("Log operation failed");
-          });
-        }
-      }
       return res;
     })
     .catch((err) => {
@@ -66,7 +41,7 @@ export const request = (method, url, data = {}, messageToLog = "") => {
     });
 };
 
-export const requestJwt = (method, url, data = {}, messageToLog = "") => {
+export const requestJwt = (method, url, data = {}) => {
   const item = sessionStorage.getItem("userCred");
   const userCred = item ? JSON.parse(item) : null;
   const token = userCred ? userCred.token : "";
@@ -79,11 +54,6 @@ export const requestJwt = (method, url, data = {}, messageToLog = "") => {
     },
   })
     .then((res) => {
-      if (messageToLog && messageToLog.trim().length > 0) {
-        LogAPI.post("", { logMessage: messageToLog }).catch(() => {
-          console.warn("Log operation failed");
-        });
-      }
       return res;
     })
     .catch((err) => {
@@ -106,13 +76,7 @@ export const requestJwt = (method, url, data = {}, messageToLog = "") => {
       throw err; // rethrow original error without wrapping
     });
 };
-export const requestParamJwt = (
-  method,
-  url,
-  data = {},
-  params = {},
-  messageToLog = "",
-) => {
+export const requestParamJwt = (method, url, data = {}, params = {}) => {
   const item = sessionStorage.getItem("userCred");
   const userCred = item ? JSON.parse(item) : null;
   const token = userCred ? userCred.token : "";
@@ -127,11 +91,6 @@ export const requestParamJwt = (
     },
   })
     .then((res) => {
-      if (messageToLog && messageToLog.trim().length > 0) {
-        LogAPI.post("", { logMessage: messageToLog }).catch(() => {
-          console.warn("Log operation failed");
-        });
-      }
       return res;
     })
     .catch((err) => {
@@ -155,16 +114,8 @@ export const requestParamJwt = (
     });
 };
 
-export const requestLog = (messageToLog) => {
-  LogAPI.post("", { logMessage: messageToLog }).catch(() => {
-    console.warn("Log operation failed");
-    return false;
-  });
-};
-
 export default {
   request,
   requestParamJwt,
   requestJwt,
-  requestLog,
 };

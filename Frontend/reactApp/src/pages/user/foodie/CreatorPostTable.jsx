@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import FoodieService from "@/service/FoodieService";
-import { requestLog } from "@/jwt/axios_helper";
+
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "../../../utils/context/AuthContext";
 
@@ -31,7 +31,6 @@ export default function CreatorPostTable() {
   useEffect(() => {
     (async () => {
       try {
-        requestLog("Fetched creator posts for creatorId: " + cid);
         const data = await FoodieService.getCreatorsPosts(cid);
         console.log(data);
         setPosts(data || []);

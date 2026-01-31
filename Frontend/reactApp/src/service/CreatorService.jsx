@@ -3,12 +3,7 @@ import { request, requestJwt, requestParamJwt } from "../jwt/axios_helper";
 // login user
 const RegisterCreator = async (details) => {
   try {
-    const res = await request(
-      "POST",
-      "/creators/signUp",
-      details,
-      "Creator " + res.data.name + " was Registered",
-    );
+    const res = await request("POST", "/creators/signUp", details);
     return res.data;
   } catch (err) {
     throw new Error("Register Failed: invalid creator details");
@@ -74,7 +69,6 @@ const getFollowers = async (cid) => {
       "/engagement/follow/followers",
       {},
       { id: cid },
-      "",
     );
     return res.data;
   } catch (err) {
