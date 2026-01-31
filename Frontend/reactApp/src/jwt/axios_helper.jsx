@@ -1,10 +1,10 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const url = "localhost";
+const url = import.meta.env.VITE_API_BACKEND_URL;
 
 const BackendAPI = axios.create({
-  baseURL: "http://" + url + ":9001",
+  baseURL: url,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
