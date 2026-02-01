@@ -13,20 +13,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { useAuth } from "../../../utils/context/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function FollowingTable() {
   const [followings, setFollowings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const user = useAuth();
 
   // Fetch followings for current user
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const data = await FoodieService.getAllFollowing();
         setFollowings(data);
       } catch (error) {
         console.error("Error fetching followings:", error);
         toast.error("Failed to fetch followings. Please try again.");
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -55,6 +60,56 @@ export default function FollowingTable() {
       toast.error("Failed to unfollow. Please try again.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-4 max-w-lg mx-auto">
+        <p className="text-muted-foreground animate-pulse font-medium text-center">
+          Loading followings...
+        </p>
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader className="mb-4">
+              <TableRow>
+                <TableHead className="h-full text-center py-4 text-primary font-bold w-[60px]">
+                  ID
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold w-[80px]">
+                  Icon
+                </TableHead>
+                <TableHead className="h-full text-left py-4 text-primary font-bold w-[120px]">
+                  Name
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold w-[120px]">
+                  Action
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="h-full text-center">
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <div className="flex justify-center items-center">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="h-full text-left">
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <Skeleton className="h-8 w-20 mx-auto" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  }
 
   return saferFollowings.length > 0 ? (
     <div className="space-y-4 max-w-lg mx-auto">

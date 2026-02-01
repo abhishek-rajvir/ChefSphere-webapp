@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FoodieService from "@/service/FoodieService";
 import { FetchAvatar } from "@/service/ImagekitApiService";
 import { Star, Mail, User, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import CreatorPostTable from "@/pages/user/foodie/CreatorPostTable";
@@ -61,8 +62,40 @@ export default function GuestViewCreator() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="p-4 space-y-6">
+        <div className="text-center w-full">
+          <p className="text-muted-foreground animate-pulse font-medium">
+            Loading creator profile...
+          </p>
+        </div>
+        {/* Profile Header Skeleton */}
+        <div className="flex flex-col md:flex-row items-center md:items-center gap-6 p-6">
+          <div className="flex-shrink-0">
+            <Skeleton className="w-24 h-24 md:w-32 md:h-32 rounded-full" />
+          </div>
+          <div className="flex-1 text-center md:text-left space-y-4 w-full">
+            <Skeleton className="h-8 w-48 mx-auto md:mx-0" />
+            <Skeleton className="h-4 w-full max-w-md mx-auto md:mx-0" />
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          </div>
+        </div>
+        {/* Posts Section Skeleton */}
+        <div>
+          <Skeleton className="h-8 w-32 mb-4" />
+          <div className="space-y-4">
+            <div className="rounded-md border p-4">
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

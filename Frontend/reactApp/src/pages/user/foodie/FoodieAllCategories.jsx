@@ -3,20 +3,25 @@ import { Button } from "@/components/ui/button";
 import FoodieService from "@/service/FoodieService";
 import { FetchCategory } from "@/service/ImagekitApiService";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function FoodieAllCategories() {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 20;
   const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const data = await FoodieService.getAllCategory();
         setCategories(data);
       } catch (error) {
         console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -44,36 +49,54 @@ export default function FoodieAllCategories() {
         </span>
       </div>
       <div className="flex flex-wrap gap-4 justify-center">
-        {currentCategories.map((cat, idx) => {
-          const imageUrl =
-            cat.image ||
-            `https://placehold.jp/22/fdf2f8/000000/150x150.png?text=${encodeURIComponent(cat.name.trim())}`;
-          return (
-            <div
-              key={idx}
-              onClick={() =>
-                navigate(
-                  `/foodie/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
-                )
-              }
-              className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-              <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
-                <FetchCategory
-                  categoryName={cat.name}
-                  size={120}
-                  className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
-                />
-              </div>
-              <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
-                {cat.name}
-              </span>
+        {loading ? (
+          <div className="w-full flex flex-col items-center gap-4">
+            <p className="text-muted-foreground animate-pulse font-medium">
+              Loading categories...
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center w-full">
+              {Array.from({ length: 20 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center gap-2 cursor-pointer transition-transform duration-300">
+                  <Skeleton className="w-[120px] h-[120px] rounded-full" />
+                  <Skeleton className="h-4 w-[100px]" />
+                </div>
+              ))}
             </div>
-          );
-        })}
+          </div>
+        ) : (
+          currentCategories.map((cat, idx) => {
+            const imageUrl =
+              cat.image ||
+              `https://placehold.jp/22/fdf2f8/000000/150x150.png?text=${encodeURIComponent(cat.name.trim())}`;
+            return (
+              <div
+                key={idx}
+                onClick={() =>
+                  navigate(
+                    `/foodie/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                  )
+                }
+                className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
+                  <FetchCategory
+                    categoryName={cat.name}
+                    size={120}
+                    className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
+                  />
+                </div>
+                <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
+                  {cat.name}
+                </span>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {totalPages > 1 && !loading && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <Button
             variant="outline"

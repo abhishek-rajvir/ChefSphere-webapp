@@ -12,18 +12,23 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function FollowerTable() {
   const [followers, setFollowers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const data = await CreatorService.getAllFollowers();
         setFollowers(data);
       } catch (error) {
         console.error("Error fetching followers:", error);
         toast.error("Failed to fetch followers. Please try again.");
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -38,6 +43,50 @@ export default function FollowerTable() {
     startIndex,
     startIndex + itemsPerPage,
   );
+
+  if (loading) {
+    return (
+      <div className="space-y-4 max-w-lg mx-auto">
+        <p className="text-muted-foreground animate-pulse font-medium text-center">
+          Loading followers...
+        </p>
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader className="mb-4">
+              <TableRow>
+                <TableHead className="h-full text-center py-4 text-primary font-bold w-[60px]">
+                  ID
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold w-[80px]">
+                  Icon
+                </TableHead>
+                <TableHead className="h-full text-left py-4 text-primary font-bold w-[120px]">
+                  Name
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="h-full text-center">
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </TableCell>
+                  <TableCell className="h-full text-center">
+                    <div className="flex justify-center items-center">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="h-full text-left">
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  }
 
   return saferFollowers.length > 0 ? (
     <div className="space-y-4 max-w-lg mx-auto">

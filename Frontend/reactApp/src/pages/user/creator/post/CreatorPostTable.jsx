@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import CreatorService from "../../../../service/CreatorService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,19 +22,26 @@ export default function CreatorPostTable({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchedPosts, setFetchedPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 5;
 
   const posts = propPosts || fetchedPosts;
 
   useEffect(() => {
-    if (propPosts) return;
+    if (propPosts) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       try {
+        setLoading(true);
         const data = await CreatorService.getCreatorsPosts();
-        console.log(data);
+        // console.log(data);
         setFetchedPosts(data || []);
       } catch (err) {
         setFetchedPosts([]);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [cid, propPosts]);
@@ -42,26 +50,85 @@ export default function CreatorPostTable({
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
-    try {
-      await CreatorService.deletePost(id);
 
-      if (propPosts && onPostDelete) {
-        onPostDelete(id);
-      } else {
-        const updatedPosts = fetchedPosts.filter((post) => post.pid !== id);
-        setFetchedPosts(updatedPosts);
-      }
-      toast.success("Post deleted successfully");
-    } catch (err) {
-      console.error("Failed to delete post:", err);
-      toast.error("Failed to delete post");
-    }
+    toast.promise(
+      CreatorService.deletePost(id).then(() => {
+        if (propPosts && onPostDelete) {
+          onPostDelete(id);
+        } else {
+          const updatedPosts = fetchedPosts.filter((post) => post.pid !== id);
+          setFetchedPosts(updatedPosts);
+        }
+      }),
+      {
+        loading: "Deleting post...",
+        success: "Post deleted successfully",
+        error: "Failed to delete post",
+      },
+    );
   };
   // Handle case where posts is null or undefined
   const safePosts = posts;
   const totalPages = Math.ceil(safePosts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentPosts = safePosts.slice(startIndex, startIndex + itemsPerPage);
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <p className="text-muted-foreground animate-pulse font-medium text-center">
+          Loading recipes...
+        </p>
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader className="mb-4">
+              <TableRow>
+                <TableHead className="h-full text-center py-4 text-primary font-bold">
+                  ID
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold">
+                  Title
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold">
+                  Description
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold">
+                  Video
+                </TableHead>
+                <TableHead className="h-full text-center py-4 text-primary font-bold">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="text-center">
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="h-4 w-24 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="h-4 w-40 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="h-10 w-20 mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center gap-2">
+                      <Skeleton className="h-8 w-8" />
+                      <Skeleton className="h-8 w-8" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  }
 
   return safePosts.length > 0 ? (
     <div className="space-y-4">

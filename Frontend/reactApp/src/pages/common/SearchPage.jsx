@@ -14,6 +14,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/utils/context/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SearchPage() {
   const [params] = useSearchParams();
@@ -151,9 +152,23 @@ export default function SearchPage() {
       </div>
 
       {/* while loading show pulsing text*/}
+      {/* while loading show pulsing text*/}
       {loading ? (
-        <div className="p-12 text-center text-lg font-medium text-muted-foreground animate-pulse">
-          Searching for delicacies...
+        <div className="w-full flex flex-col items-center gap-4">
+          <p className="text-muted-foreground animate-pulse font-medium">
+            Searching for delicacies...
+          </p>
+          <div className="flex flex-wrap items-center gap-4 justify-center w-full">
+            {Array.from({ length: 15 }).map((_, idx) => (
+              <div key={idx} className="flex flex-col space-y-3 w-[180px]">
+                <Skeleton className="h-[200px] w-full rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[150px]" />
+                  <Skeleton className="h-4 w-[100px]" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         // else show data

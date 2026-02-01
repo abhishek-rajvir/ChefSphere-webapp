@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { getYoutubeId } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import FoodieService from "@/service/FoodieService";
 import { useAuth } from "../../../utils/context/AuthContext";
@@ -14,6 +15,7 @@ export default function FoodieDashBoard() {
   const [creators, setCreators] = useState([]);
   const [categories, setCategories] = useState([]);
   const [followingState, setFollowingState] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const { user } = useAuth();
 
@@ -23,10 +25,13 @@ export default function FoodieDashBoard() {
     // Fetch recipes
     (async () => {
       try {
+        setLoading(true);
         const data = await FoodieService.getRecipeByRange(15);
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
       }
     })();
 
@@ -80,36 +85,55 @@ export default function FoodieDashBoard() {
         </Button>
       </div>
       <div className="flex flex-wrap items-center gap-4 justify-center">
-        {posts.map((post, idx) => {
-          return (
-            <Card
-              key={idx}
-              onClick={() => {
-                navigate(`/foodie/posts/${post.pid}`);
-              }}
-              className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-              <div className="h-[200px] w-full overflow-hidden">
-                <img
-                  src={
-                    "https://img.youtube.com/vi/" +
-                    getYoutubeId(post.videoUrl || post.videoURL) +
-                    "/mqdefault.jpg"
-                  }
-                  alt="Image not found"
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-              <CardContent className="p-3 text-center">
-                <p className="font-semibold text-sm truncate">
-                  {post.recipeName}
-                </p>
-                <p className="font-semibold text-sm truncate">
-                  {post.description}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {loading ? (
+          <div className="w-full flex flex-col items-center gap-4">
+            <p className="text-muted-foreground animate-pulse font-medium">
+              Loading your feed...
+            </p>
+            <div className="flex flex-wrap items-center gap-4 justify-center w-full">
+              {Array.from({ length: 15 }).map((_, idx) => (
+                <div key={idx} className="flex flex-col space-y-3 w-[180px]">
+                  <Skeleton className="h-[200px] w-full rounded-xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-[150px]" />
+                    <Skeleton className="h-4 w-[100px]" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          posts.map((post, idx) => {
+            return (
+              <Card
+                key={idx}
+                onClick={() => {
+                  navigate(`/foodie/posts/${post.pid}`);
+                }}
+                className="w-[180px] p-0 gap-0 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+                <div className="h-[200px] w-full overflow-hidden">
+                  <img
+                    src={
+                      "https://img.youtube.com/vi/" +
+                      getYoutubeId(post.videoUrl || post.videoURL) +
+                      "/mqdefault.jpg"
+                    }
+                    alt="Image not found"
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <CardContent className="p-3 text-center">
+                  <p className="font-semibold text-sm truncate">
+                    {post.recipeName}
+                  </p>
+                  <p className="font-semibold text-sm truncate">
+                    {post.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })
+        )}
       </div>
 
       <div className="mt-8">

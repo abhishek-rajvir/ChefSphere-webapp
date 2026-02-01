@@ -14,13 +14,16 @@ export default function AdminUsers() {
   const handleDeleteUser = async () => {
     if (!userId) return toast.error("Please enter User ID");
     if (confirm("Are you sure you want to delete User " + userId + "?")) {
-      try {
-        await AdminService.deleteUser(userId);
-        toast.success("User deleted successfully");
-        setUserId("");
-      } catch (err) {
-        toast.error(err.message || "Failed to delete user");
-      }
+      toast.promise(
+        AdminService.deleteUser(userId).then(() => {
+          setUserId("");
+        }),
+        {
+          loading: "Deleting user...",
+          success: "User deleted successfully",
+          error: (err) => err.message || "Failed to delete user",
+        },
+      );
     }
   };
 

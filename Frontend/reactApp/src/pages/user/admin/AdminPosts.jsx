@@ -14,13 +14,16 @@ export default function AdminPosts() {
   const handleDeletePost = async () => {
     if (!postId) return toast.error("Please enter Post ID");
     if (confirm("Are you sure you want to delete Post " + postId + "?")) {
-      try {
-        await AdminService.deletePost(postId);
-        toast.success("Post deleted successfully");
-        setPostId("");
-      } catch (err) {
-        toast.error(err.message || "Failed to delete post");
-      }
+      toast.promise(
+        AdminService.deletePost(postId).then(() => {
+          setPostId("");
+        }),
+        {
+          loading: "Deleting post...",
+          success: "Post deleted successfully",
+          error: (err) => err.message || "Failed to delete post",
+        },
+      );
     }
   };
 
