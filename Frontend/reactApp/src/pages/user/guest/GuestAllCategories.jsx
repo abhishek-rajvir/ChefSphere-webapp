@@ -82,7 +82,7 @@ export default function GuestAllCategories() {
                   <FetchCategory
                     categoryName={cat.name}
                     size={120}
-                    className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">

@@ -19,29 +19,33 @@ export default function CreatorPostTable({
   cid,
   posts: propPosts,
   onPostDelete,
+  isLoading,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [fetchedPosts, setFetchedPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [internalLoading, setInternalLoading] = useState(true);
   const itemsPerPage = 5;
 
   const posts = propPosts || fetchedPosts;
 
+  // Use prop loading if provided, otherwise use internal loading
+  const loading = isLoading !== undefined ? isLoading : internalLoading;
+
   useEffect(() => {
     if (propPosts) {
-      setLoading(false);
+      setInternalLoading(false);
       return;
     }
     (async () => {
       try {
-        setLoading(true);
+        setInternalLoading(true);
         const data = await CreatorService.getCreatorsPosts();
         // console.log(data);
         setFetchedPosts(data || []);
       } catch (err) {
         setFetchedPosts([]);
       } finally {
-        setLoading(false);
+        setInternalLoading(false);
       }
     })();
   }, [cid, propPosts]);

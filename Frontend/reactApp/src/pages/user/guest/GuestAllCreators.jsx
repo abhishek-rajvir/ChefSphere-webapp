@@ -1,28 +1,37 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { FetchAvatar } from "@/service/ImagekitApiService";
-import FoodieService from "@/service/FoodieService";
 import { useNavigate } from "react-router-dom";
+import FoodieService from "@/service/FoodieService";
+import { FetchAvatar } from "@/service/ImagekitApiService";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 
 export default function GuestAllCreators() {
   const [creators, setCreators] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 20;
   const navigate = useNavigate();
 
+  const handleFollowClick = (e) => {
+    e.stopPropagation();
+    toast.error("Unauthorized request, please login");
+  };
+
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const data = await FoodieService.getCreatorsByRange(100);
         setCreators(data);
       } catch (error) {
         console.error("Error fetching creators:", error);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
 
-  // Calculate pagination
   const totalPages = Math.ceil(creators.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -36,12 +45,6 @@ export default function GuestAllCreators() {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  const handleFollowClick = async (e) => {
-    e.stopPropagation(); // Prevent card navigation
-    console.log("Forbidden request");
-    toast.error("Unauthorized request, please login");
-  };
-
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -50,35 +53,53 @@ export default function GuestAllCreators() {
           Page {currentPage} of {totalPages || 1}
         </span>
       </div>
-      <div className="flex flex-wrap gap-6 justify-center">
-        {currentCreators.map((creator, idx) => {
-          const name = creator.username || "Creator";
-          const creatorUid = creator.uid;
-          const creatorId = creator.cid;
-          return (
-            <div
-              key={idx}
-              onClick={() => navigate(`/creators/${creatorId}`)}
-              className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-              <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
-                <FetchAvatar
-                  userId={creatorUid}
-                  size={100}
-                  alt={name}
-                  className="w-full h-full object-cover"
-                  style={{ width: "100%", height: "100%" }}
-                />
+
+      {loading ? (
+        <div className="w-full flex flex-col items-center gap-4">
+          <p className="text-muted-foreground animate-pulse font-medium">
+            Loading creators...
+          </p>
+          <div className="flex flex-wrap gap-6 justify-center w-full">
+            {Array.from({ length: 20 }).map((_, idx) => (
+              <div key={idx} className="flex flex-col items-center gap-2">
+                <Skeleton className="w-[100px] h-[100px] rounded-full" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-6 w-16 rounded-full" />
               </div>
-              <span className="font-semibold text-sm">{name}</span>
-              <button
-                onClick={handleFollowClick}
-                className={`text-xs px-3 py-1 rounded-full transition-colors ${"bg-black text-white dark:bg-white dark:text-black border border-primary"}`}>
-                Follow
-              </button>
-            </div>
-          );
-        })}
-      </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-6 justify-center">
+          {currentCreators.map((creator, idx) => {
+            const name = creator.username || "Creator";
+            const creatorUid = creator.uid;
+            const creatorId = creator.cid;
+            return (
+              <div
+                key={idx}
+                onClick={() => navigate(`/creators/${creatorId}`)}
+                className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
+                <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
+                  <FetchAvatar
+                    userId={creatorUid}
+                    size={100}
+                    alt={name}
+                    className="w-full h-full object-cover"
+                    style={{ width: "100%", height: "100%" }}
+                  />
+                </div>
+                <span className="font-semibold text-sm">{name}</span>
+                <button
+                  onClick={handleFollowClick}
+                  className={`text-xs px-3 py-1 rounded-full transition-colors ${"bg-black text-white dark:bg-white dark:text-black border border-primary"}`}>
+                  Follow
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Pagination Controls */}
       {totalPages > 1 && (

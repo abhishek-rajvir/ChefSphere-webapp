@@ -32,14 +32,11 @@ export default function CreatorPosts() {
           <Plus className="mr-2 h-4 w-4" /> New Post
         </Button>
       </div>
-      {loading ? (
-        <div className="text-center py-4">Loading posts...</div>
-      ) : (
-        <CreatorPostTable
-          posts={posts}
-          onPostDelete={(id) => setPosts(posts.filter((p) => p.pid !== id))}
-        />
-      )}
+      <CreatorPostTable
+        posts={posts}
+        onPostDelete={(id) => setPosts(posts.filter((p) => p.pid !== id))}
+        isLoading={loading}
+      />
     </div>
   );
 }

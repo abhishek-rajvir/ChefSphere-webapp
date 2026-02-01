@@ -10,6 +10,7 @@ import {
   Trash2,
   Send,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getYoutubeId } from "@/lib/utils";
 import FoodieService from "@/service/FoodieService";
 import Fraction from "fraction.js";
@@ -116,8 +117,24 @@ export default function CreatorViewPost() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-lg font-medium">
-        Loading deliciousness...
+      <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-12 animate-pulse">
+        <div className="flex flex-col items-center text-center space-y-6">
+          <Skeleton className="w-full max-w-2xl aspect-video rounded-2xl" />
+          <div className="space-y-4 px-4 w-full flex flex-col items-center">
+            <Skeleton className="h-10 w-3/4 max-w-lg" />
+            <Skeleton className="h-6 w-full max-w-md" />
+            <Skeleton className="h-6 w-2/3 max-w-sm" />
+
+            <div className="flex justify-center gap-8 py-4 w-full max-w-3xl">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+          </div>
+        </div>
+        <p className="text-center text-lg text-muted-foreground font-medium">
+          Loading deliciousness...
+        </p>
       </div>
     );
   }

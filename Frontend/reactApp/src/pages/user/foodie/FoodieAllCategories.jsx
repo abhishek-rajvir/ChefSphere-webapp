@@ -67,9 +67,6 @@ export default function FoodieAllCategories() {
           </div>
         ) : (
           currentCategories.map((cat, idx) => {
-            const imageUrl =
-              cat.image ||
-              `https://placehold.jp/22/fdf2f8/000000/150x150.png?text=${encodeURIComponent(cat.name.trim())}`;
             return (
               <div
                 key={idx}
@@ -83,7 +80,7 @@ export default function FoodieAllCategories() {
                   <FetchCategory
                     categoryName={cat.name}
                     size={120}
-                    className={`w-full h-full ${cat.image ? "object-cover" : "object-cover"}`}
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">

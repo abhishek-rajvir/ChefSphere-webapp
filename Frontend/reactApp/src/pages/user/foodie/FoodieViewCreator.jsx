@@ -80,8 +80,6 @@ export default function FoodieViewCreator() {
     fetchCreatorDetails();
   }, [cid, user?.id]);
 
-  // ... imports remain the same
-
   if (loading) {
     return (
       <div className="p-4 space-y-6">
