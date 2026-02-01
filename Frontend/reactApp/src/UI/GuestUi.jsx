@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import logo from "../assets/logo_transperent.png";
 import SearchBar from "@/core/template/SearchBar";
 import { Link, Outlet } from "react-router-dom";
 import GuestConfig from "@/pages/user/guest/GuestConfig";
@@ -13,7 +14,7 @@ export default function GuestUi() {
           {/* LEFT */}
           <div className="flex items-center gap-3">
             <SidebarTrigger />
-            <span className="font-semibold whitespace-nowrap">ChefSphere</span>
+            <img src={logo} alt="ChefSphere Logo" className="h-10" />
             &nbsp;
           </div>
 

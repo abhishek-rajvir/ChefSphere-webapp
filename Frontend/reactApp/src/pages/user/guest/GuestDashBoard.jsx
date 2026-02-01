@@ -14,6 +14,8 @@ export default function GuestDashBoard() {
   const [creators, setCreators] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingCreators, setLoadingCreators] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   const navigate = useNavigate();
 
@@ -35,22 +37,28 @@ export default function GuestDashBoard() {
     // Fetch top creators
     (async () => {
       try {
+        setLoadingCreators(true);
         const data = await FoodieService.getCreatorsByRange(20);
         setCreators(data);
       } catch (error) {
         console.error("Error fetching creators:", error);
         toast.error("Failed to load creators");
+      } finally {
+        setLoadingCreators(false);
       }
     })();
 
     // Fetch categories
     (async () => {
       try {
+        setLoadingCategories(true);
         const data = await FoodieService.getCategoryByRange(16);
         setCategories(data);
       } catch (error) {
         console.error("Error fetching categories:", error);
         toast.error("Failed to load categories");
+      } finally {
+        setLoadingCategories(false);
       }
     })();
   }, []);
@@ -123,31 +131,38 @@ export default function GuestDashBoard() {
           </Button>
         </div>
         <div className="flex flex-wrap gap-4 justify-center">
-          {categories.map((cat, idx) => {
-            // imageUrl declaration removed
-            return (
-              <div
-                key={idx}
-                onClick={() =>
-                  navigate(
-                    `/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
-                  )
-                }
-                className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
-                  <FetchCategory
-                    categoryName={cat.name}
-                    size={120}
-                    className="w-full h-full object-cover"
-                    style={{ width: "100%", height: "100%" }}
-                  />
+          {loadingCategories
+            ? Array.from({ length: 8 }).map((_, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-2">
+                  <Skeleton className="w-[120px] h-[120px] rounded-full" />
+                  <Skeleton className="h-4 w-[80px]" />
                 </div>
-                <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
-                  {cat.name}
-                </span>
-              </div>
-            );
-          })}
+              ))
+            : categories.map((cat, idx) => {
+                // imageUrl declaration removed
+                return (
+                  <div
+                    key={idx}
+                    onClick={() =>
+                      navigate(
+                        `/search?sortBy=category&query=${encodeURIComponent(cat.name.trim())}`,
+                      )
+                    }
+                    className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
+                    <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-inherit shadow-md flex items-center justify-center bg-[#fdf2f8]">
+                      <FetchCategory
+                        categoryName={cat.name}
+                        size={120}
+                        className="w-full h-full object-cover"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    </div>
+                    <span className="font-semibold text-base max-w-[120px] text-center px-1 break-words">
+                      {cat.name}
+                    </span>
+                  </div>
+                );
+              })}
         </div>
       </div>
 
@@ -159,41 +174,49 @@ export default function GuestDashBoard() {
           </Button>
         </div>
         <div className="flex flex-wrap gap-6 justify-center">
-          {creators.map((creator, idx) => {
-            const name = creator.username || "Creator";
-            const creatorUid = creator.uid;
-            const creatorId = creator.cid;
-            // imageUrl declaration removed
-
-            const handleFollowClick = async (e) => {
-              e.stopPropagation(); // Prevent card navigation
-              console.log("Forbidden request");
-              toast.error("Unauthorized request, please login");
-            };
-
-            return (
-              <div
-                key={idx}
-                onClick={() => navigate(`/creators/${creatorId}`)}
-                className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
-                <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
-                  <FetchAvatar
-                    userId={creatorUid}
-                    size={102}
-                    alt={name}
-                    className="w-full h-full object-cover"
-                    style={{ width: "100%", height: "100%" }}
-                  />
+          {loadingCreators
+            ? Array.from({ length: 8 }).map((_, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-2">
+                  <Skeleton className="w-[100px] h-[100px] rounded-full" />
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-6 w-[60px] rounded-full" />
                 </div>
-                <span className="font-semibold text-sm">{name}</span>
-                <button
-                  onClick={handleFollowClick}
-                  className={`text-xs px-3 py-1 rounded-full transition-colors ${"text-primary border border-primary hover:bg-primary hover:text-white"}`}>
-                  {"Follow"}
-                </button>
-              </div>
-            );
-          })}
+              ))
+            : creators.map((creator, idx) => {
+                const name = creator.username || "Creator";
+                const creatorUid = creator.uid;
+                const creatorId = creator.cid;
+                // imageUrl declaration removed
+
+                const handleFollowClick = async (e) => {
+                  e.stopPropagation(); // Prevent card navigation
+                  console.log("Forbidden request");
+                  toast.error("Unauthorized request, please login");
+                };
+
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => navigate(`/creators/${creatorId}`)}
+                    className="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-300">
+                    <div className="w-[100px] h-[100px] rounded-full overflow-hidden border-2 border-inherit shadow-md ring-2 ring-offset-2 ring-gray-100">
+                      <FetchAvatar
+                        userId={creatorUid}
+                        size={102}
+                        alt={name}
+                        className="w-full h-full object-cover"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    </div>
+                    <span className="font-semibold text-sm">{name}</span>
+                    <button
+                      onClick={handleFollowClick}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors ${"text-primary border border-primary hover:bg-primary hover:text-white"}`}>
+                      {"Follow"}
+                    </button>
+                  </div>
+                );
+              })}
         </div>
       </div>
     </div>
