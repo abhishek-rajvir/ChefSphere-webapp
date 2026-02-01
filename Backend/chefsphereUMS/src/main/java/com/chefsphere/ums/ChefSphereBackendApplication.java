@@ -17,8 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 //one of the annotations - @SpringBootConfiguration => it's Spring boot config class , where you can add @Bean methods to declare spring beans
 public class ChefSphereBackendApplication {
 
-	@Value("${frontend.url}")
-	private String frontEndUrl;
+	@Value("#{'${frontend.url}'.split('\\s*,\\s*')}")
+	private List<String> frontEndUrls;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChefSphereBackendApplication.class, args);
@@ -41,7 +41,7 @@ public class ChefSphereBackendApplication {
 	    CorsConfiguration config = new CorsConfiguration();
 
 		//front end port
-	    config.setAllowedOrigins(List.of(frontEndUrl));
+	    config.setAllowedOrigins(frontEndUrls);
 		// methods allowed [get,post,..]
 	    config.setAllowedMethods(List.of("*"));
 		// allowed headers
