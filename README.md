@@ -7,8 +7,10 @@ It enables users to discover, create, and manage recipes through a secure and re
 
 ## 🚀 Live Application
 
-🔗 **Frontend:** https://chefsphere-webapp.netlify.app/
-The backend is hosted on an on-demand service and may take up to **4 minutes** to wake up after inactivity. 
+🔗 **Frontend (Netlify):** https://chefsphere-webapp.netlify.app/  
+🔗 **Frontend (Vercel):** https://chefsphere-webapp.vercel.app/
+
+> ⚠️ The backend is hosted on an on-demand service and may take up to **5 minutes** to wake up after inactivity.
 
 ---
 
@@ -16,7 +18,7 @@ The backend is hosted on an on-demand service and may take up to **4 minutes** t
 
 ### Backend
 ![Java](https://img.shields.io/badge/Java-21+-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.9.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-Authentication-000000?style=for-the-badge&logo=jsonwebtokens)
 ![Hibernate](https://img.shields.io/badge/JPA%20%2F%20Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
@@ -44,9 +46,10 @@ The backend is hosted on an on-demand service and may take up to **4 minutes** t
 ---
 
 ### DevOps & Deployment
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-Backend-000000?style=for-the-badge&logo=render&logoColor=white)
 ![Netlify](https://img.shields.io/badge/Netlify-Frontend-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-Frontend-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-Version%20Control-181717?style=for-the-badge&logo=github&logoColor=white)
 
 ---
@@ -54,7 +57,7 @@ The backend is hosted on an on-demand service and may take up to **4 minutes** t
 ## 🔐 Security & Authentication
 
 - JWT-based authentication using Spring Security  
-- Stateless session management for scalability  
+- Stateless session management  
 - Role-based access control (RBAC)  
 - Secure token exchange between frontend and backend  
 
@@ -62,35 +65,35 @@ The backend is hosted on an on-demand service and may take up to **4 minutes** t
 
 ## 📑 API Documentation & Testing
 
-- Swagger / OpenAPI for auto-generated API documentation  
+- Swagger / OpenAPI auto-generated documentation  
 - Interactive Swagger UI for endpoint exploration  
-- Postman collections used for API testing and validation  
+- Postman collections for API testing  
 
 ---
 
 ## 🌐 Client-Side Routing
 
-- React Router for client-side navigation  
+- React Router for SPA navigation  
 - Protected routes for authenticated users  
-- SPA behavior with clean URLs and no full page reloads  
+- Clean URLs with no full page reloads  
 
 ---
 
 ## 🖥️ Application Server
 
-- Apache Tomcat 10 (embedded with Spring Boot)  
+- Apache Tomcat 10 (embedded)  
 - Jakarta EE compatible (Spring Boot 3.x)  
-- Packaged as a standalone executable JAR  
-- Optimized for RESTful API workloads  
+- Standalone executable JAR  
+- Optimized for RESTful workloads  
 
 ---
 
 ## 🏗️ Architecture Overview
 
-- **Backend:** Spring Boot REST APIs handling authentication, authorization, and business logic  
-- **Frontend:** React Single Page Application consuming REST endpoints  
-- **Database:** Cloud-hosted TiDB (MySQL compatible)  
-- **Deployment:** Decoupled services enabling independent scaling and maintenance  
+- **Backend:** Spring Boot REST APIs  
+- **Frontend:** React Single Page Application  
+- **Database:** TiDB Cloud (MySQL compatible)  
+- **Deployment:** Decoupled services for independent scaling  
 
 ---
 
@@ -100,14 +103,14 @@ The backend is hosted on an on-demand service and may take up to **4 minutes** t
 |---------|----------|
 | Backend | Render |
 | Database | TiDB Cloud |
-| Frontend | Netlify |
+| Frontend | Netlify / Vercel |
 
 ---
 
 ## 🐳 Docker
 
-The backend is fully containerized to ensure consistent runtime behavior across development and production environments.
+The backend is fully containerized to ensure consistent runtime behavior.
 
-**Docker Image**
+### Docker Image
 ```bash
 docker pull abhishekrajvir66/chefsphere-deployment:latest
