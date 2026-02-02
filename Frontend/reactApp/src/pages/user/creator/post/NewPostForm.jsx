@@ -75,6 +75,8 @@ export default function NewPostForm() {
     ],
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -186,6 +188,11 @@ export default function NewPostForm() {
     if (!formData.postTitle.trim()) return "Post title is required";
     if (!formData.description.trim()) return "Post description is required";
     if (!formData.videoUrl.trim()) return "Video URL is required";
+    try {
+      new URL(formData.videoUrl);
+    } catch (_) {
+      return "Please enter a valid Video URL (e.g., https://example.com)";
+    }
 
     // Recipe Details validation
     const { recipe_name, description, prepTime, number_of_servings } =
@@ -239,6 +246,9 @@ export default function NewPostForm() {
       toast.error(error);
       return;
     }
+
+    setIsSubmitting(true);
+
     try {
       const res = await CreatorService.newCreatorPost(formData);
       toast.success("Post created successfully");
@@ -275,6 +285,7 @@ export default function NewPostForm() {
       navigate("/creator/posts");
     } catch (err) {
       toast.error("Failed to create post");
+      setIsSubmitting(false);
       return;
     }
   };
@@ -578,11 +589,15 @@ export default function NewPostForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate(-1)}>
+                onClick={() => navigate(-1)}
+                disabled={isSubmitting}>
                 Cancel
               </Button>
-              <Button type="button" onClick={handleSubmit}>
-                Create Post
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Post"}
               </Button>
             </div>
           </form>
