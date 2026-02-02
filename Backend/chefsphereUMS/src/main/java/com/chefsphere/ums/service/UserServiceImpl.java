@@ -1,10 +1,5 @@
 package com.chefsphere.ums.service;
 
-import java.util.Optional;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.UserResponseDTO;
 import com.chefsphere.ums.dto.UserSignUpDto;
@@ -12,17 +7,16 @@ import com.chefsphere.ums.dto.UserUpdateDto;
 import com.chefsphere.ums.entities.Foodie;
 import com.chefsphere.ums.entities.User;
 import com.chefsphere.ums.entities.UserType;
-import com.chefsphere.ums.exception_handler.EmailAlreadyExistsException;
-import com.chefsphere.ums.exception_handler.InvalidIdException;
-import com.chefsphere.ums.exception_handler.NoUniqueDataException;
-import com.chefsphere.ums.exception_handler.UserNameAlreadyExistsException;
-import com.chefsphere.ums.exception_handler.UserNotFoundException;
+import com.chefsphere.ums.exception_handler.*;
 import com.chefsphere.ums.repository.UserRepo;
 import com.chefsphere.ums.security.JwtUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +29,17 @@ public class UserServiceImpl implements UserService {
 	private final UserRepo userRepo;
 	private final ModelMapper modelMapper;
 	private final JwtUtils jwtUtils;
+
+	@Override
+	public void updateUserPassword(String email,String newPassword){
+		User u = userRepo.findByEmailAndIsActiveTrue(email).orElseThrow(()-> new InvalidEmailException("User email doesn't exist"));
+		// update pass
+		u.setPassword(newPassword);
+		// encrypt pass
+		authService.encryptPassword(u);
+		userRepo.save(u);
+	}
+
 
 	public User createUser(Integer i, UserSignUpDto dto) {
 		User newUser = modelMapper.map(dto, User.class);

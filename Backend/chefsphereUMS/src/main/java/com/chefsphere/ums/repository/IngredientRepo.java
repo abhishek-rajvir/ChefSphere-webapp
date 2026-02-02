@@ -1,12 +1,11 @@
 package com.chefsphere.ums.repository;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.chefsphere.ums.entities.Ingredients;
 import com.chefsphere.ums.entities.Recipe;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Set;
 
 public interface IngredientRepo extends JpaRepository<Ingredients, Long> {
 

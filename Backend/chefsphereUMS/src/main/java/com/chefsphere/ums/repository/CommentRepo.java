@@ -1,10 +1,9 @@
 package com.chefsphere.ums.repository;
 
-import java.util.List;
-
+import com.chefsphere.ums.entities.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.chefsphere.ums.entities.Comment;
+import java.util.List;
 
 
 public interface CommentRepo extends JpaRepository<Comment, Long> {

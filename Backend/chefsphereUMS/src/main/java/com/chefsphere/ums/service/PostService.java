@@ -1,16 +1,10 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-
-import com.chefsphere.ums.dto.FoodCategoryDTO;
-import com.chefsphere.ums.dto.PostRequestDTO;
-import com.chefsphere.ums.dto.PostResponseDTO;
-import com.chefsphere.ums.dto.PostSearchDTO;
-import com.chefsphere.ums.dto.PostUpdateDTO;
-import com.chefsphere.ums.dto.RecipeRandRespDTO;
+import com.chefsphere.ums.dto.*;
 import com.chefsphere.ums.entities.Creator;
-
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface PostService {
 

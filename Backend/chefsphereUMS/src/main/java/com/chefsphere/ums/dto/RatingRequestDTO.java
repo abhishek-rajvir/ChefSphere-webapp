@@ -1,12 +1,11 @@
 package com.chefsphere.ums.dto;
 
-import org.hibernate.validator.constraints.Range;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter

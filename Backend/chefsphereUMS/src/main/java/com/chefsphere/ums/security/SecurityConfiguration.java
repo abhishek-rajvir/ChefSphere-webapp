@@ -1,5 +1,7 @@
 package com.chefsphere.ums.security;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,9 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Configuration // To declare a java configuration class (equivalent to bean config xml file)
 @EnableWebSecurity // to enable spring security (in non reactive - servlet filter based)
@@ -54,7 +53,7 @@ public class SecurityConfiguration {
 		 */
 
 		request.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/users/pwd-encryption", "/auth/signIn",
-				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}").permitAll()
+				"/auth/checkUsername/{username}", "/auth/checkEmail/{email}","/email/**").permitAll()
 				// in flight request from React front end extra request sent by react
 				.requestMatchers(HttpMethod.OPTIONS).permitAll()
 
@@ -62,6 +61,13 @@ public class SecurityConfiguration {
 				 * Auth
 				 */
 				.requestMatchers(HttpMethod.GET, "/auth/imgkToken").hasAnyAuthority("CREATOR", "FOODIE", "ADMIN")
+
+				/*
+				 * Email
+				 */
+				.requestMatchers(HttpMethod.POST, "/email/new").hasAnyAuthority("CREATOR")
+				.requestMatchers(HttpMethod.POST, "/email/otp").permitAll()
+				.requestMatchers(HttpMethod.POST, "/email/validate").permitAll()
 
 				/*
 				 * Admin

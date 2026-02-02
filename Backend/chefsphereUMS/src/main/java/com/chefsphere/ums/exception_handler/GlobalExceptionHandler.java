@@ -1,9 +1,6 @@
 package com.chefsphere.ums.exception_handler;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.chefsphere.ums.dto.ApiResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -11,7 +8,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.chefsphere.ums.dto.ApiResponseDTO;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice // To declare a spring bean containing global exception handling logic . SC is
 						// offering global exc handling advice via this bean -> to all the rest
@@ -19,7 +18,17 @@ import com.chefsphere.ums.dto.ApiResponseDTO;
 //try block - rest controller methods
 //catch block - exc handler
 public class GlobalExceptionHandler {
-	
+
+	@ExceptionHandler(InvalidEmailException.class)
+	public ResponseEntity<?> handleInvalidEmailException(InvalidEmailException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseDTO<String>(e.getLocalizedMessage(),false, "Failed"));
+	}
+
+	@ExceptionHandler(InvalidOtpException.class)
+	public ResponseEntity<?> handleInvalidOtpException(InvalidOtpException e) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseDTO<String>(e.getLocalizedMessage(),false, "Failed"));
+	}
+
 	// add exception handling method - to handle ResourceNotFoundException
 	@ExceptionHandler(InvalidFilterException.class)
 	public ResponseEntity<?> handleInvalidCategoryException(InvalidFilterException e) {

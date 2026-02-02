@@ -4,10 +4,11 @@ import com.chefsphere.ums.dto.UserResponseDTO;
 import com.chefsphere.ums.dto.UserSignUpDto;
 import com.chefsphere.ums.dto.UserUpdateDto;
 import com.chefsphere.ums.entities.User;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
+
+	void updateUserPassword(String email,String newPassword);
 
 	void updateUser(User changeUser);
 

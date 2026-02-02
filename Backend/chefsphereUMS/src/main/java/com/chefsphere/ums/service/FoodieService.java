@@ -1,16 +1,13 @@
 package com.chefsphere.ums.service;
 
 
-import java.util.List;
-
 import com.chefsphere.ums.dto.FoodieResponseDTO;
-import com.chefsphere.ums.dto.UserSignUpDto;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
 import com.chefsphere.ums.entities.User;
-
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
+
+import java.util.List;
 
 public interface FoodieService {
 

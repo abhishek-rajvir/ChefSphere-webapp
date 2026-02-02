@@ -1,13 +1,12 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-
 import com.chefsphere.ums.dto.CreatorRandomDTO;
 import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.User;
-
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface CreatorService {
 

@@ -1,7 +1,6 @@
 package com.chefsphere.ums.dto;
 
 import com.chefsphere.ums.entities.UserType;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,27 +1,17 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.chefsphere.ums.dto.*;
+import com.chefsphere.ums.entities.User;
+import com.chefsphere.ums.entities.UserType;
+import com.chefsphere.ums.exception_handler.*;
+import com.chefsphere.ums.repository.UserRepo;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.chefsphere.ums.dto.AuthRequestDTO;
-import com.chefsphere.ums.dto.UserDTO;
-import com.chefsphere.ums.dto.UserResponseDTO;
-import com.chefsphere.ums.dto.UserSignUpDto;
-import com.chefsphere.ums.dto.UserUpdateDto;
-import com.chefsphere.ums.entities.User;
-import com.chefsphere.ums.entities.UserType;
-import com.chefsphere.ums.exception_handler.EmailAlreadyExistsException;
-import com.chefsphere.ums.exception_handler.InvalidCredentialsException;
-import com.chefsphere.ums.exception_handler.NoUniqueDataException;
-import com.chefsphere.ums.exception_handler.UserNameAlreadyExistsException;
-import com.chefsphere.ums.exception_handler.UserNotFoundException;
-import com.chefsphere.ums.repository.UserRepo;
-
-import lombok.AllArgsConstructor;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor

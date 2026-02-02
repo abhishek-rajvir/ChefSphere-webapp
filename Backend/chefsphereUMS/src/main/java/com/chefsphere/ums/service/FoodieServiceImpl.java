@@ -1,11 +1,5 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.chefsphere.ums.dto.FoodieResponseDTO;
 import com.chefsphere.ums.entities.Creator;
 import com.chefsphere.ums.entities.Foodie;
@@ -16,10 +10,14 @@ import com.chefsphere.ums.exception_handler.NoContentException;
 import com.chefsphere.ums.repository.CreatorRepo;
 import com.chefsphere.ums.repository.FoodieRepo;
 import com.chefsphere.ums.security.JwtUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

@@ -1,17 +1,7 @@
 package com.chefsphere.ums.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.chefsphere.ums.dto.PostUpdateDTO;
+import com.chefsphere.ums.dto.UserResponseDTO;
 import com.chefsphere.ums.dto.UserSignUpDto;
 import com.chefsphere.ums.dto.UserUpdateDto;
 import com.chefsphere.ums.entities.Creator;
@@ -20,11 +10,13 @@ import com.chefsphere.ums.service.CreatorService;
 import com.chefsphere.ums.service.FoodieService;
 import com.chefsphere.ums.service.PostService;
 import com.chefsphere.ums.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -52,12 +44,15 @@ public class AdminController {
 	public ResponseEntity<?> newAdmin(@Valid @RequestBody UserSignUpDto dto) {
 		System.out.println(dto);
 		User u = userService.createUser(0, dto);
+		log.info("Admin created successfully. username={}", u.getUsername());
 		return ResponseEntity.ok("Admin " + u.getUsername() + " created successfully");
 	}
 
 	@GetMapping("/details")
 	public ResponseEntity<?> getUserDetails(HttpServletRequest req) {
-		return ResponseEntity.ok(userService.userDetails(req));
+		UserResponseDTO dto = userService.userDetails(req);
+		log.info("Fetched user details. uid={}, username={}", dto.getId(), dto.getUsername());
+		return ResponseEntity.ok(dto);
 	}
 
 	/*
@@ -66,11 +61,13 @@ public class AdminController {
 
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUser(@PathVariable Long id) {
+		log.info("Fetched user details. uid={}", id);
 		return ResponseEntity.ok(userService.userDetails(id));
 	}
 
 	@PutMapping("/user/{id}")
 	public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto dto) {
+		log.info("Updated user details. uid={}",id);
 		return ResponseEntity.ok(userService.updateUserDetails(id, dto));
 	}
 
@@ -78,6 +75,7 @@ public class AdminController {
 	public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 		// hard delete
 		userService.deleteUserHard(id);
+		log.info("Permanently removed user details from database. uid={}",id);
 		return ResponseEntity.ok("User has been removed from database");
 	}
 
@@ -86,8 +84,8 @@ public class AdminController {
 	 */
 	@GetMapping("/creator/listAll")
 	public ResponseEntity<?> listAllCreators() {
+		log.info("Fetched all creators details.");
 		return ResponseEntity.ok(creatorService.findAll());
-
 	}
 
 	@DeleteMapping("/creator/{id}")

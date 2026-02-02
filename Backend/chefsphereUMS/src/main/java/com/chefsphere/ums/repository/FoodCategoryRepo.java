@@ -1,15 +1,14 @@
 package com.chefsphere.ums.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.chefsphere.ums.dto.FoodCategoryDTO;
+import com.chefsphere.ums.entities.FoodCategory;
+import com.chefsphere.ums.entities.Recipe;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.chefsphere.ums.dto.FoodCategoryDTO;
-import com.chefsphere.ums.entities.FoodCategory;
-import com.chefsphere.ums.entities.Recipe;
+import java.util.List;
+import java.util.Optional;
 
 public interface FoodCategoryRepo extends JpaRepository<FoodCategory, Long> {
 

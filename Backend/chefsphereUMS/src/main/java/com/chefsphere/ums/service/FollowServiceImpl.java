@@ -1,10 +1,5 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.FoodieResponseDTO;
 import com.chefsphere.ums.entities.Creator;
@@ -15,9 +10,12 @@ import com.chefsphere.ums.exception_handler.ResourceNotFoundException;
 import com.chefsphere.ums.exception_handler.UserNotFoundException;
 import com.chefsphere.ums.repository.CreatorRepo;
 import com.chefsphere.ums.security.JwtUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /*
  * Follower service methods 

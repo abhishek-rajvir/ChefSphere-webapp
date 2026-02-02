@@ -1,11 +1,5 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import com.chefsphere.ums.dto.CommentRequestDTO;
 import com.chefsphere.ums.dto.CommentResponseDTO;
 import com.chefsphere.ums.entities.Comment;
@@ -15,10 +9,14 @@ import com.chefsphere.ums.exception_handler.NoContentException;
 import com.chefsphere.ums.repository.CommentRepo;
 import com.chefsphere.ums.repository.PostRepo;
 import com.chefsphere.ums.security.JwtUtils;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional

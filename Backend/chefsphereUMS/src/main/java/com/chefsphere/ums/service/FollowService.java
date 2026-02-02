@@ -1,11 +1,10 @@
 package com.chefsphere.ums.service;
 
-import java.util.List;
-
 import com.chefsphere.ums.dto.CreatorResponseDTO;
 import com.chefsphere.ums.dto.FoodieResponseDTO;
-
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 public interface FollowService {
 
