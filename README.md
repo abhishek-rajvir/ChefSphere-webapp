@@ -8,6 +8,7 @@ It enables users to discover, create, and manage recipes through a secure and re
 ## 🚀 Live Application
 
 🔗 **Frontend (Vercel):** https://chefsphere-webapp.vercel.app/
+
 🔗 **Frontend (Netlify):** https://chefsphere-webapp.netlify.app/  
 
 > ⚠️ The backend is hosted on an on-demand service and may take up to **5 minutes** to wake up after inactivity.
