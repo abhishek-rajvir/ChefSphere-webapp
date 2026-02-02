@@ -115,3 +115,19 @@ The backend is fully containerized to ensure consistent runtime behavior.
 ### Docker Image
 ```bash
 docker pull abhishekrajvir66/chefsphere-deployment:latest
+```
+
+## Maven
+
+```bash
+./mvnw clean package
+```
+
+```bash
+Get-Content .env | Where-Object { $_ -and $_ -notmatch '^#' } |
+  ForEach-Object {
+    $k, $v = $_ -split '=', 2
+    Set-Item "Env:$k" $v
+  };
+java -jar target\Chefsphere-UMS-0.0.1.jar
+```
