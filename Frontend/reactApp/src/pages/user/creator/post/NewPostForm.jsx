@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2 } from "lucide-react";
 
 import CreatorService from "../../../../service/CreatorService";
+import EmailService from "../../../../service/EmailService";
+import { useAuth } from "../../../../utils/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   Select,
@@ -18,10 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function NewPostForm() {
   const [formData, setFormData] = useState({
-    post_title: "",
+    postTitle: "",
     description: "",
     videoUrl: "",
     recipe_Details: {
@@ -72,6 +75,7 @@ export default function NewPostForm() {
     ],
   });
 
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -179,7 +183,7 @@ export default function NewPostForm() {
 
   const validateForm = () => {
     // Basic Info validation
-    if (!formData.post_title.trim()) return "Post title is required";
+    if (!formData.postTitle.trim()) return "Post title is required";
     if (!formData.description.trim()) return "Post description is required";
     if (!formData.videoUrl.trim()) return "Video URL is required";
 
@@ -237,22 +241,43 @@ export default function NewPostForm() {
     }
     try {
       const res = await CreatorService.newCreatorPost(formData);
-
       toast.success("Post created successfully");
+
+      try {
+        const followers = await CreatorService.getAllFollowers();
+        const userName = "👨‍🍳 " + user.username;
+        const postTitle = formData.postTitle;
+
+        const emailPromises = followers.map((follower) =>
+          EmailService.sendNewPostEmail(
+            follower.email,
+            userName,
+            postTitle,
+          ).catch((e) => {
+            console.error(`Failed to send email to ${follower.email}:`, e);
+            return "failed";
+          }),
+        );
+
+        const results = await Promise.all(emailPromises);
+        const hasFailure = results.includes("failed");
+
+        if (hasFailure) {
+          toast.error("Failed to send some email notifications");
+        } else if (followers.length > 0) {
+          toast.success("Email notifications sent to all followers");
+        }
+      } catch (emailError) {
+        console.error("Failed to process emails:", emailError);
+        toast.error("Failed to initiate email notifications");
+      }
+
       navigate("/creator/posts");
     } catch (err) {
       toast.error("Failed to create post");
       return;
     }
   };
-
-  // Helper for flexible textarea
-  const Textarea = (props) => (
-    <textarea
-      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      {...props}
-    />
-  );
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -267,11 +292,11 @@ export default function NewPostForm() {
               <h3 className="text-lg font-semibold">Basic Information</h3>
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="post_title">Post Title</Label>
+                  <Label htmlFor="postTitle">Post Title</Label>
                   <Input
-                    id="post_title"
-                    name="post_title"
-                    value={formData.post_title}
+                    id="postTitle"
+                    name="postTitle"
+                    value={formData.postTitle}
                     onChange={handleChange}
                     placeholder="e.g. Triple chocolate mousse"
                   />

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 import UserService from "@/service/UserService";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -114,13 +115,15 @@ export default function RegisterForm({ ...props }) {
     if (!validate()) return;
 
     try {
-      const registerPromise = await UserService.registerUser(forms);
+      const registerPromise = UserService.registerUser(forms);
 
       toast.promise(registerPromise, {
         loading: "Registering...",
         success: "Register successful",
         error: "Register failed",
       });
+
+      await registerPromise;
 
       console.error("Registered successfully");
       navigate(`/login`, { replace: true });
@@ -321,9 +324,9 @@ export default function RegisterForm({ ...props }) {
               </Field>
               <Field>
                 <FieldLabel htmlFor="description">Bio (Optional)</FieldLabel>
-                <textarea
+                <Textarea
                   id="description"
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="resize-none"
                   placeholder="Tell us a little about yourself..."
                   onChange={(e) =>
                     setForms((prev) => ({

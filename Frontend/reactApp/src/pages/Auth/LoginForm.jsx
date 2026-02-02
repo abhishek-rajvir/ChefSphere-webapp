@@ -67,7 +67,7 @@ export default function LoginForm() {
     ) {
       errors.password =
         "Password must be at least 8 characters, include uppercase, lowercase, number, and special character";
-      toast.warn(
+      toast.error(
         "Password must be at least 8 characters, include uppercase, lowercase, number, and special character",
       );
     }

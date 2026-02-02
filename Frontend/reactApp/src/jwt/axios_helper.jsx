@@ -51,6 +51,7 @@ export const requestJwt = (method, url, data = {}) => {
     url,
     data,
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   })

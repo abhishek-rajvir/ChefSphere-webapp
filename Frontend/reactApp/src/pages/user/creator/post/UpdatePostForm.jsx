@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function UpdatePostForm() {
   const params = useParams();
@@ -28,7 +29,7 @@ export default function UpdatePostForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    post_title: "",
+    postTitle: "",
     description: "",
     videoUrl: "",
     recipe_Details: {
@@ -61,7 +62,7 @@ export default function UpdatePostForm() {
             {};
 
           setFormData({
-            post_title: data.post_title || data.title || data.postTitle || "",
+            postTitle: data.post_title || data.title || data.postTitle || "",
             description: data.description || data.desc || "",
             videoUrl: data.videoUrl || data.video_url || data.video || "",
             recipe_Details: {
@@ -214,7 +215,7 @@ export default function UpdatePostForm() {
 
   const validateForm = () => {
     // Basic Info validation
-    if (!formData.post_title.trim()) return "Post title is required";
+    if (!formData.postTitle.trim()) return "Post title is required";
     if (!formData.description.trim()) return "Post description is required";
     // if (!formData.videoUrl.trim()) return "Video URL is required";
 
@@ -318,14 +319,6 @@ export default function UpdatePostForm() {
     }
   };
 
-  // Helper for flexible textarea
-  const Textarea = (props) => (
-    <textarea
-      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      {...props}
-    />
-  );
-
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto p-6 space-y-8 animate-pulse">
@@ -367,11 +360,11 @@ export default function UpdatePostForm() {
               <h3 className="text-lg font-semibold">Basic Information</h3>
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="post_title">Post Title</Label>
+                  <Label htmlFor="postTitle">Post Title</Label>
                   <Input
-                    id="post_title"
-                    name="post_title"
-                    value={formData.post_title}
+                    id="postTitle"
+                    name="postTitle"
+                    value={formData.postTitle}
                     onChange={handleChange}
                     placeholder="e.g. Triple chocolate mousse"
                   />
