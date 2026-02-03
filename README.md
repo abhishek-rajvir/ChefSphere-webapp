@@ -117,13 +117,21 @@ The backend is fully containerized to ensure consistent runtime behavior.
 docker pull abhishekrajvir66/chefsphere-deployment:latest
 ```
 
-## Maven
+## Execution
+
+Frontend
+
+set backend url to to localhost:8080 in .env
 
 ```bash
-./mvnw clean package
+cd /Frontend/reactApp/src
+npm install
+npm run dev
 ```
 
-```bash
+Backend
+```powershell
+cd compiled-jar
 Get-Content .env | Where-Object { $_ -and $_ -notmatch '^#' } |
   ForEach-Object {
     $k, $v = $_ -split '=', 2
